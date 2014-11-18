@@ -26,7 +26,7 @@ DIRECTORY STRUCTURE
 
 NOTE
 ------------
-When you pull this repo, the first thing you should do is to create your /config/db.php file using /config/db.php.example as a basis
+When you pull this repo, the first thing you should do is creating your /config/db.php file using /config/db.php.example as a basis
 
 REQUIREMENTS
 ------------
