@@ -18,6 +18,9 @@ Thumbs.db
 # automatically generated files for execution
 /runtime
 
+# Ignore db parameters, each one of us will have his own
+/config/db.php
+
 # composer itself is not needed
 composer.phar
 
