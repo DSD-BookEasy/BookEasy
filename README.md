@@ -24,7 +24,9 @@ DIRECTORY STRUCTURE
       views/              contains view files for the Web application
       web/                contains the entry script and Web resources
 
-
+NOTE
+------------
+When you pull this repo, first thing create your /config/db.php file from /config/db.php.example
 
 REQUIREMENTS
 ------------
