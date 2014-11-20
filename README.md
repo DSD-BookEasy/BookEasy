@@ -28,8 +28,9 @@ NOTEs
 ------------
 When you pull this repo, the first thing you should do is creating your /config/db.php file using /config/db.php.example as a basis
 
-WARNING: if the framework returns you an error about missing files under the /vendor directory, it is necessary that you copy those files from:
+WARNING: the first time you install this software you need to add a folder that is not included in the repository, because of some strange problems with sync. You can download it from here:
 https://github.com/yiisoft/yii2/releases/download/2.0.0/yii-basic-app-2.0.0.tgz
+Extract the archive and copy ONLY THE VENDOR FOLDER to the repository root
 
 REQUIREMENTS
 ------------
