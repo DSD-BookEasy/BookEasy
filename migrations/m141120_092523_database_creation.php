@@ -11,13 +11,13 @@ class m141120_092523_database_creation extends Migration
 		$this->createTable('Booking', [
 				'id' => 'pk',
 				'status' => 'boolean',
-				'timestamp' => 'timestamp',
+				'timestamp' => Schema::TYPE_TIMESTAMP. ' DEFAULT CURRENT_TIMESTAMP',
 				'name' => 'string',
 				'surname' => 'string',
 				'telephone' => 'string',
 				'e-mail' => 'string',
 				'address' => 'string',
-				]);
+				], 'ENGINE InnoDB');
 				
 		//table TimeSlot		
 		$this->createTable('TimeSlot', [
@@ -27,7 +27,7 @@ class m141120_092523_database_creation extends Migration
 				'cost' => 'integer',
 				'id_timeSlotModel' => 'integer',
 				'id_simulator' => 'integer',
-				]);
+				], 'ENGINE InnoDB');
 				
 		//table TimeSlotModel
 		$this->createTable('TimeSlotModel', [
@@ -39,7 +39,7 @@ class m141120_092523_database_creation extends Migration
 				'end_validity' => 'date',
 				'repeat_day' => 'integer',//come prima
 				'id_simulator' => 'integer',
-				]);
+				], 'ENGINE InnoDB');
 				
 		//table Simulator		
 		$this->createTable('Simulator', [
@@ -48,7 +48,7 @@ class m141120_092523_database_creation extends Migration
 				'description' => 'text',
 				'flight_duration' => 'integer',
 				'price_simulation' => 'integer',
-				]);
+				], 'ENGINE InnoDB');
 				
 		//table Staff
 		$this->createTable('Staff', [
@@ -61,8 +61,8 @@ class m141120_092523_database_creation extends Migration
 				'role' => 'integer',//enum
 				'user_name' => 'string',
 				'password' => 'string',
-				'last_login' => 'timestamp',
-				]);
+				'last_login' => Schema::TYPE_TIMESTAMP. ' DEFAULT CURRENT_TIMESTAMP',
+				], 'ENGINE InnoDB');
     }
 
     public function down()
