@@ -13,7 +13,7 @@ nbproject
 Thumbs.db
 
 # composer vendor dir
-# /vendor
+/vendor
 
 # automatically generated files for execution
 /runtime
