@@ -24,9 +24,12 @@ DIRECTORY STRUCTURE
       views/              contains view files for the Web application
       web/                contains the entry script and Web resources
 
-NOTE
+NOTEs
 ------------
 When you pull this repo, the first thing you should do is creating your /config/db.php file using /config/db.php.example as a basis
+
+WARNING: if the framework returns you an error about missing files under the /vendor directory, it is necessary that you copy those files from:
+https://github.com/yiisoft/yii2/releases/download/2.0.0/yii-basic-app-2.0.0.tgz
 
 REQUIREMENTS
 ------------
