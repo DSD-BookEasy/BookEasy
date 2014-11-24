@@ -14,7 +14,7 @@ use Yii;
  * @property integer $id_timeSlotModel
  * @property integer $id_simulator
  */
-class Timeslot extends \yii\db\ActiveRecord
+class TimeSlot extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
