@@ -38,7 +38,7 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         return [
             [['role'], 'integer'],
             [['last_login'], 'safe'],
-            [['name', 'surname', 'telephone', 'email', 'address', 'user_name', 'password', 'auth_key'], 'string', 'max' => 255]
+            [['name', 'surname', 'telephone', 'email', 'address', 'user_name', 'password', 'auth_key'], 'string', 'max' =>  255]
         ];
     }
 
