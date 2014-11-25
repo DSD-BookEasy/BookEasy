@@ -62,6 +62,15 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     }
 
     /**
+     * Checks if a password is valid for the current user
+     * @param $psw the password to check
+     * @return bool true if $psw is valid. False otherwise
+     */
+    public function isValidPassword($psw){
+        return Yii::$app->getSecurity()->validatePassword($psw, $this->password) ? true : false;
+    }
+
+    /**
      * Finds an identity by the given ID.
      * @param string|integer $id the ID to be looked for
      * @return IdentityInterface the identity object that matches the given ID.
