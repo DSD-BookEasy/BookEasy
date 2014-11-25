@@ -7,6 +7,8 @@ use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "Staff".
+ * To automatically encrypt the user password when you save a user,
+ * set the $plain_password property, not $password!!!
  *
  * @property integer $id
  * @property string $name
@@ -145,6 +147,10 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
                 $this->auth_key = Yii::$app->getSecurity()->generateRandomString();
+            }
+            if(isset($this->plain_password)){
+                $this->password= \Yii::$app->getSecurity()->generatePasswordHash($this->plain_password);
+                unset($this->plain_password);
             }
             return true;
         }
