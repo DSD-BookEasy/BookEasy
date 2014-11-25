@@ -26,8 +26,10 @@ class StaffController extends \yii\web\Controller
                 return $this->goHome();
             }
             else{
+                $staff=new Staff();
+                $staff->user_name=$loginData['user_name'];
                 return $this->render('login', [
-                    'model' => new Staff(),
+                    'model' => $staff,
                     'error' => \Yii::t('app','Invalid Username or Password')
                 ]);
             }
