@@ -13,7 +13,7 @@ use Yii;
  * @property integer $flight_duration
  * @property integer $price_simulation
  */
-class simulator extends \yii\db\ActiveRecord
+class Simulator extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc

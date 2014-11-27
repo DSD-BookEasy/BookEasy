@@ -3,14 +3,14 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\simulator;
+use app\models\Simulator;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * SimulatorController implements the CRUD actions for simulator model.
+ * SimulatorController implements the CRUD actions for Simulator model.
  */
 class SimulatorController extends Controller
 {
@@ -33,7 +33,7 @@ class SimulatorController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => simulator::find(),
+            'query' => Simulator::find(),
         ]);
 
         return $this->render('index', [
@@ -60,7 +60,7 @@ class SimulatorController extends Controller
      */
     public function actionCreate()
     {
-        $model = new simulator();
+        $model = new Simulator();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -107,12 +107,12 @@ class SimulatorController extends Controller
      * Finds the simulator model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return simulator the loaded model
+     * @return Simulator the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = simulator::findOne($id)) !== null) {
+        if (($model = Simulator::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
