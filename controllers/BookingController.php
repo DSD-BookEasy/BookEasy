@@ -73,6 +73,7 @@ class BookingController extends Controller
 
     /**
      * Creates a new Booking model for weekdays.
+     * Expects to receive timeSlots in the POST "timeslot" field, as in the standard Yii format
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
@@ -83,8 +84,13 @@ class BookingController extends Controller
 
         if(Yii::$app->request->post($name = 'timeslot') && !isset(Yii::$app->session['timeslots'])){
             TimeSlot::loadMultiple($timeSlots, Yii::$app->request->post($name = 'timeslots'));
-            Yii::app()->session['timeslots'] = $timeSlots;
-        }elseif(!isset(Yii::app()->session['timeslots'])){
+            foreach($timeSlots as $timeSlot){
+                if(!empty($timeSlot->id)){
+                    throw new ErrorException();
+                }
+            }
+            Yii::$app->session['timeslots'] = $timeSlots;
+        }elseif(!isset(Yii::$app->session['timeslots'])){
             $this -> goBack();
         }
 
@@ -92,21 +98,7 @@ class BookingController extends Controller
             //lock
             $transaction = Yii::$app->db->beginTransaction(\yii\db\Transaction::SERIALIZABLE);
             try {
-                $timeSlots = Yii::app()->session['timeslots'];
-                foreach ($timeSlots as $slot) {
-                    foreach ($timeSlots as $slot2) {
-                        if ($slot != $slot2) {
-                            if ($slot->overlapping($slot2)) {
-                                //rise error
-                                throw new ErrorException();
-                            }
-                        }
-                    }
-                    if ($slot->checkConsistency()) {
-                        //rise error
-                        throw new ErrorException;
-                    }
-                }
+                $timeSlots = Yii::$app->session['timeslots'];
 
                 if (!$model->save()) {
                     //rise error
@@ -120,12 +112,13 @@ class BookingController extends Controller
                         throw new ErrorException();
                     }
                 }
+
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             }catch(Exception $e){
                 $transaction->rollBack();
+                throw new ErrorException();
             }
-            $transaction->commit();
-
-            return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('createWeekdays', [
                 'model' => $model,
@@ -135,18 +128,26 @@ class BookingController extends Controller
 
     /**
      * Creates a new Booking model for sunday.
+     * Expects an array of timeSlot ids in the POST "timeslot" field
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
         $model = new Booking();
-        $timeSlots = [];
 
         if(Yii::$app->request->post($name = 'timeslot') && !isset(Yii::$app->session['timeslots'])){
-            TimeSlot::loadMultiple($timeSlots, Yii::$app->request->post($name = 'timeslots'));
-            Yii::app()->session['timeslots'] = $timeSlots;
-        }elseif(!isset(Yii::app()->session['timeslots'])){
+            $timeSlots=(array)Yii::$app->request->post($name = 'timeslots');
+            //Accept only an array of integer values
+            foreach($timeSlots as $timeSlot){
+                if(!is_numeric($timeSlot) or ((int)$timeSlot)!=$timeSlot or $timeSlot<=0){
+                    throw new ErrorException();
+                }
+            }
+
+            //And save them in the session
+            Yii::$app->session['timeslots'] = TimeSlot::findAll(Yii::$app->request->post($name = 'timeslots'));
+        }elseif(!isset(Yii::$app->session['timeslots'])){
             $this -> goBack();
         }
 
@@ -154,23 +155,9 @@ class BookingController extends Controller
             //lock
             $transaction = Yii::$app->db->beginTransaction(\yii\db\Transaction::SERIALIZABLE);
             try {
-                $timeSlots = Yii::app()->session['timeslots'];
-                foreach ($timeSlots as $slot) {
-                    foreach ($timeSlots as $slot2) {
-                        if ($slot != $slot2) {
-                            if ($slot->overlapping($slot2)) {
-                                //rise error
-                                throw new ErrorException();
-                            }
-                        }
-                    }
-                    if ($slot->checkConsistency($slot->id)) {
-                        //rise error
-                        throw new ErrorException;
-                    }
-                }
+                $timeSlots = Yii::$app->session['timeslots'];
 
-                if (!$model->save()) {
+                if (!$model->save()) {//Note: does the framework automatically update the id on insert?
                     //rise error
                     throw new ErrorException();
                 }
@@ -182,14 +169,17 @@ class BookingController extends Controller
                         throw new ErrorException();
                     }
                 }
+
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             }catch(Exception $e){
                 $transaction->rollBack();
+                //TODO here we should go to error page
+                throw new ErrorException();
             }
-            $transaction->commit();
 
-            return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('createWeekdays', [
+            return $this->render('create', [
                 'model' => $model,
             ]);
         }
