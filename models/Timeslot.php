@@ -95,6 +95,9 @@ class TimeSlot extends \yii\db\ActiveRecord
         if((strtotime($this->end) > strtotime($slot->start) )&& (strtotime($this->end) < strtotime($slot->end))){
             return true;
         }
+        if((strtotime($slot->start) == strtotime($this->start) )&& (strtotime($slot->start) == strtotime($this->end))){
+            return true;
+        }
         return false;
     }
 
