@@ -29,6 +29,10 @@ class BookingController extends Controller
         ];
     }
 
+    /**
+     * The action allow the possibility to search for a specific booking.
+     * The id of the booking to search is insert by a HTML form, using the YII support of form
+     */
     public function actionSearch(){
 
         $model = new Booking();
@@ -72,9 +76,11 @@ class BookingController extends Controller
     }
 
     /**
-     * Creates a new Booking model for weekdays.
-     * Expects to receive timeSlots in the POST "timeslot" field, as in the standard Yii format
+     * Creates a new Booking model for weekdays and also timeslots, passed in post, are insert in the database.
+     * Expects to receive timeSlots in the POST "timeslot" field, as in the standard Yii format (as instance of model
+     * timeslot).
      * If creation is successful, the browser will be redirected to the 'view' page.
+     * The action works as a transaction: the booking and timeslots insert are performed in an atomic transaction.
      * @return mixed
      */
     public function actionCreateWeekdays()
@@ -127,9 +133,10 @@ class BookingController extends Controller
     }
 
     /**
-     * Creates a new Booking model for sunday.
-     * Expects an array of timeSlot ids in the POST "timeslot" field
+     * Creates a new Booking model for sunday or for day included in the timeSlotModel.
+     * Expects an array of timeSlot ids in the POST "timeslot" field.
      * If creation is successful, the browser will be redirected to the 'view' page.
+     * The action work as a transaction: the booking and timeslots update are performed in an atomic transaction
      * @return mixed
      */
     public function actionCreate()
