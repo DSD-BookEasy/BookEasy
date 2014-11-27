@@ -13,7 +13,7 @@ class StaffController extends \yii\web\Controller
             return $this->goHome();
         }
         $loginData=\Yii::$app->request->post('Staff');
-        //No data sent, show the form
+        //No data sent, show the form, link the controller with the view
         if(empty($loginData)){
             return $this->render('login', [
                 'model' => new Staff(),

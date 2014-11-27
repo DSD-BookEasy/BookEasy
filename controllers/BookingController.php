@@ -29,6 +29,10 @@ class BookingController extends Controller
         ];
     }
 
+    /**
+     * The action allow the possibility to search for a specific booking.
+     * The id of the booking to search is insert by a HTML form, using the YII support of form
+     */
     public function actionSearch(){
 
         $model = new Booking();
@@ -72,8 +76,11 @@ class BookingController extends Controller
     }
 
     /**
-     * Creates a new Booking model for weekdays.
+     * Creates a new Booking model for weekdays and also timeslots, passed in post, are insert in the database.
+     * Expects to receive timeSlots in the POST "timeslot" field, as in the standard Yii format (as instance of model
+     * timeslot).
      * If creation is successful, the browser will be redirected to the 'view' page.
+     * The action works as a transaction: the booking and timeslots insert are performed in an atomic transaction.
      * @return mixed
      */
     public function actionCreateWeekdays()
@@ -83,8 +90,13 @@ class BookingController extends Controller
 
         if(Yii::$app->request->post($name = 'timeslot') && !isset(Yii::$app->session['timeslots'])){
             TimeSlot::loadMultiple($timeSlots, Yii::$app->request->post($name = 'timeslots'));
-            Yii::app()->session['timeslots'] = $timeSlots;
-        }elseif(!isset(Yii::app()->session['timeslots'])){
+            foreach($timeSlots as $timeSlot){
+                if(!empty($timeSlot->id)){
+                    throw new ErrorException();
+                }
+            }
+            Yii::$app->session['timeslots'] = $timeSlots;
+        }elseif(!isset(Yii::$app->session['timeslots'])){
             $this -> goBack();
         }
 
@@ -92,21 +104,7 @@ class BookingController extends Controller
             //lock
             $transaction = Yii::$app->db->beginTransaction(\yii\db\Transaction::SERIALIZABLE);
             try {
-                $timeSlots = Yii::app()->session['timeslots'];
-                foreach ($timeSlots as $slot) {
-                    foreach ($timeSlots as $slot2) {
-                        if ($slot != $slot2) {
-                            if ($slot->overlapping($slot2)) {
-                                //rise error
-                                throw new ErrorException();
-                            }
-                        }
-                    }
-                    if ($slot->checkConsistency()) {
-                        //rise error
-                        throw new ErrorException;
-                    }
-                }
+                $timeSlots = Yii::$app->session['timeslots'];
 
                 if (!$model->save()) {
                     //rise error
@@ -120,12 +118,14 @@ class BookingController extends Controller
                         throw new ErrorException();
                     }
                 }
+
+                $transaction->commit();
+                $this->notifyCoordinators($model);
+                return $this->redirect(['view', 'id' => $model->id]);
             }catch(Exception $e){
                 $transaction->rollBack();
+                throw new ErrorException();
             }
-            $transaction->commit();
-
-            return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('createWeekdays', [
                 'model' => $model,
@@ -134,19 +134,28 @@ class BookingController extends Controller
     }
 
     /**
-     * Creates a new Booking model for sunday.
+     * Creates a new Booking model for sunday or for day included in the timeSlotModel.
+     * Expects an array of timeSlot ids in the POST "timeslot" field.
      * If creation is successful, the browser will be redirected to the 'view' page.
+     * The action work as a transaction: the booking and timeslots update are performed in an atomic transaction
      * @return mixed
      */
     public function actionCreate()
     {
         $model = new Booking();
-        $timeSlots = [];
 
         if(Yii::$app->request->post($name = 'timeslot') && !isset(Yii::$app->session['timeslots'])){
-            TimeSlot::loadMultiple($timeSlots, Yii::$app->request->post($name = 'timeslots'));
-            Yii::app()->session['timeslots'] = $timeSlots;
-        }elseif(!isset(Yii::app()->session['timeslots'])){
+            $timeSlots=(array)Yii::$app->request->post($name = 'timeslots');
+            //Accept only an array of integer values
+            foreach($timeSlots as $timeSlot){
+                if(!is_numeric($timeSlot) or ((int)$timeSlot)!=$timeSlot or $timeSlot<=0){
+                    throw new ErrorException();
+                }
+            }
+
+            //And save them in the session
+            Yii::$app->session['timeslots'] = TimeSlot::findAll(Yii::$app->request->post($name = 'timeslots'));
+        }elseif(!isset(Yii::$app->session['timeslots'])){
             $this -> goBack();
         }
 
@@ -154,23 +163,9 @@ class BookingController extends Controller
             //lock
             $transaction = Yii::$app->db->beginTransaction(\yii\db\Transaction::SERIALIZABLE);
             try {
-                $timeSlots = Yii::app()->session['timeslots'];
-                foreach ($timeSlots as $slot) {
-                    foreach ($timeSlots as $slot2) {
-                        if ($slot != $slot2) {
-                            if ($slot->overlapping($slot2)) {
-                                //rise error
-                                throw new ErrorException();
-                            }
-                        }
-                    }
-                    if ($slot->checkConsistency($slot->id)) {
-                        //rise error
-                        throw new ErrorException;
-                    }
-                }
+                $timeSlots = Yii::$app->session['timeslots'];
 
-                if (!$model->save()) {
+                if (!$model->save()) {//Note: does the framework automatically update the id on insert?
                     //rise error
                     throw new ErrorException();
                 }
@@ -182,14 +177,18 @@ class BookingController extends Controller
                         throw new ErrorException();
                     }
                 }
+
+                $transaction->commit();
+                $this->notifyCoordinators($model);
+                return $this->redirect(['view', 'id' => $model->id]);
             }catch(Exception $e){
                 $transaction->rollBack();
+                //TODO here we should go to error page
+                throw new ErrorException();
             }
-            $transaction->commit();
 
-            return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('createWeekdays', [
+            return $this->render('create', [
                 'model' => $model,
             ]);
         }
@@ -241,5 +240,20 @@ class BookingController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    private function notifyCoordinators($booking){
+        $mails=[];
+        //TODO find Coordinators emails
+
+        Yii::$app->mailer->compose()
+            ->setFrom(\Yii::$app->params['adminEmail'])
+            ->setBcc($mails)
+            ->setSubject(\Yii::t('app','New Booking'))
+            ->setTextBody(\Yii::t('app',"Hello,\n\na new booking for the museum simulators has been received. Check
+            it out here:\n".\yii\helpers\Url::to(['booking/view','id'=>$booking->id])))
+            ->setHtmlBody('<p>Hello,</p><p>a new booking for the museum simulators has been received. Check
+            it out by clicking <a href="'.\yii\helpers\Url::to(['booking/view','id'=>$booking->id]).'">here</a></p>')
+            ->send();
     }
 }
