@@ -1,5 +1,7 @@
 <?php
 
+namespace app\modules\api;
+
 return [
     'modules' => [
         'v1' => [
@@ -8,12 +10,6 @@ return [
         ],
     ],
     'components' => [
-        'request' => [
-            'class' => 'yii\base\Request',
-            'parsers' => [
-                'application/json' => 'yii\web\JsonParser',
-            ]
-        ],
 
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
@@ -23,6 +19,7 @@ return [
             'rules' => [
                 ['class' => 'yii\rest\UrlRule'],
             ],
-        ]
+        ],
+
     ],
 ];
