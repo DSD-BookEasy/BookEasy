@@ -114,6 +114,7 @@ class BookingController extends Controller
                 }
 
                 $transaction->commit();
+                $this->notifyCoordinators($model);
                 return $this->redirect(['view', 'id' => $model->id]);
             }catch(Exception $e){
                 $transaction->rollBack();
@@ -171,6 +172,7 @@ class BookingController extends Controller
                 }
 
                 $transaction->commit();
+                $this->notifyCoordinators($model);
                 return $this->redirect(['view', 'id' => $model->id]);
             }catch(Exception $e){
                 $transaction->rollBack();
@@ -231,5 +233,20 @@ class BookingController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    private function notifyCoordinators($booking){
+        $mails=[];
+        //TODO find Coordinators emails
+
+        Yii::$app->mailer->compose()
+            ->setFrom(\Yii::$app->params['adminEmail'])
+            ->setBcc($mails)
+            ->setSubject(\Yii::t('app','New Booking'))
+            ->setTextBody(\Yii::t('app',"Hello,\n\na new booking for the museum simulators has been received. Check
+            it out here:\n".\yii\helpers\Url::to(['booking/view','id'=>$booking->id])))
+            ->setHtmlBody('<p>Hello,</p><p>a new booking for the museum simulators has been received. Check
+            it out by clicking <a href="'.\yii\helpers\Url::to(['booking/view','id'=>$booking->id]).'">here</a></p>')
+            ->send();
     }
 }
