@@ -3,17 +3,36 @@
 namespace app\modules\api\modules\v1\controllers;
 
 use Yii;
-use app\models\Staff;
-use app\models\StaffSearch;
+use yii\filters\VerbFilter;
 use yii\rest\ActiveController;
-use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
-/**
- * StaffController implements the CRUD actions for Staff model.
- */
 class StaffController extends ActiveController
 {
 
     public $modelClass = 'app\models\Staff';
+
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'index' => ['get'],
+                    'view' => ['get'],
+                    'create' => ['get', 'post'],
+                    'update' => ['get', 'put', 'post'],
+                    'delete' => ['post', 'delete'],
+                ],
+            ],
+            'contentNegotiator' => [
+                'class' => 'yii\filters\ContentNegotiator',
+                'formats' => [
+                    'application/json' => Response::FORMAT_JSON,
+                    'application/xml' => Response::FORMAT_XML,
+                ]
+            ]
+        ];
+    }
 
 }
