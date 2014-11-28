@@ -20,6 +20,7 @@ Thumbs.db
 
 # Ignore db parameters, each one of us will have his own
 /config/db.php
+/tests/codeception/config/config.php
 
 # composer itself is not needed
 composer.phar
@@ -31,3 +32,5 @@ composer.phar
 phpunit.phar
 # local phpunit config
 /phpunit.xml
+
+tests/_output/*
