@@ -42,8 +42,8 @@ class TimeslotController extends Controller
             throw new ErrorException();
         }
         $show=\Yii::$app->request->get("week",date('c'));
-        if(($show=strtotime($show))==false){
-            $show=time();
+        if(strtotime($show)==false){
+            $show=date('c');
         }
 
         //Find timeslots in the week of the specified day
