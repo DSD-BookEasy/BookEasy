@@ -15,6 +15,7 @@ use Yii;
  * @property string $telephone
  * @property string $email
  * @property string $address
+ * @property string $comments
  */
 class Booking extends \yii\db\ActiveRecord
 {
@@ -34,7 +35,7 @@ class Booking extends \yii\db\ActiveRecord
         return [
             [['status'], 'integer'],
             [['timestamp'], 'safe'],
-            [['name', 'surname', 'telephone', 'email', 'address'], 'string', 'max' => 255]
+            [['name', 'surname', 'telephone', 'email', 'address', 'comments'], 'string', 'max' => 255]
         ];
     }
 
@@ -52,6 +53,7 @@ class Booking extends \yii\db\ActiveRecord
             'telephone' => Yii::t('app', 'Telephone'),
             'email' => Yii::t('app', 'Email'),
             'address' => Yii::t('app', 'Address'),
+            'comments' => Yii::t('app', 'Comments'),
         ];
     }
 }
