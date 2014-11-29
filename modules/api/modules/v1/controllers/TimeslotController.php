@@ -7,10 +7,10 @@ use yii\filters\VerbFilter;
 use yii\rest\ActiveController;
 use yii\web\Response;
 
-class TimeSlotController extends ActiveController
+class TimeslotController extends ActiveController
 {
 
-    public $modelClass = 'app\models\TimeSlot';
+    public $modelClass = 'app\models\Timeslot';
 
     public function behaviors()
     {
