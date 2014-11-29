@@ -13,6 +13,7 @@ use Yii;
  * @property integer $cost
  * @property integer $id_timeSlotModel
  * @property integer $id_simulator
+ * @property integer $id_booking
  */
 class TimeSlot extends \yii\db\ActiveRecord
 {
