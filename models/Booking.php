@@ -15,6 +15,7 @@ use Yii;
  * @property string $telephone
  * @property string $email
  * @property string $address
+ * @property integer $assigned_instructor
  */
 class Booking extends \yii\db\ActiveRecord
 {
