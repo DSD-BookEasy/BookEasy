@@ -15,7 +15,7 @@ use Yii;
  * @property integer $id_simulator
  * @property integer $id_booking
  */
-class TimeSlot extends \yii\db\ActiveRecord
+class Timeslot extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -71,7 +71,7 @@ class TimeSlot extends \yii\db\ActiveRecord
             $condition[] = ['not',['id' => $this->id]];
         }
 
-        $slots = TimeSlot::find()
+        $slots = self::find()
             ->where($condition,
                 [':start' => $this->start])
             ->all();

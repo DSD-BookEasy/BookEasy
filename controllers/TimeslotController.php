@@ -4,10 +4,8 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Timeslot;
-use app\models\TimeslotSearch;
 use yii\base\ErrorException;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**

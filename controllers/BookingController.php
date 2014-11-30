@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-use app\models\TimeSlot;
+use app\models\Timeslot;
 use Yii;
 use app\models\Booking;
 use yii\base\ErrorException;
@@ -89,7 +89,7 @@ class BookingController extends Controller
         $timeSlots = [];
 
         if(Yii::$app->request->post($name = 'timeslot') && !isset(Yii::$app->session['timeslots'])){
-            TimeSlot::loadMultiple($timeSlots, Yii::$app->request->post($name = 'timeslots'));
+            Timeslot::loadMultiple($timeSlots, Yii::$app->request->post($name = 'timeslots'));
             foreach($timeSlots as $timeSlot){
                 if(!empty($timeSlot->id)){
                     throw new ErrorException();
@@ -154,7 +154,7 @@ class BookingController extends Controller
             }
 
             //And save them in the session
-            Yii::$app->session['timeslots'] = TimeSlot::findAll(Yii::$app->request->post($name = 'timeslots'));
+            Yii::$app->session['timeslots'] = Timeslot::findAll(Yii::$app->request->post($name = 'timeslots'));
         }elseif(!isset(Yii::$app->session['timeslots'])){
             $this -> goBack();
         }
