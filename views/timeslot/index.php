@@ -54,9 +54,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'aspectRatio' => '2',
             'defaultView' => 'agendaWeek',
             'scrollTime' => '08:00:00',
-            'editable' => 'false',
+            'editable' => false,
             'firstDay' => 1,
-            'allDaySlot'=>false,
+            'allDaySlot'=> false,
             'defaultDate'=> $week,
             'events' => $events
         ]
