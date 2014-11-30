@@ -55,7 +55,8 @@ class TimeslotController extends Controller
 
         return $this->render('index', [
             'week' => $show,
-            'slots' => $thisWeek
+            'slots' => $thisWeek,
+            'simulator' => $sim
         ]);
     }
 
