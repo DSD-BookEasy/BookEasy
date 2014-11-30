@@ -18,6 +18,9 @@ define('_lunchBreak','+2 hours');
 define('_monday', '2014-12-01');
 define('_sunday', '2014-12-07');
 //testing purpose
+use app\models\Booking;
+use app\models\Simulator;
+use app\models\Staff;
 use app\models\Timeslot;
 use Yii;
 
@@ -63,6 +66,15 @@ class PopulatorController extends \yii\web\Controller
 
     public function actionIndex()
     {
+        return $this->render('index');
+    }
+
+    public function actionClear()
+    {
+        Timeslot::deleteAll();
+        Booking::deleteAll();
+        Simulator::deleteAll();
+        Staff::deleteAll();
         return $this->render('index');
     }
 
