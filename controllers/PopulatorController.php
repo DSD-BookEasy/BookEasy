@@ -18,7 +18,8 @@ define('_lunchBreak','+2 hours');
 define('_monday', '2014-12-01');
 define('_sunday', '2014-12-07');
 //testing purpose
-use app\models\TimeSlot;
+use app\models\Timeslot;
+use Yii;
 
 class PopulatorController extends \yii\web\Controller
 {
@@ -115,7 +116,7 @@ class PopulatorController extends \yii\web\Controller
         //1.1) already reserved and assigned
         while (count($assigned_bookings_ids) > 0 and $sunday < $endDay) {
             $val = array_pop($assigned_bookings_ids);
-            $time_slot = new TimeSlot();
+            $time_slot = new Timeslot();
             if ($sunday == $midday) {
                 $sunday->add($lunchBreak);
             }
@@ -131,7 +132,7 @@ class PopulatorController extends \yii\web\Controller
             if ($sunday == $midday) {
                 $sunday->add($lunchBreak);
             }
-            $time_slot = new TimeSlot();
+            $time_slot = new Timeslot();
             $time_slot->start = $sunday->format($format_string);
             $time_slot->end = $sunday->add($interval)->format($format_string);
             $time_slot->cost = rand(100, 999);
@@ -142,7 +143,7 @@ class PopulatorController extends \yii\web\Controller
             if ($sunday == $midday) {
                 $sunday->add($lunchBreak);
             }
-            $time_slot = new TimeSlot();
+            $time_slot = new Timeslot();
             $time_slot->start = $sunday->format($format_string);
             $time_slot->end = $sunday->add($interval)->format($format_string);
             $time_slot->cost = rand(100, 999);
@@ -152,7 +153,7 @@ class PopulatorController extends \yii\web\Controller
         //1.3) reserved but not assigned
         while (count($unassigned_bookings_ids) > 0 and $sunday < $endDay) {
             $ele = array_pop($unassigned_bookings_ids);
-            $time_slot = new TimeSlot();
+            $time_slot = new Timeslot();
             if ($sunday == $midday) {
                 $sunday->add($lunchBreak);
             }
@@ -168,7 +169,7 @@ class PopulatorController extends \yii\web\Controller
         //2.1) assigned weekday bookings if any left
         while (count($assigned_bookings_ids) > 0) {
             $val = array_pop($assigned_bookings_ids);
-            $time_slot = new TimeSlot();
+            $time_slot = new Timeslot();
             $time_slot->start = $weekday->format($format_string);
             $time_slot->end = $weekday->add($interval)->format($format_string);
             $this->next($weekday, $lunchBreak);
@@ -180,7 +181,7 @@ class PopulatorController extends \yii\web\Controller
         //2.2) unassigned weekday bookings if any left
         while (count($unassigned_bookings_ids) > 0) {
             $ele = array_pop($unassigned_bookings_ids);
-            $time_slot = new TimeSlot();
+            $time_slot = new Timeslot();
             $time_slot->start = $weekday->format($format_string);
             $time_slot->end = $weekday->add($interval)->format($format_string);
             $this->next($weekday, $lunchBreak);

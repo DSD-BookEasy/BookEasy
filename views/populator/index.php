@@ -40,6 +40,6 @@ use yii\widgets\ActiveForm;
         Take a look at the controller code to change these dates.
     </p>
 </div>
-<form method="get" action="execute">
+<form method="get" action="<?= \yii\helpers\Url::to(['execute'])?>">
     <input type="submit" class="btn btn-danger btn-lg" value="Click me once">
 </form>
