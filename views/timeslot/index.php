@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="timeslot-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
+    <p><?= \Yii::t('app','Click on a timeslot to make a booking'); ?></p>
     <?php
     $next=strftime("%Y-%m-%d",strtotime($week)+(7*24*60*60));
     $prev=strftime("%Y-%m-%d",strtotime($week)-(7*24*60*60));
@@ -32,13 +32,18 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     $events=[];
     foreach($slots as $s){
-        $a=['start'=>$s->start,
-            'end'=>$s->end
+        $a=['start' => $s->start,
+            'end' => $s->end,
+            'id' => $s->id
         ];
 
         if($s->id_booking!=null){
             $a['title']=\Yii::t('app','Unavailable');
             $a['class']='unavailable';
+        }
+        else{
+            $a['title']=\Yii::t('app','Available');
+            $a['class']='available';
         }
 
         $events[]=$a;
@@ -55,10 +60,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'defaultView' => 'agendaWeek',
             'scrollTime' => '08:00:00',
             'editable' => false,
+            'selectable' => true,
             'firstDay' => 1,
             'allDaySlot'=> false,
             'defaultDate'=> $week,
-            'events' => $events
+            'events' => $events,
+            'eventRender' => new \yii\web\JsExpression('function slotBooking(event, element)
+    {
+        element.css(\'cursor\',\'pointer\');
+        element.click(function(ev){
+            ev.preventDefault();
+            window.location.href=\''.\yii\helpers\Url::to(['booking/create','timeslot[]'=>'event.id']).';
+        })
+    }')
         ]
     ]); ?>
 
