@@ -48,8 +48,8 @@ class TimeslotController extends Controller
         $borders = $this->findWeekFromDay($show);
         $thisWeek = Timeslot::find()->
         where(['id_simulator' => $sim])->
-        andWhere(['>=', 'start', strftime("%Y-%m-%d", $borders[0])])->
-        andWhere(['<=', 'end', strftime("%Y-%m-%d", $borders[1])])->all();
+        andWhere(['>=', 'start', strftime("%Y-%m-%d 00:00:00", $borders[0])])->
+        andWhere(['<=', 'end', strftime("%Y-%m-%d 23:59:59", $borders[1])])->all();
 
         return $this->render('index', [
             'week' => $show,
