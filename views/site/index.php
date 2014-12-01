@@ -20,28 +20,28 @@ $this->title = 'Västerås Flygmuseum';
 
                 <p><img src="http://placehold.it/225"></p>
 
-                <p><a class="btn btn-default" href="timeslot?simulator=1">Book &raquo;</a></p>
+                <p><a class="btn btn-default" href="timeslot?simulator=5">Book &raquo;</a></p>
             </div>
             <div class="col-lg-3">
                 <h2>Eliquam Simulator</h2>
 
                 <p><img src="http://placehold.it/225"></p>
 
-                <p><a class="btn btn-default" href="timeslot?simulator=2">Book &raquo;</a></p>
+                <p><a class="btn btn-default" href="timeslot?simulator=6">Book &raquo;</a></p>
             </div>
             <div class="col-lg-3">
                 <h2>Voluptas Simulator</h2>
 
                 <p><img src="http://placehold.it/225"></p>
 
-                <p><a class="btn btn-default" href="timeslot?simulator=3">Book &raquo;</a></p>
+                <p><a class="btn btn-default" href="timeslot?simulator=7">Book &raquo;</a></p>
             </div>
             <div class="col-lg-3">
                 <h2>Ab Simulator</h2>
 
                 <p><img src="http://placehold.it/225"></p>
 
-                <p><a class="btn btn-default" href="timeslot?simulator=4">Book &raquo;</a></p>
+                <p><a class="btn btn-default" href="timeslot?simulator=8">Book &raquo;</a></p>
             </div>
         </div>
 
