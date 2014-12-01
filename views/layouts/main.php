@@ -26,7 +26,7 @@ AppAsset::register($this);
     <div class="wrap">
         <?php
             NavBar::begin([
-                'brandLabel' => 'My Company',
+                'brandLabel' => 'BookEasy',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => [
                     'class' => 'navbar-inverse navbar-fixed-top',
@@ -35,14 +35,14 @@ AppAsset::register($this);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
-                    ['label' => 'Home', 'url' => ['/site/index']],
-                    ['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => 'Contact', 'url' => ['/site/contact']],
+                    ['label' => \Yii::t('app','Home'), 'url' => ['/site/index']],
+                    //['label' => 'About', 'url' => ['/site/about']],
+                    ['label' => \Yii::t('app','Book a Simulator'), 'url' => ['/simulator/book']],
                     Yii::$app->user->isGuest ?
-                        ['label' => 'Login', 'url' => ['/site/login']] :
-                        ['label' => 'Logout (' . Yii::$app->user->identity->user_name . ')',
-                            'url' => ['/site/logout'],
-                            'linkOptions' => ['data-method' => 'post']],
+                        ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
+                        ['label' => \Yii::t('app','Logout ({username})',
+                            ['username'=>Yii::$app->user->identity->user_name]),
+                            'url' => ['/staff/logout']],
                 ],
             ]);
             NavBar::end();

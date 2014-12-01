@@ -6,6 +6,27 @@ use app\models\Staff;
 
 class StaffController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [//Allow access to logout only if user is logged-in
+                'class' => AccessControl::className(),
+                'only' => ['logout'],
+                'rules' => [
+                    [
+                        'actions' => ['logout'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Login
+     * @return string|\yii\web\Response
+     */
     public function actionLogin()
     {
         //Already loggedin users should not access this page
@@ -34,5 +55,15 @@ class StaffController extends \yii\web\Controller
                 ]);
             }
         }
+    }
+
+    /**
+     * Logout from the system
+     * @return \yii\web\Response
+     */
+    public function actionLogout()
+    {
+        \Yii::$app->user->logout();
+        return $this->goBack();
     }
 }
