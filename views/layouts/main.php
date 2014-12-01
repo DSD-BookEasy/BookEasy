@@ -37,7 +37,7 @@ AppAsset::register($this);
                 'items' => [
                     ['label' => \Yii::t('app','Home'), 'url' => ['/site/index']],
                     //['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => \Yii::t('app','Book a Simulator'), 'url' => ['/simulator/book']],
+                    ['label' => \Yii::t('app','Look for a Booking'), 'url' => ['/booking/search']],
                     Yii::$app->user->isGuest ?
                         ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
                         ['label' => \Yii::t('app','Logout ({username})',
