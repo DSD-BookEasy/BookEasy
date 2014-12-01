@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
         element.css(\'cursor\',\'pointer\');
         element.click(function(ev){
             ev.preventDefault();
-            window.location.href=\''.\yii\helpers\Url::to(['booking/create','timeslot[]'=>'event.id']).';
+            window.location.href=\''.\yii\helpers\Url::to(['booking/create','timeslots[]'=>'']).'\'+event.id;
         })
     }')
         ]
