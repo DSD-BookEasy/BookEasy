@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Staff;
+use yii\filters\AccessControl;
 
 class StaffController extends \yii\web\Controller
 {
