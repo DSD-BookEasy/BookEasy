@@ -8,6 +8,7 @@ use app\models\Booking;
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\data\ActiveDataProvider;
+use yii\db\Transaction;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -102,7 +103,7 @@ class BookingController extends Controller
 
         if ($model->load(Yii::$app->request->post($name = 'Booking'))) {
             //lock
-            $transaction = Yii::$app->db->beginTransaction(\yii\db\Transaction::SERIALIZABLE);
+            $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
             try {
                 $timeSlots = Yii::$app->session['timeslots'];
 
@@ -144,8 +145,8 @@ class BookingController extends Controller
     {
         $model = new Booking();
 
-        if(Yii::$app->request->post($name = 'timeslot') && !isset(Yii::$app->session['timeslots'])){
-            $timeSlots=(array)Yii::$app->request->post($name = 'timeslots');
+        if(Yii::$app->request->get($name = 'timeslots') && !isset(Yii::$app->session['timeslots'])){
+            $timeSlots=(array)Yii::$app->request->get($name = 'timeslots');
             //Accept only an array of integer values
             foreach($timeSlots as $timeSlot){
                 if(!is_numeric($timeSlot) or ((int)$timeSlot)!=$timeSlot or $timeSlot<=0){
@@ -154,14 +155,14 @@ class BookingController extends Controller
             }
 
             //And save them in the session
-            Yii::$app->session['timeslots'] = Timeslot::findAll(Yii::$app->request->post($name = 'timeslots'));
+            Yii::$app->session['timeslots'] = Timeslot::findAll(Yii::$app->request->get($name = 'timeslots'));
         }elseif(!isset(Yii::$app->session['timeslots'])){
             $this -> goBack();
         }
 
-        if ($model->load(Yii::$app->request->post($name = 'Booking'))) {
+        if ($model->load(Yii::$app->request->post())) {
             //lock
-            $transaction = Yii::$app->db->beginTransaction(\yii\db\Transaction::SERIALIZABLE);
+            $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
             try {
                 $timeSlots = Yii::$app->session['timeslots'];
 
@@ -178,8 +179,12 @@ class BookingController extends Controller
                     }
                 }
 
+                // Unset session, otherwise it will stay hanging forever
+                unset(Yii::$app->session['timeslots']);
+
                 $transaction->commit();
-                $this->notifyCoordinators($model);
+                //$this->notifyCoordinators($model);
+                // Fix exception
                 return $this->redirect(['view', 'id' => $model->id]);
             }catch(Exception $e){
                 $transaction->rollBack();
