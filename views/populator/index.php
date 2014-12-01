@@ -12,7 +12,9 @@ use yii\widgets\ActiveForm;
         Make sure you run this controller just once, otherwise it will duplicate your data. If you want to
         regenerate
         the fixture files run the below code on
-        your project root folder
+        your project root folder. But before that you need to create the <code>/tests/codeception/config.php</code> file
+        like
+        the example in the same path.
     </p>
 
     <p>
@@ -30,6 +32,10 @@ use yii\widgets\ActiveForm;
 </div>
 <div class="alert alert-info" role="alert">
     <p>
+        All staff passwords are <code>123456789</code>.
+    </p>
+
+    <p>
         This controller generates only 10 staff members, 4 simulators, 20 bookings(randomly assigned to a staff or
         unassigned, random status(we don't have approval yet)), 22 Timeslots, 0 Timeslotmodels(we don't have it
         yet).
@@ -40,6 +46,12 @@ use yii\widgets\ActiveForm;
         Take a look at the controller code to change these dates.
     </p>
 </div>
-<form method="get" action="<?= \yii\helpers\Url::to(['execute'])?>">
-    <input type="submit" class="btn btn-danger btn-lg" value="Click me once">
-</form>
+<div>
+    <form style="float:left" method="get" action="<?= \yii\helpers\Url::to(['execute']) ?>">
+        <input type="submit" class="btn btn-warning btn-lg" value="Click me once">
+    </form>
+    <form method="get" action="<?= \yii\helpers\Url::to(['clear']) ?>"
+          onsubmit="return confirm('This action will completely remove every row in your database. Are you sure?');">
+        <input style="margin-left: 50px" type="submit" class="btn btn-danger btn-lg" value="Clear database">
+    </form>
+</div>
