@@ -1,5 +1,7 @@
 <?php
 /* @var $this yii\web\View */
+use yii\helpers\Url;
+
 $this->title = 'Västerås Flygmuseum';
 ?>
 <div class="site-index">
@@ -20,28 +22,40 @@ $this->title = 'Västerås Flygmuseum';
 
                 <p><img src="http://placehold.it/225"></p>
 
-                <p><a class="btn btn-default" href="timeslot?simulator=1">Book &raquo;</a></p>
+                <p><a class="btn btn-default" href="<?= Url::to([
+                        'simulator/agenda',
+                        'id' => '1',
+                    ])?>">Book &raquo;</a></p>
             </div>
             <div class="col-lg-3">
                 <h2>Eliquam Simulator</h2>
 
                 <p><img src="http://placehold.it/225"></p>
 
-                <p><a class="btn btn-default" href="timeslot?simulator=2">Book &raquo;</a></p>
+                <p><a class="btn btn-default" href="<?= Url::to([
+                        'simulator/agenda',
+                        'id' => '2',
+                    ])?>">Book &raquo;</a></p>
             </div>
             <div class="col-lg-3">
                 <h2>Voluptas Simulator</h2>
 
                 <p><img src="http://placehold.it/225"></p>
 
-                <p><a class="btn btn-default" href="timeslot?simulator=3">Book &raquo;</a></p>
+                <p><a class="btn btn-default" href="<?= Url::to([
+                        'simulator/agenda',
+                        'id' => '3',
+                    ])?>">Book &raquo;</a></p>
             </div>
             <div class="col-lg-3">
                 <h2>Ab Simulator</h2>
 
                 <p><img src="http://placehold.it/225"></p>
 
-                <p><a class="btn btn-default" href="timeslot?simulator=4">Book &raquo;</a></p>
+                <p><a class="btn btn-default" href="<?= Url::to([
+                        'simulator/agenda',
+                        'id' => '4',
+                    ])?>">Book &raquo;</a></p>
             </div>
         </div>
 
