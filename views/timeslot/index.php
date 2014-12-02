@@ -39,15 +39,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
         if($s->id_booking!=null){
             $a['title']=\Yii::t('app','Unavailable');
-            $a['class']='unavailable';
+            $a['className']='unavailable';
         }
         else{
             $a['title']=\Yii::t('app','Available');
-            $a['class']='available';
+            $a['className']='available';
         }
 
         $events[]=$a;
     }
+
+    $bookUrl=\yii\helpers\Url::to(['booking/create','timeslots[]'=>'']);
 
     echo FullCalendar::widget([
         'config' => [
@@ -67,11 +69,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'events' => $events,
             'eventRender' => new \yii\web\JsExpression('function slotBooking(event, element)
     {
-        element.css(\'cursor\',\'pointer\');
-        element.click(function(ev){
-            ev.preventDefault();
-            window.location.href=\''.\yii\helpers\Url::to(['booking/create','timeslots[]'=>'']).'\'+event.id;
-        })
+        if(element.hasClass("available")){
+            element.click(function(ev){
+                ev.preventDefault();
+                window.location.href="'.$bookUrl.'"+event.id;
+            })
+        }
+        else{
+            element.attr("title","'.\Yii::t('app',"This timeslot is already booked. Choose another one, please.").'");
+            element.tooltip();
+        }
     }')
         ]
     ]); ?>
