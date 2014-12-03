@@ -183,7 +183,7 @@ class BookingController extends Controller
                 unset(Yii::$app->session['timeslots']);
 
                 $transaction->commit();
-                //$this->notifyCoordinators($model);
+                $this->notifyCoordinators($model);
                 // Fix exception
                 return $this->redirect(['view', 'id' => $model->id]);
             }catch(Exception $e){
@@ -227,6 +227,7 @@ class BookingController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        //TODO delete foreign keys! e.g. references to this booking in timeslots
 
         return $this->redirect(['index']);
     }
@@ -248,17 +249,11 @@ class BookingController extends Controller
     }
 
     private function notifyCoordinators($booking){
-        $mails=[];
-        //TODO find Coordinators emails
-
-        Yii::$app->mailer->compose()
-            ->setFrom(\Yii::$app->params['adminEmail'])
-            ->setBcc($mails)
-            ->setSubject(\Yii::t('app','New Booking'))
-            ->setTextBody(\Yii::t('app',"Hello,\n\na new booking for the museum simulators has been received. Check
-            it out here:\n".\yii\helpers\Url::to(['booking/view','id'=>$booking->id])))
-            ->setHtmlBody('<p>Hello,</p><p>a new booking for the museum simulators has been received. Check
-            it out by clicking <a href="'.\yii\helpers\Url::to(['booking/view','id'=>$booking->id]).'">here</a></p>')
-            ->send();
+        Yii::$app->mailer->compose(['html'=>'booking/new_booking_html','text'=>'booking/new_booking_text'],[
+          'id'=>$booking->id])
+          ->setFrom(\Yii::$app->params['adminEmail'])
+          ->setTo(\Yii::$app->params['coordinatorEmail'])
+          ->setSubject(\Yii::t('app','New Booking'))
+          ->send();
     }
 }
