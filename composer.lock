@@ -4,7 +4,19 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+    "hash": "549526f938c8ec9f8b750a53182674bd",
+=======
+    "hash": "58d59823501eea63f95ab6fe6cc16dc5",
+>>>>>>> origin/dev
+=======
     "hash": "63eb5ba98c353922d188599ce0f06c33",
+>>>>>>> parent of 9641ac4... Porva
+=======
+    "hash": "63eb5ba98c353922d188599ce0f06c33",
+>>>>>>> origin/dev
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -729,8 +741,31 @@
             },
             "dist": {
                 "type": "zip",
+<<<<<<< HEAD
+<<<<<<< HEAD
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/0e7d2eec5554f869fa7a4ec2d21e4b37af943ea5",
+                "reference": "0e7d2eec5554f869fa7a4ec2d21e4b37af943ea5",
+=======
+            "name": "swiftmailer/swiftmailer",
+            "version": "v5.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/swiftmailer/swiftmailer.git",
+                "reference": "b86b927dfefdb56ab0b22d1350033d9a38e9f205"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/b86b927dfefdb56ab0b22d1350033d9a38e9f205",
+                "reference": "b86b927dfefdb56ab0b22d1350033d9a38e9f205",
+>>>>>>> origin/dev
+=======
                 "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/53603b3c995f5aab6b59c8e08c3a663d2cc810b7",
                 "reference": "53603b3c995f5aab6b59c8e08c3a663d2cc810b7",
+>>>>>>> parent of 9641ac4... Porva
+=======
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/53603b3c995f5aab6b59c8e08c3a663d2cc810b7",
+                "reference": "53603b3c995f5aab6b59c8e08c3a663d2cc810b7",
+>>>>>>> origin/dev
                 "shasum": ""
             },
             "require": {
