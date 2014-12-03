@@ -37,6 +37,7 @@ class BookingController extends Controller
     public function actionSearch(){
 
         $model = new Booking();
+
         if ( (Yii::$app->request->post())) {
             $id = (Yii::$app->request->post($name = 'Booking'));
             return $this->redirect(['view',
@@ -145,6 +146,8 @@ class BookingController extends Controller
     {
         $model = new Booking();
 
+        // Check for 'timeslots' in the GET-Request
+        // Make sure 'timeslots' is available as a session parameter
         if(Yii::$app->request->get($name = 'timeslots') && !isset(Yii::$app->session['timeslots'])){
             $timeSlots=(array)Yii::$app->request->get($name = 'timeslots');
             //Accept only an array of integer values
@@ -195,6 +198,7 @@ class BookingController extends Controller
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'timeslots' => Yii::$app->session['timeslots'],
             ]);
         }
     }
