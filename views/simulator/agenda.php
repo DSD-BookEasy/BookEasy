@@ -15,7 +15,8 @@ use yii\helpers\Url;
 /* @var $nextWeek string */
 /* @var $simulator Simulator */
 
-
+$price=$simulator->getAttribute("price_simulation");
+$duration=$simulator->getAttribute("flight_duration");
 $this->title = Yii::t('app', "{simulator}'s agenda", [
     'simulator' => $simulator->getAttribute("name")
 ]);
@@ -37,6 +38,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Agenda')];
             ])?>">
             <?= \Yii::t('app',"Previous Week");?>
         </a>&nbsp;
+
         <a href="<?= Url::to([
                 'simulator/agenda',
                 'id' => $simulator->getAttribute("id"),
@@ -88,9 +90,12 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Agenda')];
             'eventRender' => new \yii\web\JsExpression('function slotBooking(event, element)
     {
         if(element.hasClass("available")){
+                element.attr("title","'.\Yii::t('app',"This timeslot is available. and it costs $price SEK for $duration minutes").'");
+                element.tooltip();
             element.click(function(ev){
                 ev.preventDefault();
                 window.location.href="'.$bookUrl.'"+event.id;
+
             })
         }
         else{
