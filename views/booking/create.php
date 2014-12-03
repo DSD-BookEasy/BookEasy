@@ -5,6 +5,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
+/* @var $entry_fee integer */
 
 $this->title = Yii::t('app', 'Create {modelClass}', [
     'modelClass' => 'Booking',
@@ -33,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <li>Start: <?= $timeslots[0]->start ?></li>
         <li>End: <?= $timeslots[0]->end ?></li>
         <li>Cost: <?= $price_simulator ?> SEK</li>
-        <li>Entrance: 80 SEK</li>
+        <li>Entrance: <?= (int)$entry_fee ?> SEK</li>
     </ul>
 
     <p>Please provide the following information to continue.</p>

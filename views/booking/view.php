@@ -5,6 +5,7 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
+/* @var $entry_fee integer */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
@@ -40,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <li>Start: <?= $timeslots[0]->start ?></li>
         <li>End: <?= $timeslots[0]->end ?></li>
         <li>Cost: <?= $price_simulator ?> SEK</li>
-        <li>Entrance: 80 SEK</li>
+        <li>Entrance: <?= $entry_fee ?></li>
     </ul>
 
     <?= DetailView::widget([
