@@ -49,7 +49,7 @@ $config = [
         'urlManager' => [
             'class'=>'yii\web\UrlManager',
             'enablePrettyUrl' => true,
-            'showScriptName' => false,
+            'showScriptName' => true,
             'rules' => [
                 '<controller>/<id:\d+>/<action>' => '<controller>/<action>'
             ]
