@@ -51,6 +51,12 @@ class Timeslot extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getBooking()
+    {
+        // Timeslot has_one Booking via Booking.id -> id_booking
+        return $this->hasOne(Booking::className(), ['id' => 'id_booking']);
+    }
+
     /**
      * Check whether exist an other timeSlot with the same simulator, in the same day, overlapping
      * @return bool
