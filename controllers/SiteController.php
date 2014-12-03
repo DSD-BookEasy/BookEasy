@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -47,7 +48,13 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        $simulators = new ActiveDataProvider([
+            'query' => \app\models\Simulator::find(),
+        ]);
+
+        return $this->render('index', [
+            'simulators' => $simulators->getModels(),
+        ]);
     }
 
     public function actionAbout()
