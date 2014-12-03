@@ -72,8 +72,12 @@ class BookingController extends Controller
      */
     public function actionView($id)
     {
+        $booking = $this->findModel($id);
+        $timeslots = Timeslot::findAll(['id_booking' => $id]);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $booking,
+            'timeslots' => $timeslots,
         ]);
     }
 
