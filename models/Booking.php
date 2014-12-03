@@ -55,4 +55,9 @@ class Booking extends \yii\db\ActiveRecord
             'address' => Yii::t('app', 'Address'),
         ];
     }
+
+    public function getTimeslots() {
+        // Booking has_many Timeslot via timeslot.id_booking -> id
+        return $this->hasMany(Timeslot::className(), ['id_booking' => 'id']);
+    }
 }
