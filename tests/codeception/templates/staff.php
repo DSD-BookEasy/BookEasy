@@ -11,7 +11,8 @@ return [
     'address' => $faker->address,
     'role' => 0, //TODO will be implemented later
     'user_name' => $faker->userName,
-    'password' => \Yii::$app->getSecurity()->generatePasswordHash("123456789"),
+    //'password' => '123456789',
+    'password' => \Yii::$app->getSecurity()->generatePasswordHash('123456789'),
     'last_login' => $faker->dateTimeBetween($startDate = '-1 week', $endDate = 'now')->format("Y-m-d H:i:s"),
     'auth_key' => Yii::$app->getSecurity()->generateRandomString(),
 ];
