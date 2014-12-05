@@ -26,6 +26,14 @@ use yii\web\IdentityInterface;
 class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
     /**
+     * Set this property to change the password of a user.
+     * If you change this property password will be automatically encrypted
+     * If you change the $password attribute you will change directly
+     * the encrypted password
+     */
+    public $plain_password;
+
+    /**
      * @inheritdoc
      */
     public static function tableName()
@@ -62,19 +70,6 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'password' => Yii::t('app', 'Password'),
             'last_login' => Yii::t('app', 'Last Login'),
         ];
-    }
-
-    /**
-     * Sets the password of the user, already encrypted.
-     * You should not use this method direclty, it will be called by Yii when you modify the password attribute:
-     * $user->password="sesame";
-     *
-     * @param $psw the new password to set to the user
-     * @throws \yii\base\Exception
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function setPassword($psw){
-        $this->password= \Yii::$app->getSecurity()->generatePasswordHash($psw);
     }
 
     /**
@@ -161,6 +156,10 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
                 $this->auth_key = Yii::$app->getSecurity()->generateRandomString();
+            }
+            if(isset($this->plain_password)){
+                $this->password= \Yii::$app->getSecurity()->generatePasswordHash($this->plain_password);
+                unset($this->plain_password);
             }
             return true;
         }
