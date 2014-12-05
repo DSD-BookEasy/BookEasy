@@ -13,5 +13,14 @@ class UserTest extends TestCase
         //$this->loadFixtures(['user']);
     }
 
-    // TODO add test methods here
+    public function testMe()
+    {
+        $staff= \app\models\Staff::findOne(['user_name'=>'mercedes26']);
+        if(!empty($staff) and $staff->isValidPassword('123456789')){
+
+        }
+        else {
+
+        }
+    }
 }
