@@ -31,7 +31,7 @@ class TimeSlotModel extends ActiveRecord
     const TUESDAY = 2;
     const WEDNESDAY = 3;
     const THURSDAY = 4;
-    const  FRIDAY = 5;
+    const FRIDAY = 5;
     const SATURDAY = 6;
     const SUNDAY = 7;
 
@@ -49,9 +49,16 @@ class TimeSlotModel extends ActiveRecord
     public function rules()
     {
         return [
-            [['start_time', 'end_time', 'start_validity', 'end_validity', 'last_generation'], 'safe'],
+            [['start_time', 'end_time'], 'date', 'format' => 'php:H:i'],
+            [['start_validity', 'end_validity'], 'date', 'format' => 'php:Y-m-d'],
+            [['last_generation'], 'date'],
             [['frequency', 'repeat_day', 'id_simulator'], 'integer']
         ];
+    }
+
+    public function beforeValidate() {
+        $this->start_validity = date('Y-m-d', strtotime($this->start_validity));
+        $this->end_validity = date('Y-m-d', strtotime($this->end_validity));
     }
 
     /**
@@ -67,28 +74,14 @@ class TimeSlotModel extends ActiveRecord
             'start_validity' => Yii::t('app', 'Start Validity'),
             'end_validity' => Yii::t('app', 'End Validity'),
             'repeat_day' => Yii::t('app', 'Repeat Day'),
-            'id_simulator' => Yii::t('app', 'Id Simulator'),
+            'id_simulator' => Yii::t('app', 'Simulator'),
             'last_generation' =>  Yii::t('app', 'Last Generation'),
         ];
     }
 
     public function repeat_day_string(){
+        // Is this really needed for something?
+        return date('l', strtotime("this week + ($this->repeat_day - 1) days"));
 
-        switch($this->repeat_day){
-            case 1:
-                return "Monday";
-            case 2:
-                return "Tuesday";
-            case 3:
-                return "Wednesday";
-            case 4:
-                return "Thursday";
-            case 5:
-                return "Friday";
-            case 6:
-                return "Saturday";
-            case 7:
-                return "Sunday";
-        }
     }
 }
