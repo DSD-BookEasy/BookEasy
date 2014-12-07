@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Simulator;
 use Yii;
 use app\models\TimeSlotModel;
 use yii\data\ActiveDataProvider;
@@ -65,10 +66,24 @@ class TimeSlotModelController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
+
+            $weekDays = [];
+
+            for ($i = 0; $i <= 6; $i++) {
+                $weekDays[] = date('l', strtotime("this week + $i days"));
+            }
+
+            $simulators = new ActiveDataProvider([
+                'query' => Simulator::find(),
+            ]);
+
             return $this->render('create', [
                 'model' => $model,
+                'weekDays' => $weekDays,
+                'simulators' => $simulators->getModels()
             ]);
         }
+
     }
 
     /**

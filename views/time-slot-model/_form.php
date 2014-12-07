@@ -1,33 +1,83 @@
 <?php
 
+use app\models\TimeSlotModel;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\time\TimePicker;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TimeSlotModel */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $weekDays string[] */
+/* @var $simulators app\models\Simulator[] */
+
 ?>
 
 <div class="time-slot-model-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'start_time')->textInput() ?>
+    <div class="row">
+        <div class="col-md-4">
+            <?= $form->field($model, 'id_simulator')->dropDownList(ArrayHelper::map($simulators, 'id', 'name')) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'end_time')->textInput() ?>
+    <div class="row">
+        <div class="col-md-3">
+            <?= $form->field($model, 'start_time')->widget(TimePicker::className(), [
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'showMeridian' => false,
+                ]
+            ]) ?>
+        </div>
+        <div class="col-md-3">
+            <?= $form->field($model, 'end_time')->widget(TimePicker::className(), [
+                'pluginOptions' => [
+                    'autoclose' => true,
+                    'showMeridian' => false,
+                ]
+            ]) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'frequency')->textInput() ?>
+    <div class="row">
+        <div class="col-md-2">
+            <?= $form->field($model, 'repeat_day')->dropDownList($weekDays) ?>
+        </div>
+        <div class="col-md-2">
+            <?= $form->field($model, 'frequency')->dropDownList([
+                TimeSlotModel::DAILY => Yii::t('app', 'Daily'),
+                TimeSlotModel::WEEKLY => Yii::t('app', 'Weekly')
+            ]) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'start_validity')->textInput() ?>
-
-    <?= $form->field($model, 'end_validity')->textInput() ?>
-
-    <?= $form->field($model, 'repeat_day')->textInput() ?>
-
-    <?= $form->field($model, 'id_simulator')->textInput() ?>
+    <div class="row">
+        <div class="col-md-3">
+            <?= $form->field($model, 'start_validity')->widget(DatePicker::className(), [
+                'type' => DatePicker::TYPE_COMPONENT_APPEND,
+                'pluginOptions' => [
+                    'autoclose' => true,
+                ]
+            ]) ?>
+        </div>
+        <div class="col-md-3">
+            <?= $form->field($model, 'end_validity')->widget(DatePicker::className(), [
+                'type' => DatePicker::TYPE_COMPONENT_APPEND,
+                'pluginOptions' => [
+                    'autoclose' => true,
+                ]
+            ]) ?>
+        </div>
+    </div>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'),
+            ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
