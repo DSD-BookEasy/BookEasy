@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "TimeSlotModel".
@@ -17,7 +18,7 @@ use Yii;
  * @property integer $id_simulator
  * @property string $last_generation
  */
-class TimeSlotModel extends \yii\db\ActiveRecord
+class TimeSlotModel extends ActiveRecord
 {
     //frequency const
     const DAILY = 1;
@@ -39,7 +40,7 @@ class TimeSlotModel extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'timeslotmodel';
+        return 'TimeSlotModel';
     }
 
     /**
