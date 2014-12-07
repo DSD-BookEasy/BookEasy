@@ -18,7 +18,10 @@
         "yiisoft/yii2": "*",
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
-        "paolomanca/yii2-fullcalendar": "v2.2.3.1"
+        "paolomanca/yii2-fullcalendar": "v2.2.3.1",
+        "kartik-v/yii2-widget-datepicker": "*",
+        "kartik-v/yii2-widget-timepicker": "*",
+        "kartik-v/yii2-widget-datetimepicker": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
