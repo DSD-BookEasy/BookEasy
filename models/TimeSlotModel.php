@@ -122,9 +122,9 @@ class TimeSlotModel extends ActiveRecord
             $currDate->modify($this->generated_until);
         }
 
-        if ($currDate->format('l') !== $this->repeat_day_string()) {
+        if ($currDate->format('l') !== $this->repeatDayToString()) {
             // If the starting date is not in the week day set for $this->repeat_day
-            $currDate->modify('next ' . $this->repeat_day_string());
+            $currDate->modify('next ' . $this->repeatDayToString());
         }
 
         while ($currDate <= $stopSpawning) {
@@ -144,7 +144,7 @@ class TimeSlotModel extends ActiveRecord
 
     }
 
-    public function repeat_day_string(){
+    public function repeatDayToString(){
         return date('l', strtotime("this week + ($this->repeat_day - 1) days"));
 
     }
