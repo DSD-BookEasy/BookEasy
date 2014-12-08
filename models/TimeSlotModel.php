@@ -15,7 +15,7 @@ use yii\db\ActiveRecord;
  * @property integer $id_simulator Identifier of the Simulator the model is referring to
  * @property string $start_time Starting time of the generated TimeSlots
  * @property string $end_time Ending time of the generated TimeSlots
- * @property integer $frequency Frequency of the repetition
+ * @property string $frequency Frequency of the repetition (see durations in ISO8601)
  * @property string $start_validity Starting date of validity of the model
  * @property string $end_validity Ending date of validity of the model
  * @property integer $repeat_day Day of the week in which the repetitions takes place
