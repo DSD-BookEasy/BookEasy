@@ -2,22 +2,25 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
+use yii\base\ErrorException;
 use yii\base\ModelEvent;
 use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "TimeSlotModel".
  *
- * @property integer $id
- * @property string $start_time
- * @property string $end_time
- * @property integer $frequency
- * @property string $start_validity
- * @property string $end_validity
- * @property integer $repeat_day
- * @property integer $id_simulator
- * @property string $last_generation
+ * @property integer $id Identifier of the TimeSlot Model
+ * @property integer $id_simulator Identifier of the Simulator the model is referring to
+ * @property string $start_time Starting time of the generated TimeSlots
+ * @property string $end_time Ending time of the generated TimeSlots
+ * @property integer $frequency Frequency of the repetition
+ * @property string $start_validity Starting date of validity of the model
+ * @property string $end_validity Ending date of validity of the model
+ * @property integer $repeat_day Day of the week in which the repetitions takes place
+ * @property DateTime $last_generation Last time the model was used to generate TimeSlot
+ * @property string $generated_until Date of the last generated TimeSlot
  */
 class TimeSlotModel extends ActiveRecord
 {
