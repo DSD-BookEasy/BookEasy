@@ -106,6 +106,17 @@ a.desc:after {
     border-color: #ff4500;
 }
 
-.fc-bgevent.closed{
+.fc-bgevent.closed {
     background: #C0C0C0;
+}
+
+/**
+ * Parameter list
+ */
+.param_name{
+    font-weight: bold;
+}
+
+.param_description{
+    font-size: 0.8em;
 }

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Parameter;
 use app\models\Timeslot;
 use Yii;
 use app\models\Booking;
@@ -78,6 +79,7 @@ class BookingController extends Controller
         return $this->render('view', [
             'model' => $booking,
             'timeslots' => $timeslots,
+            'entry_fee' => Parameter::getValue('entryFee',80)
         ]);
     }
 
@@ -203,6 +205,7 @@ class BookingController extends Controller
             return $this->render('create', [
                 'model' => $model,
                 'timeslots' => Yii::$app->session['timeslots'],
+                'entry_fee' => Parameter::getValue('entryFee',80)
             ]);
         }
     }
