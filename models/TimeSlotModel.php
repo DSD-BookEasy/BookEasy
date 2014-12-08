@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use DateInterval;
 use DateTime;
 use Yii;
 use yii\base\ErrorException;
@@ -91,8 +92,59 @@ class TimeSlotModel extends ActiveRecord
         ];
     }
 
+    /**
+     * Generates the TimeSlots based on the TimeSlotModel until a given date
+     * @param $until
+     * @throws ErrorException
+     */
+    public function spawnTimeSlots($until)
+    {
+
+        $stopSpawning = new Datetime($until);
+        $endValidity = new DateTime($this->end_validity);
+
+        if ($endValidity < new DateTime()) {
+            // Model is already invalid, can't spawn new TimeSlots
+            throw new ErrorException();
+        }
+
+        if ($stopSpawning > $endValidity) {
+            // Requesting to spawn ahead of the validity of the model
+            $stopSpawning = $endValidity;
+        }
+
+        $currDate = new DateTime();
+
+        if (empty($this->generated_until)) {
+            // If this is the first time the generation is performed
+            $currDate->modify($this->start_validity);
+        } else {
+            $currDate->modify($this->generated_until);
+        }
+
+        if ($currDate->format('l') !== $this->repeat_day_string()) {
+            // If the starting date is not in the week day set for $this->repeat_day
+            $currDate->modify('next ' . $this->repeat_day_string());
+        }
+
+        while ($currDate <= $stopSpawning) {
+
+            TimeSlot::createFromModel($this, $currDate);
+
+            $currDate->add(new \DateInterval($this->frequency));
+        }
+
+        $this->generated_until = $currDate->format('Y-m-d'); // not sure about the format
+        $this->last_generation = date('Y-m-d');
+
+
+        if (!$this->save()) {
+            throw new ErrorException();
+        }
+
+    }
+
     public function repeat_day_string(){
-        // Is this really needed for something?
         return date('l', strtotime("this week + ($this->repeat_day - 1) days"));
 
     }

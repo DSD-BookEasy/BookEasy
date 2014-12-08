@@ -77,6 +77,10 @@ class Timeslot extends \yii\db\ActiveRecord
         }
     }
 
+    public static function createFromModel(TimeSlotModel $model, $day) {
+
+    }
+
 
     /**
      * @inheritdoc
