@@ -50,7 +50,29 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Agenda')];
     </div>
 
     <?php
-    $events = [];
+    $businessHours=[//TODO Make these dynamic
+        'start' => '8:00',
+        'end' => '19:00'
+    ];
+
+    /**
+     * We will use this to track the interval of hours to show in the calendar
+     * Initially it will be equal to the business hours, but if there are explicit
+     * timeslots exceeding it, we should make space for them too
+     */
+    $borders=$businessHours;
+
+    $events = [
+        [//Show Business Hours.
+            'start' => $businessHours['start'],
+            'end' => $businessHours['end'],
+            'dow' => [0, 1, 2, 3, 4, 5, 6],
+            'rendering' => 'inverse-background',
+            'className' => 'closed'
+        ]
+    ];
+
+    //Populate calendar events with timeslots
     foreach ($slots as $s) {
         $a = [
             'start' => $s->start,
@@ -65,6 +87,8 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Agenda')];
             $a['title'] = \Yii::t('app', 'Available');
             $a['className'] = 'available';
         }
+
+        checkBorders($borders,$s->start,$s->end);
 
         $events[] = $a;
     }
@@ -89,22 +113,55 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Agenda')];
             'events' => $events,
             'eventRender' => new \yii\web\JsExpression('function slotBooking(event, element)
     {
-        if(element.hasClass("available")){
-                element.attr("title","'.\Yii::t('app',"This timeslot is available. and it costs $price SEK for $duration minutes").'");
+        if(event.rendering!="background" && event.rendering!="inverse-background"){
+            if(element.hasClass("available")){
+                    element.attr("title","'.\Yii::t('app',"This timeslot is available. and it costs $price SEK for $duration minutes").'");
+                    element.tooltip();
+                element.click(function(ev){
+                    ev.preventDefault();
+                    window.location.href="'.$bookUrl.'"+event.id;
+
+                })
+            }
+            else{
+                element.attr("title","'.\Yii::t('app',"This timeslot is already booked. Choose another one, please.").'");
                 element.tooltip();
-            element.click(function(ev){
-                ev.preventDefault();
-                window.location.href="'.$bookUrl.'"+event.id;
-
-            })
+            }
         }
-        else{
-            element.attr("title","'.\Yii::t('app',"This timeslot is already booked. Choose another one, please.").'");
-            element.tooltip();
-        }
-
-    }')
+    }'),
+            //Features for booking during weekdays
+            'selectable' => true,
+            'selectOverlap' => new \yii\web\JsExpression("function(event) {
+        return (event.rendering === 'background' || event.rendering === 'inverse-background');
+    }"),
+            'selectConstraint' => [
+                'start' => $businessHours['start'],
+                'end' => $businessHours['end'],
+                'dow' => [0, 1, 2, 3, 4, 5, 6]
+            ],
+            'minTime' => $borders['start'],
+            'maxTime' => $borders['end']
         ]
     ]); ?>
 
 </div>
+<?php
+
+function checkBorders(&$borders,$start,$end){
+    //Converting hours in minutes
+    $convertStart = ((int)strftime("%H",strtotime($start)))*60+(int)strftime("%M",strtotime($start));
+    $convertEnd = ((int)strftime("%H",strtotime($end)))*60+(int)strftime("%M",strtotime($end));
+
+    $chunks = explode(':', $borders['start']);
+    $convertBStart=$chunks[0]*60+$chunks[1];
+    $chunks = explode(':', $borders['end']);
+    $convertBEnd=$chunks[0]*60+$chunks[1];
+
+    if($convertBStart>$convertStart){
+        $borders['start'] = strftime("%H:%M",strtotime($start));
+    }
+
+    if($convertBEnd<$convertEnd){
+        $borders['end'] = strftime("%H:%M",strtotime($end));
+    }
+}

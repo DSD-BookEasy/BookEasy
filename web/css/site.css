@@ -105,3 +105,7 @@ a.desc:after {
     background-color: #F08080;
     border-color: #ff4500;
 }
+
+.fc-bgevent.closed{
+    background: #C0C0C0;
+}
