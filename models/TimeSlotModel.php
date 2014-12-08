@@ -25,10 +25,8 @@ use yii\db\ActiveRecord;
 class TimeSlotModel extends ActiveRecord
 {
     //frequency const
-    const DAILY = 1;
-    const WEEKLY = 7;
-    const DAILY_INCREMENT = '1D';
-    const WEEKLY_INCREMENT = '1W';
+    const DAILY = 'P1D';
+    const WEEKLY = 'P1W';
 
     //repeat day const
     const MONDAY = 1;
@@ -56,7 +54,8 @@ class TimeSlotModel extends ActiveRecord
             [['start_time', 'end_time'], 'date', 'format' => 'php:H:i'],
             [['start_validity', 'end_validity'], 'date', 'format' => 'php:Y-m-d'],
             [['last_generation'], 'date'],
-            [['frequency', 'repeat_day', 'id_simulator'], 'integer']
+            [['frequency'], 'string'],
+            [['repeat_day', 'id_simulator'], 'integer']
         ];
     }
 

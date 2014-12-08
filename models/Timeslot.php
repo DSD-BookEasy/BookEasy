@@ -64,17 +64,7 @@ class Timeslot extends \yii\db\ActiveRecord
 
         $time_scan = strtotime('next ' . $model->repeat_day_string(), $start);
 
-        //map frequency with its increment
-        switch($model->frequency){
-            case TimeSlotModel::DAILY:
-                $time_increment = new \DateInterval(TimeSlotModel::DAILY_INCREMENT);
-                break;
-            case TimeSlotModel::WEEKLY:
-                $time_increment = new \DateInterval(TimeSlotModel::WEEKLY_INCREMENT);
-                break;
-            default:
-                throw new \Exception();
-        }
+        $time_increment = new \DateInterval($model->frequency);
 
         while($time_scan < $stop){
             //create new time slot
