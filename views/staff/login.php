@@ -3,16 +3,17 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+
 ?>
-<h1><?=Yii::t('app','Staff Login') ?></h1>
+<h1><?= Yii::t('app', 'Staff Login') ?></h1>
 <?php
-    if(!empty($error)){
-?>
-<div class="error">
-    <?= HTML::encode($error); ?>
-</div>
+if (!empty($error)) {
+    ?>
+    <div class="error">
+        <?= HTML::encode($error); ?>
+    </div>
 <?php
-    }
+}
 ?>
 
 <div class="login-form">
@@ -23,7 +24,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'password')->passwordInput() ?>
 
-    <?= Html::submitButton(Yii::t('app', 'Login'), ['class' => 'btn btn-primary']) ?>
+    <?= Html::submitButton(Yii::t('app', 'Login'), ['id' => 'loginBtn', 'class' => 'btn btn-primary']) ?>
 
     <?php ActiveForm::end(); ?>
 
