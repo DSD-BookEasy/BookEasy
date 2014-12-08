@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <li>Entrance: 80 SEK</li>
     </ul>
 
-    <p>Plerovide the following information to continue.</p>ase p
+    <p>Provide the following information to continue.</p>
 
     <?= $this->render('_form', [
         'model' => $model,
