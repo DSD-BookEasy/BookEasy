@@ -1,10 +1,13 @@
 <?php
 
 use tests\codeception\_pages\LoginPage;
+use tests\codeception\_pages\PopulatePage;
 
 $I = new FunctionalTester($scenario);
 $I->wantTo('ensure that login works');
 
+$populatePage = PopulatePage::openBy($I);
+$populatePage->populate();
 $loginPage = LoginPage::openBy($I);
 
 $I->see('Staff Login','h1');

@@ -1,27 +1,27 @@
 <?php
 
 namespace app\controllers;
-
 /**
  * define working hours and generated data range here
  * REMEMBER!: timeslot endings must coincide with midday!
  * REMEMBER!: Keep the below format if you change the dates YYYY-MM-DD HH:mm:ss
  **/
-define ('_beginDay_H','09');
-define ('_beginDay_M','00');
+define ('_beginDay_H', '09');
+define ('_beginDay_M', '00');
 define('_midday_H', '12');
 define('_midday_M', '00');
 define('_endDay_H', '17');
 define('_endDay_M', '59');
-define('_interval','+30 minutes');
-define('_lunchBreak','+2 hours');
-define('_monday', '2014-12-01');
-define('_sunday', '2014-12-07');
+define('_interval', '+30 minutes');
+define('_lunchBreak', '+2 hours');
+define('_monday', '2014-12-08');
+define('_sunday', '2014-12-14');
 //testing purpose
 use app\models\Booking;
 use app\models\Simulator;
 use app\models\Staff;
 use app\models\Timeslot;
+use app\models\TimeSlotModel;
 use Yii;
 
 class PopulatorController extends \yii\web\Controller
@@ -78,7 +78,8 @@ class PopulatorController extends \yii\web\Controller
         return $this->render('index');
     }
 
-    public function actionExecute() {
+    public function actionExecute()
+    {
         //loads and creates staff objects and then saves it to the db
         $staff = require(__DIR__ . '/../tests/codeception/fixtures/staff.php');
         $staff_ids = array();
@@ -117,12 +118,14 @@ class PopulatorController extends \yii\web\Controller
         }
         //This section can be changed to generate time slots in different dates
         $format_string = "Y-m-d H:i:s";
-        $sunday = \DateTime::createFromFormat($format_string, _sunday.' '._beginDay_H.':'._beginDay_M.':00');
-        $midday = \DateTime::createFromFormat($format_string, _sunday.' '._midday_H.':'._midday_M.':00');
-        $weekday = \DateTime::createFromFormat($format_string, _monday.' '._beginDay_H.':'._beginDay_M.':00');
+        $format_string_time = "H:i:s";
+        $sunday = \DateTime::createFromFormat($format_string, _sunday . ' ' . _beginDay_H . ':' . _beginDay_M . ':00');
+        $midday = \DateTime::createFromFormat($format_string, _sunday . ' ' . _midday_H . ':' . _midday_M . ':00');
+        $weekday = \DateTime::createFromFormat($format_string, _monday . ' ' . _beginDay_H . ':' . _beginDay_M . ':00');
         $interval = \DateInterval::createFromDateString(_interval);
         $lunchBreak = \DateInterval::createFromDateString(_lunchBreak);
-        $endDay = \DateTime::createFromFormat($format_string, _sunday.' '._endDay_H.':'._endDay_M.':00');
+        $endDay = \DateTime::createFromFormat($format_string, _sunday . ' ' . _endDay_H . ':' . _endDay_M . ':00');
+
 
         //1) sunday bookings
         //1.1) already reserved and assigned
@@ -202,6 +205,33 @@ class PopulatorController extends \yii\web\Controller
             $time_slot->id_booking = $ele;
             $time_slot->save();
         }
+/*
+        //TimeslotModel for sundays:
+        $tempDateEnd = \DateTime::createFromFormat($format_string, _sunday . " 00:00:00");
+        $tempDateEnd->add(\DateInterval::createFromDateString("+6 weeks"));
+        $tempDateEnd = $tempDateEnd->format($format_string);
+        $tempDateStart = \DateTime::createFromFormat($format_string,
+            _sunday . ' 00:00:00')->format($format_string);
+        $sunday = \DateTime::createFromFormat($format_string,
+            _sunday . ' ' . _beginDay_H . ':' . _beginDay_M . ':00');
+        while ($sunday < $endDay) {
+            if ($sunday == $midday) {
+                $sunday->add($lunchBreak);
+            }
+            foreach ($simulators_ids as $id) {
+                $currentSlotTime = clone $sunday;
+                $timeslotmodel = new TimeSlotModel();
+                $timeslotmodel->id_simulator = $id;
+                $timeslotmodel->start_validity = $tempDateStart;
+                $timeslotmodel->end_validity = $tempDateEnd;
+                $timeslotmodel->repeat_day = 7;
+                $timeslotmodel->frequency = 7;
+                $timeslotmodel->start_time = $currentSlotTime->format($format_string_time);
+                $timeslotmodel->end_time = $currentSlotTime->add($interval)->format($format_string_time);
+                $timeslotmodel->save();
+            }
+            $sunday->add($interval);
+        }*/
         return $this->render('index');
     }
 
