@@ -89,3 +89,19 @@ a.desc:after {
     padding: 10px 20px;
     margin: 0 0 15px 0;
 }
+
+/**
+ * Book Timeslot in Week Calendar View
+ */
+.fc-event.available{
+    background-color: #008000;
+    border-color: #32CD32;
+    cursor: pointer;
+}
+.fc-event.available:hover{
+    background-color: #ffdc2e;
+}
+.fc-event.unavailable{
+    background-color: #F08080;
+    border-color: #ff4500;
+}

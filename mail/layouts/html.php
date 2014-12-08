@@ -16,6 +16,7 @@ use yii\helpers\Html;
 <body>
     <?php $this->beginBody() ?>
     <?= $content ?>
+    <p><?= \Yii::t('app',"Best Regards,\nVästerås Flygmuseum Staff")?></p>
     <?php $this->endBody() ?>
 </body>
 </html>

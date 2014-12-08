@@ -26,6 +26,69 @@ class Timeslot extends \yii\db\ActiveRecord
     }
 
     /**
+     * @param $until date
+     */
+    public static function generateNextTimeSlot($until){
+        $models =  TimeSlotModel::findAll(''); //load all models
+        $today = strtotime(date("Y-m-d"));
+
+        foreach($models as $model){
+            //check this usage of date. Maybe move this control to db condition
+
+            //convert strings to datetime
+            $end_validity = strtotime($model->end_validity);
+            if($model->last_generation == NULL)
+                $last_generation = $today;
+            else
+                $last_generation = strtotime($model->last_generation);
+
+            //check if the model is still valid and if
+            if(!($end_validity < $today) && $last_generation < $until){
+                if($end_validity < $until){
+                    $stop =  $end_validity;
+                }else{
+                    $stop = $until;
+                }
+
+                if($last_generation > strtotime($model->start_validity)){
+                    $start = $last_generation;
+                }else
+                    $start = strtotime($model->start_validity);
+
+                createTimeSlotFromModel($model, $start, $stop);
+            }
+        }
+    }
+
+    private function createTimeSlotFromModel($model, $start, $stop){
+
+        $time_scan = strtotime('next ' . $model->repeat_day_string(), $start);
+
+        //map frequency with its increment
+        switch($model->frequency){
+            case TimeSlotModel::DAILY:
+                $time_increment = new \DateInterval(TimeSlotModel::DAILY_INCREMENT);
+                break;
+            case TimeSlotModel::WEEKLY:
+                $time_increment = new \DateInterval(TimeSlotModel::WEEKLY_INCREMENT);
+                break;
+            default:
+                throw new \Exception();
+        }
+
+        while($time_scan < $stop){
+            //create new time slot
+            $temp = new Timeslot();
+            $temp->id_simulator = $model->id_simulator;
+            $temp->start = date_format($time_scan,"Y-m-d") . $model->start_time;
+            $temp->end = date_format($time_scan,"Y-m-d") . $model->end_time;
+            //increment time scan
+            date_add($time_scan, $time_increment);
+        }
+    }
+
+
+    /**
      * @inheritdoc
      */
     public function rules()
@@ -109,5 +172,6 @@ class Timeslot extends \yii\db\ActiveRecord
         }
         return false;
     }
+
 
 }
