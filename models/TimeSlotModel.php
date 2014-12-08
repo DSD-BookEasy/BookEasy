@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\base\ModelEvent;
 use yii\db\ActiveRecord;
 
 /**
@@ -56,9 +57,18 @@ class TimeSlotModel extends ActiveRecord
         ];
     }
 
-    public function beforeValidate() {
+    /**
+     * @inheritdoc
+     */
+    public function beforeValidate()
+    {
+        $event = new ModelEvent;
+        $this->trigger(self::EVENT_BEFORE_VALIDATE, $event);
+
         $this->start_validity = date('Y-m-d', strtotime($this->start_validity));
         $this->end_validity = date('Y-m-d', strtotime($this->end_validity));
+
+        return $event->isValid;
     }
 
     /**

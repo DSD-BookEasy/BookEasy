@@ -60,6 +60,7 @@ use kartik\date\DatePicker;
         <div class="col-md-3">
             <?= $form->field($model, 'start_validity')->widget(DatePicker::className(), [
                 'type' => DatePicker::TYPE_COMPONENT_APPEND,
+                'convertFormat' => true,
                 'pluginOptions' => [
                     'autoclose' => true,
                 ]
@@ -68,6 +69,7 @@ use kartik\date\DatePicker;
         <div class="col-md-3">
             <?= $form->field($model, 'end_validity')->widget(DatePicker::className(), [
                 'type' => DatePicker::TYPE_COMPONENT_APPEND,
+                'convertFormat' => true,
                 'pluginOptions' => [
                     'autoclose' => true,
                 ]
