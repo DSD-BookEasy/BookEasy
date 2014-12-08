@@ -36,6 +36,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     ?>
 
+    <p>You booked the following simulator:</p>
+
     <ul>
         <li>Start: <?= $timeslots[0]->start ?></li>
         <li>End: <?= $timeslots[0]->end ?></li>
