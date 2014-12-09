@@ -6,6 +6,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
 /* @var $entry_fee integer */
+/* @var $timeslots \app\models\Timeslot[] */
 
 $this->title = Yii::t('app', 'Create {modelClass}', [
     'modelClass' => 'Booking',
@@ -20,28 +21,22 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>You are about to book the following simulator:</p>
 
     <?php
-
-    $price_simulator = 0;
-    if (empty($timeslots) == false) {
-        foreach ($timeslots as $timeslot) {
-            $price_simulator += isset($timeslot->cost) ? $timeslot->cost : 0;
-        }
-    }
-
+    $flight_price = $timeslots[0]->cost>0?$timeslots[0]->cost:$timeslots[0]->simulator->price_simulation;
     ?>
 
-    <ul>
-        <li>Start: <?= $timeslots[0]->start ?></li>
-        <li>End: <?= $timeslots[0]->end ?></li>
-        <li>Cost: <?= $price_simulator ?> SEK</li>
-        <li>Entrance: <?= (int)$entry_fee ?> SEK</li>
-    </ul>
+    <?= Html::ul([
+        Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->start)),
+        Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->end)),
+        Yii::t('app','Entrance: {0, number, currency}', $entry_fee),
+        Yii::t('app','Flight Simulation: {0, number, currency}', $flight_price),
+        Yii::t('app','Total Cost: {0, number, currency}', $entry_fee + $flight_price),
+    ]);
+    ?>
 
     <p>Provide the following information to continue.</p>
 
     <?= $this->render('_form', [
-        'model' => $model,
-        'timeslots' => $timeslots,
+        'model' => $model
     ]) ?>
 
 </div>

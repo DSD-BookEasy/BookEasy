@@ -27,24 +27,23 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php
-
-    $price_simulator = 0;
-    if (empty($timeslots) == false) {
-        foreach ($timeslots as $timeslot) {
-            $price_simulator += isset($timeslot->cost) ? $timeslot->cost : 0;
-        }
-    }
-
+    $timeslots=$model->timeslots;
     ?>
 
     <p>You booked the following simulator:</p>
 
-    <ul>
-        <li>Start: <?= $timeslots[0]->start ?></li>
-        <li>End: <?= $timeslots[0]->end ?></li>
-        <li>Cost: <?= $price_simulator ?> SEK</li>
-        <li>Entrance: <?= $entry_fee ?></li>
-    </ul>
+    <?php
+    $flight_price = $timeslots[0]->cost>0?$timeslots[0]->cost:$timeslots[0]->simulator->price_simulation;
+    ?>
+
+    <?= Html::ul([
+        Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->start)),
+        Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->end)),
+        Yii::t('app','Entrance: {0, number, currency}', $entry_fee),
+        Yii::t('app','Flight Simulation: {0, number, currency}', $flight_price),
+        Yii::t('app','Total Cost: {0, number, currency}', $entry_fee + $flight_price),
+    ]);
+    ?>
 
     <?= DetailView::widget([
         'model' => $model,
