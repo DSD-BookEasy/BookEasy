@@ -35,13 +35,15 @@ class BookingController extends Controller
      * The action allow the possibility to search for a specific booking.
      * The id of the booking to search is insert by a HTML form, using the YII support of form
      */
-    public function actionSearch(){
+    public function actionSearch()
+    {
 
         $model = new Booking();
 
-        if ( (Yii::$app->request->post())) {
+        if ((Yii::$app->request->post())) {
             $id = (Yii::$app->request->post($name = 'Booking'));
-            return $this->redirect(['view',
+            return $this->redirect([
+                'view',
                 'id' => $id['id'],
             ]);
         } else {
@@ -79,13 +81,13 @@ class BookingController extends Controller
         return $this->render('view', [
             'model' => $booking,
             'timeslots' => $timeslots,
-            'entry_fee' => Parameter::getValue('entryFee',80)
+            'entry_fee' => Parameter::getValue('entryFee', 80)
         ]);
     }
 
     /**
      * Creates a new Booking model for weekdays and also timeslots, passed in post, are insert in the database.
-     * Expects to receive timeSlots in the POST "timeslot" field, as in the standard Yii format (as instance of model
+     * Expects to receive timeSlots in the GET "timeslots" field, as in the standard Yii format (as instance of model
      * timeslot).
      * If creation is successful, the browser will be redirected to the 'view' page.
      * The action works as a transaction: the booking and timeslots insert are performed in an atomic transaction.
@@ -96,16 +98,17 @@ class BookingController extends Controller
         $model = new Booking();
         $timeSlots = [];
 
-        if(Yii::$app->request->post($name = 'timeslot') && !isset(Yii::$app->session['timeslots'])){
-            Timeslot::loadMultiple($timeSlots, Yii::$app->request->post($name = 'timeslots'));
-            foreach($timeSlots as $timeSlot){
-                if(!empty($timeSlot->id)){
+
+        if (Yii::$app->request->get('timeslots') && !isset(Yii::$app->session['timeslots'])) {
+            Timeslot::loadMultiple($timeSlots, Yii::$app->request->get('timeslots'));
+            foreach ($timeSlots as $timeSlot) {
+                if (!empty($timeSlot->id)) {
                     throw new ErrorException();
                 }
             }
             Yii::$app->session['timeslots'] = $timeSlots;
-        }elseif(!isset(Yii::$app->session['timeslots'])){
-            $this -> goBack();
+        } elseif (!isset(Yii::$app->session['timeslots'])) {
+            $this->goBack();
         }
 
         if ($model->load(Yii::$app->request->post($name = 'Booking'))) {
@@ -130,7 +133,7 @@ class BookingController extends Controller
                 $transaction->commit();
                 $this->notifyCoordinators($model);
                 return $this->redirect(['view', 'id' => $model->id]);
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 $transaction->rollBack();
                 throw new ErrorException();
             }
@@ -154,19 +157,19 @@ class BookingController extends Controller
 
         // Check for 'timeslots' in the GET-Request
         // Make sure 'timeslots' is available as a session parameter
-        if(Yii::$app->request->get($name = 'timeslots') && !isset(Yii::$app->session['timeslots'])){
-            $timeSlots=(array)Yii::$app->request->get($name = 'timeslots');
+        if (Yii::$app->request->get($name = 'timeslots') && !isset(Yii::$app->session['timeslots'])) {
+            $timeSlots = (array)Yii::$app->request->get($name = 'timeslots');
             //Accept only an array of integer values
-            foreach($timeSlots as $timeSlot){
-                if(!is_numeric($timeSlot) or ((int)$timeSlot)!=$timeSlot or $timeSlot<=0){
+            foreach ($timeSlots as $timeSlot) {
+                if (!is_numeric($timeSlot) or ((int)$timeSlot) != $timeSlot or $timeSlot <= 0) {
                     throw new ErrorException();
                 }
             }
 
             //And save them in the session
             Yii::$app->session['timeslots'] = Timeslot::findAll(Yii::$app->request->get($name = 'timeslots'));
-        }elseif(!isset(Yii::$app->session['timeslots'])){
-            $this -> goBack();
+        } elseif (!isset(Yii::$app->session['timeslots'])) {
+            $this->goBack();
         }
 
         if ($model->load(Yii::$app->request->post())) {
@@ -195,7 +198,7 @@ class BookingController extends Controller
                 $this->notifyCoordinators($model);
                 // Fix exception
                 return $this->redirect(['view', 'id' => $model->id]);
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 $transaction->rollBack();
                 //TODO here we should go to error page
                 throw new ErrorException();
@@ -205,7 +208,7 @@ class BookingController extends Controller
             return $this->render('create', [
                 'model' => $model,
                 'timeslots' => Yii::$app->session['timeslots'],
-                'entry_fee' => Parameter::getValue('entryFee',80)
+                'entry_fee' => Parameter::getValue('entryFee', 80)
             ]);
         }
     }
@@ -259,12 +262,14 @@ class BookingController extends Controller
         }
     }
 
-    private function notifyCoordinators($booking){
-        Yii::$app->mailer->compose(['html'=>'booking/new_booking_html','text'=>'booking/new_booking_text'],[
-          'id'=>$booking->id])
-          ->setFrom(\Yii::$app->params['adminEmail'])
-          ->setTo(\Yii::$app->params['coordinatorEmail'])
-          ->setSubject(\Yii::t('app','New Booking'))
-          ->send();
+    private function notifyCoordinators($booking)
+    {
+        Yii::$app->mailer->compose(['html' => 'booking/new_booking_html', 'text' => 'booking/new_booking_text'], [
+            'id' => $booking->id
+        ])
+            ->setFrom(\Yii::$app->params['adminEmail'])
+            ->setTo(\Yii::$app->params['coordinatorEmail'])
+            ->setSubject(\Yii::t('app', 'New Booking'))
+            ->send();
     }
 }
