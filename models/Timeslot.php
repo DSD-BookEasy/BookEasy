@@ -91,14 +91,17 @@ class Timeslot extends \yii\db\ActiveRecord
             //increment time scan
             date_add($time_scan, $time_increment);
             $i++;
+            if($i==3){
+                throw new \ErrorException();
+            }
         }
     }
 
     public static function createFromModel(TimeSlotModel $model, $day) {
         $temp = new Timeslot();
         $temp->id_simulator = $model->id_simulator;
-        $temp->start = date_format($day,"Y-m-d") . ' '. $model->start_time;
-        $temp->end = date_format($day,"Y-m-d") . ' '. $model->end_time;
+        $temp->start = date_format($day,"Y-m-d") . ' ' .  $model->start_time;
+        $temp->end = date_format($day,"Y-m-d") . ' ' . $model->end_time;
         if (!$temp->save()) {
             throw new ErrorException();
         }
@@ -111,7 +114,7 @@ class Timeslot extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['start', 'end'], 'safe'],
+            [['start', 'end'], 'checkConsistency'],
             [['cost', 'id_timeSlotModel', 'id_simulator'], 'integer']
         ];
     }
@@ -144,17 +147,17 @@ class Timeslot extends \yii\db\ActiveRecord
         $command = bindValue(':start',  $this->start);
         $slots = $command->queryAll();
 */
-        $condition = ['id_simulator' => $this->id_simulator,
-            'DATE(start)=DATE(:start)'];
+        $startDate=strftime("%Y-%m-%d",strtotime($this->start));
+
+        $query = self::find()
+            ->where(['id_simulator' => $this->id_simulator]);
 
         if($this->id != NULL){
-            $condition[] = ['not',['id' => $this->id]];
+            $query->andWhere(['not',['id' => $this->id]]);
         }
+        $query->andWhere(['DATE(start)'=>$startDate]);
 
-        $slots = self::find()
-            ->where($condition,
-                [':start' => $this->start])
-            ->all();
+        $slots = $query->all();
 
         foreach($slots as $slot){
             if($this->overlapping($slot)) {
@@ -178,7 +181,7 @@ class Timeslot extends \yii\db\ActiveRecord
         if((strtotime($this->end) > strtotime($slot->start) )&& (strtotime($this->end) < strtotime($slot->end))){
             return true;
         }
-        if((strtotime($slot->start) == strtotime($this->start) )&& (strtotime($slot->start) == strtotime($this->end))){
+        if((strtotime($slot->start) == strtotime($this->start) )&& (strtotime($slot->end) == strtotime($this->end))){
             return true;
         }
         return false;
