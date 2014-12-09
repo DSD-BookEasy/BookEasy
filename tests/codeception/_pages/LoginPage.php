@@ -10,7 +10,7 @@ use yii\codeception\BasePage;
  */
 class LoginPage extends BasePage
 {
-    public $route = 'site/login';
+    public $route = 'staff/login';
 
     /**
      * @param string $username
@@ -18,8 +18,8 @@ class LoginPage extends BasePage
      */
     public function login($username, $password)
     {
-        $this->actor->fillField('input[name="LoginForm[username]"]', $username);
-        $this->actor->fillField('input[name="LoginForm[password]"]', $password);
-        $this->actor->click('login-button');
+        $this->actor->fillField('input[name="Staff[user_name]"]', $username);
+        $this->actor->fillField('input[name="Staff[password]"]', $password);
+        $this->actor->click('#loginBtn');
     }
 }
