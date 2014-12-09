@@ -17,6 +17,8 @@ use Yii;
  */
 class Timeslot extends \yii\db\ActiveRecord
 {
+
+    const STD_FORMAT = 'Y-m-d';
     /**
      * @inheritdoc
      */
@@ -29,56 +31,77 @@ class Timeslot extends \yii\db\ActiveRecord
      * @param $until date
      */
     public static function generateNextTimeSlot($until){
-        $models =  TimeSlotModel::findAll(''); //load all models
-        $today = strtotime(date("Y-m-d"));
+        $models =  TimeSlotModel::find()
+            ->all(); //load all models
+
+        $today = new \DateTime();
 
         foreach($models as $model){
             //check this usage of date. Maybe move this control to db condition
 
             //convert strings to datetime
-            $end_validity = strtotime($model->end_validity);
+            if(!$model->end_validity == NULL)
+                $end_validity = new \DateTime($model->end_validity);
+            else
+                $end_validity = NULL;
+
+
             if($model->last_generation == NULL)
                 $last_generation = $today;
             else
-                $last_generation = strtotime($model->last_generation);
+                $last_generation =  new \DateTime($model->last_generation);
 
             //check if the model is still valid and if
-            if(!($end_validity < $today) && $last_generation < $until){
-                if($end_validity < $until){
+            if(!($end_validity < $today && $end_validity!= NULL) && $last_generation < $until){
+
+                if($end_validity < $until && $end_validity != NULL)
                     $stop =  $end_validity;
-                }else{
+                else
                     $stop = $until;
-                }
 
-                if($last_generation > strtotime($model->start_validity)){
+
+                if($last_generation > new \DateTime($model->start_validity))
                     $start = $last_generation;
-                }else
-                    $start = strtotime($model->start_validity);
+                else
+                    $start = new \DateTime($model->start_validity);
 
-                createTimeSlotFromModel($model, $start, $stop);
+                Timeslot::createTimeSlotFromModel($model, $start, $stop);
             }
         }
     }
 
-    private function createTimeSlotFromModel($model, $start, $stop){
+    private static function createTimeSlotFromModel($model, $start, $stop){
 
-        $time_scan = strtotime('next ' . $model->repeat_day_string(), $start);
+        $time_scan = new \DateTime( date('Y-m-d', strtotime('next ' . $model->repeatDayToString(), $start->getTimestamp() )));
 
         $time_increment = new \DateInterval($model->frequency);
 
+        $i = 0;
         while($time_scan < $stop){
             //create new time slot
+            /*
             $temp = new Timeslot();
             $temp->id_simulator = $model->id_simulator;
             $temp->start = date_format($time_scan,"Y-m-d") . $model->start_time;
             $temp->end = date_format($time_scan,"Y-m-d") . $model->end_time;
+            */
+
+            Timeslot::createFromModel($model, $time_scan);
+
             //increment time scan
             date_add($time_scan, $time_increment);
+            $i++;
         }
     }
 
     public static function createFromModel(TimeSlotModel $model, $day) {
-
+        $temp = new Timeslot();
+        $temp->id_simulator = $model->id_simulator;
+        $temp->start = date_format($day,"Y-m-d") . ' '. $model->start_time;
+        $temp->end = date_format($day,"Y-m-d") . ' '. $model->end_time;
+        if (!$temp->save()) {
+            throw new ErrorException();
+        }
     }
 
 

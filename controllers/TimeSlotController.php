@@ -15,6 +15,8 @@ use yii\filters\VerbFilter;
  */
 class TimeSlotController extends Controller
 {
+
+
     public function behaviors()
     {
         return [
@@ -31,9 +33,9 @@ class TimeSlotController extends Controller
         //set the value of interval for the creation of timeslot
         $scope = new \DateInterval('P1M');
 
-        generateNextTimeSlot( date_add(strtotime("Y-m-d"), $scope ));
+        Timeslot::generateNextTimeSlot( date_add(new \DateTime(), $scope ));
 
-        return $this->redirectt('index', []);
+        return $this->redirect('index', []);
     }
 
     /**
