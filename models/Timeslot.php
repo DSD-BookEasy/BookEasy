@@ -41,27 +41,27 @@ class Timeslot extends \yii\db\ActiveRecord
 
             //convert strings to datetime
             if(!$model->end_validity == NULL)
-                $end_validity = new \DateTime($model->end_validity);
+                $endValidity = new \DateTime($model->end_validity);
             else
-                $end_validity = NULL;
+                $endValidity = NULL;
 
 
             if($model->generated_until == NULL)
-                $generated_until = $today;
+                $generatedUntil = $today;
             else
-                $generated_until =  new \DateTime($model->generated_until);
+                $generatedUntil =  new \DateTime($model->generated_until);
 
             //check if the model is still valid and if
-            if(!($end_validity < $today && $end_validity!= NULL) && $generated_until < $until){
+            if(!($endValidity < $today && $endValidity!= NULL) && $generatedUntil < $until){
 
-                if($end_validity < $until && $end_validity != NULL)
-                    $stop =  $end_validity;
+                if($endValidity < $until && $endValidity != NULL)
+                    $stop =  $endValidity;
                 else
                     $stop = $until;
 
 
-                if($generated_until > new \DateTime($model->start_validity))
-                    $start = $generated_until;
+                if($generatedUntil > new \DateTime($model->start_validity))
+                    $start = $generatedUntil;
                 else
                     $start = new \DateTime($model->start_validity);
 
@@ -76,24 +76,12 @@ class Timeslot extends \yii\db\ActiveRecord
 
         $time_increment = new \DateInterval($model->frequency);
 
-        $i = 0;
         while($time_scan < $stop){
-            //create new time slot
-            /*
-            $temp = new Timeslot();
-            $temp->id_simulator = $model->id_simulator;
-            $temp->start = date_format($time_scan,"Y-m-d") . $model->start_time;
-            $temp->end = date_format($time_scan,"Y-m-d") . $model->end_time;
-            */
 
             Timeslot::createFromModel($model, $time_scan);
 
             //increment time scan
             date_add($time_scan, $time_increment);
-            $i++;
-            if($i==3){
-                throw new \ErrorException();
-            }
         }
     }
 
@@ -106,8 +94,7 @@ class Timeslot extends \yii\db\ActiveRecord
         if (!$temp->save())
             throw new ErrorException();
 
-
-        //$model->generated_until = date('Y-m-d', strtotime('now'));
+        $model->generated_until = date('Y-m-d', strtotime('now'));
         if (!$model->save())
             throw new ErrorException();
     }
