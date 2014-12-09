@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         Yii::t('app','Entrance: {0, number, currency}', $entry_fee),
         Yii::t('app','Flight Simulation: {0, number, currency}', $timeslots[0]->simulator->price_simulation),
         Yii::t('app','Total Cost: {0, number, currency}', $entry_fee + $timeslots[0]->simulator->price_simulation),
-        Yii::t('app','Additional costs may be applied for the museum opening out of usual opening hours')
+        Yii::t('app','Additional costs may be applied for the museum opening out of usual opening hours. You will receive the final price as soon as the staff can confirm your booking.')
     ]);
     ?>
 
