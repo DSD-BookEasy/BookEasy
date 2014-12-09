@@ -14,6 +14,7 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\ServerErrorHttpException;
 
 /**
  * BookingController implements the CRUD actions for Booking model.
@@ -173,19 +174,21 @@ class BookingController extends Controller
 
         // Check for 'timeslots' in the GET-Request
         // Make sure 'timeslots' is available as a session parameter
-        if (Yii::$app->request->get($name = 'timeslots') && !isset(Yii::$app->session['timeslots'])) {
+        if (Yii::$app->request->get($name = 'timeslots')) {
             $timeSlots = (array)Yii::$app->request->get($name = 'timeslots');
             //Accept only an array of integer values
             foreach ($timeSlots as $timeSlot) {
                 if (!is_numeric($timeSlot) or ((int)$timeSlot) != $timeSlot or $timeSlot <= 0) {
-                    throw new ErrorException();
+                    throw new BadRequestHttpException("Invalid timeslots were specified");
                 }
             }
 
             //And save them in the session
             Yii::$app->session['timeslots'] = Timeslot::findAll(Yii::$app->request->get($name = 'timeslots'));
-        } elseif (!isset(Yii::$app->session['timeslots'])) {
-            $this->goBack();
+        }
+
+        if (empty(Yii::$app->session['timeslots'])) {
+            throw new BadRequestHttpException("You must specify the timeslots to book");
         }
 
         if ($model->load(Yii::$app->request->post())) {
@@ -217,7 +220,7 @@ class BookingController extends Controller
             } catch (Exception $e) {
                 $transaction->rollBack();
                 //TODO here we should go to error page
-                throw new ErrorException();
+                throw new ServerErrorHttpException("Saving your booking failed");
             }
 
         } else {
