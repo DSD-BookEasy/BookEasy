@@ -114,10 +114,25 @@ class Timeslot extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * Getter for finding the data of the booking associated with the current timeslot
+     * You can access it by calling $timeslot->booking
+     * @return \yii\db\ActiveQuery
+     */
     public function getBooking()
     {
         // Timeslot has_one Booking via Booking.id -> id_booking
         return $this->hasOne(Booking::className(), ['id' => 'id_booking']);
+    }
+
+    /**
+     * Getter for finding the data of the simulator associated with the current timeslot
+     * You can access it by calling $timeslot->simulator
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSimulator()
+    {
+        return $this->hasOne(Simulator::className(), ['id' => 'id_simulator']);
     }
 
     /**
