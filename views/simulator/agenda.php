@@ -169,9 +169,9 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Agenda')];
                 buttons: {
                     "<?=\Yii::t('app',"Confirm");?>": function () {
                         window.location.href = '<?=$bookUrlWeekday?>?'
-                        + encodeURIComponent('timeslots[1][start]') + '=' + encodeURIComponent(start.format())
-                        + '&' + encodeURIComponent('timeslots[1][end]') + '=' + encodeURIComponent(end.format())
-                        + '&' + encodeURIComponent('timeslots[1][id_simulator]') + '=' + getSimulatorId();
+                        + encodeURIComponent('timeslots[0][start]') + '=' + encodeURIComponent(start.format())
+                        + '&' + encodeURIComponent('timeslots[0][end]') + '=' + encodeURIComponent(end.format())
+                        + '&' + encodeURIComponent('timeslots[0][id_simulator]') + '=' + getSimulatorId();
                     },
                     "<?= \Yii::t('app',"Cancel")?>": function () {
                         $('.fullcalendar').fullCalendar('unselect');

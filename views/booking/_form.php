@@ -10,7 +10,9 @@ use yii\widgets\ActiveForm;
 
 <div class="booking-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'action' => ['']//Necessary to avoid automatic re-use of GET parameters
+    ]); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 255]) ?>
 

@@ -10,6 +10,7 @@ use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\db\Transaction;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -87,31 +88,44 @@ class BookingController extends Controller
 
     /**
      * Creates a new Booking model for weekdays and also timeslots, passed in post, are insert in the database.
-     * Expects to receive timeSlots in the GET "timeslots" field, as in the standard Yii format (as instance of model
-     * timeslot).
+     * Expects to receive Timeslots in the GET "timeslots" field, as in the standard Yii format (as an array represeting
+     * fields of the Timeslot model).
      * If creation is successful, the browser will be redirected to the 'view' page.
      * The action works as a transaction: the booking and timeslots insert are performed in an atomic transaction.
      * @return mixed
      */
     public function actionCreateWeekdays()
     {
-        $model = new Booking();
-        $timeSlots = [];
+        $getTimeSlots = Yii::$app->request->get('timeslots');
 
+        if (!empty($getTimeSlots)) {
+            $timeslots=[];
+            foreach($getTimeSlots as $k=>$t){
+                $ts=new Timeslot();
+                $ts->load($t, '');
 
-        if (Yii::$app->request->get('timeslots') && !isset(Yii::$app->session['timeslots'])) {
-            Timeslot::loadMultiple($timeSlots, Yii::$app->request->get('timeslots'));
-            foreach ($timeSlots as $timeSlot) {
-                if (!empty($timeSlot->id)) {
-                    throw new ErrorException();
+                if (!empty($ts)) {
+                    if (!empty($ts->id)) {
+                        throw new BadRequestHttpException("Invalid timeslot specified");
+                    }
+                    $timeslots[] = $ts;
                 }
             }
-            Yii::$app->session['timeslots'] = $timeSlots;
-        } elseif (!isset(Yii::$app->session['timeslots'])) {
-            $this->goBack();
+
+            if(empty($timeslots)){
+                unset(Yii::$app->session['timeslots']);
+                throw new BadRequestHttpException("You must specify a valid timeslot for this booking");
+            } else {
+                Yii::$app->session['timeslots'] = $timeslots;
+            }
         }
 
-        if ($model->load(Yii::$app->request->post($name = 'Booking'))) {
+        if (empty(Yii::$app->session['timeslots'])) {
+            throw new BadRequestHttpException("No timeslots where selected for this booking");
+        }
+
+        $model = new Booking();
+        if ($model->load(Yii::$app->request->post())) {
             //lock
             $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
             try {
@@ -131,15 +145,19 @@ class BookingController extends Controller
                 }
 
                 $transaction->commit();
+                unset(Yii::$app->session['timeslots']);
                 $this->notifyCoordinators($model);
                 return $this->redirect(['view', 'id' => $model->id]);
-            } catch (Exception $e) {
+            } catch (ErrorException $e) {
                 $transaction->rollBack();
-                throw new ErrorException();
+                unset(Yii::$app->session['timeslots']);
+                throw new BadRequestHttpException();
             }
         } else {
             return $this->render('createWeekdays', [
                 'model' => $model,
+                'timeslots' => Yii::$app->session['timeslots'],
+                'entry_fee' => Parameter::getValue('entryFee', 80)
             ]);
         }
     }
