@@ -27,6 +27,15 @@ class TimeSlotModelController extends Controller
         ];
     }
 
+    public function actionGenerate(){
+        //set the value of interval for the creation of timeslot
+        $scope = new \DateInterval('P2M');
+
+        TimeSlotModel::generateNextTimeSlot( date_add(new \DateTime(), $scope ));
+
+        return $this->redirect('index', []);
+    }
+
     /**
      * Lists all TimeSlotModel models.
      * @return mixed

@@ -28,77 +28,26 @@ class Timeslot extends \yii\db\ActiveRecord
     }
 
     /**
-     * @param $until date
+     * This method insert in the db a timeslot generated from the model and in the day passed as parameters.
+     * @param TimeSlotModel $model model that contains data for the timeslot to create
+     * @param $day day of the timeslot to create
+     * @throws ErrorException
      */
-    public static function generateNextTimeSlot($until){
-        $models =  TimeSlotModel::find()
-            ->all(); //load all models
-
-        $today = new \DateTime();
-
-        foreach($models as $model){
-            //check this usage of date. Maybe move this control to db condition
-
-            //convert strings to datetime
-            if(!$model->end_validity == NULL)
-                $endValidity = new \DateTime($model->end_validity);
-            else
-                $endValidity = NULL;
-
-
-            if($model->generated_until == NULL)
-                $generatedUntil = $today;
-            else
-                $generatedUntil =  new \DateTime($model->generated_until);
-
-            //check if the model is still valid and if
-            if(!($endValidity < $today && $endValidity!= NULL) && $generatedUntil < $until){
-
-                if($endValidity < $until && $endValidity != NULL)
-                    $stop =  $endValidity;
-                else
-                    $stop = $until;
-
-
-                if($generatedUntil > new \DateTime($model->start_validity))
-                    $start = $generatedUntil;
-                else
-                    $start = new \DateTime($model->start_validity);
-
-                Timeslot::createTimeSlotFromModel($model, $start, $stop);
-            }
-        }
-    }
-
-    private static function createTimeSlotFromModel($model, $start, $stop){
-
-        $time_scan = new \DateTime( date('Y-m-d', strtotime('next ' . $model->repeatDayToString(), $start->getTimestamp() )));
-
-        $time_increment = new \DateInterval($model->frequency);
-
-        while($time_scan < $stop){
-
-            Timeslot::createFromModel($model, $time_scan);
-
-            //increment time scan
-            date_add($time_scan, $time_increment);
-        }
-    }
-
     public static function createFromModel(TimeSlotModel $model, $day) {
         $temp = new Timeslot();
         $temp->id_simulator = $model->id_simulator;
         $temp->start = date_format($day,"Y-m-d") . ' ' . $model->start_time;
         $temp->end = date_format($day,"Y-m-d") . ' ' . $model->end_time;
-        $temp->id_simulator = $model->id;
+        $temp->id_timeSlotModel = $model->id;
         if (!$temp->save())
             throw new ErrorException();
 
         $model->generated_until = date('Y-m-d', strtotime('now'));
+        /*
         if (!$model->save())
             throw new ErrorException();
+        */
     }
-
 
     /**
      * @inheritdoc
@@ -131,14 +80,12 @@ class Timeslot extends \yii\db\ActiveRecord
      * @return bool
      */
     public function checkConsistency($attr,$params){
-        $connection = \Yii::$app->db;/*
-        $command = $connection->createCommand('SELECT * FROM TimeSlot WHERE id_simulator = :simulator &&
-                                              date(start) = date(:start)'
-                                              );
-        $command = bindValue(':simulator',  $this->id_simulator);
-        $command = bindValue(':start',  $this->start);
-        $slots = $command->queryAll();
-*/
+
+        if($this->start >= $this->end){
+            $this->addError($attr, 'Start point of timeslot is greater or equal than the end');
+            return false;
+        }
+
 
         $startDate=strftime("%Y-%m-%d",strtotime($this->start));
 
@@ -154,7 +101,7 @@ class Timeslot extends \yii\db\ActiveRecord
 
         foreach($slots as $slot){
             if($this->overlapping($slot)) {
-                $this->addError($attr, 'The current timeslot is overlapping with existing ones');
+                $this->addError($attr, 'The current timeslot is overlapping with the timeslot with code: ' . $slot->id);
                 return false;
             }
         }

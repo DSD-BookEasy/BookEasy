@@ -92,6 +92,68 @@ class TimeSlotModel extends ActiveRecord
         ];
     }
 
+
+    /**
+     * This method creates all the timeslot for each timeslotmodel in the db, until a given date passed as parameters.
+     * @param $until
+     */
+    public static function generateNextTimeSlot($until){
+        $models =  TimeSlotModel::find()
+            ->all(); //load all models
+
+        foreach($models as $model){
+            $model->createTimeSlotFromModel($until);
+            //check this usage of date. Maybe move this control to db condition
+        }
+    }
+
+    /**
+     * Generates the TimeSlots based on the TimeSlotModel until a given date
+     * @param $model
+     * @param $start
+     * @param $stop
+     * @throws ErrorException
+     */
+    public function createTimeSlotFromModel($until){
+        $today = new \DateTime();
+        //convert strings to datetime
+        if(!$this->end_validity == NULL)
+            $endValidity = new \DateTime($this->end_validity);
+        else
+            $endValidity = NULL;
+
+        if($this->generated_until == NULL)
+            $generatedUntil = $today;
+        else
+            $generatedUntil =  new \DateTime($this->generated_until);
+
+        //check if the model is still valid and if
+        if(!($endValidity < $today && $endValidity!= NULL) && $generatedUntil < $until){
+
+            if($endValidity < $until && $endValidity != NULL)
+                $stop =  $endValidity;
+            else
+                $stop = $until;
+
+            if($generatedUntil > new \DateTime($this->start_validity))
+                $start = $generatedUntil;
+            else
+                $start = new \DateTime($this->start_validity);
+
+            $time_scan = new \DateTime( date('Y-m-d', strtotime('next ' . $this->repeatDayToString(), $start->getTimestamp() )));
+
+            $time_increment = new \DateInterval($this->frequency);
+
+            while($time_scan <= $stop){
+                Timeslot::createFromModel($this, $time_scan);
+
+                //increment time scan
+                date_add($time_scan, $time_increment);
+            }
+        }
+    }
+
+
     /**
      * Generates the TimeSlots based on the TimeSlotModel until a given date
      * @param $until
