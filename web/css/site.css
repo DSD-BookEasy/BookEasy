@@ -110,6 +110,10 @@ a.desc:after {
     background: #C0C0C0;
 }
 
+.new_timeslot{
+    font-weight: bold;
+}
+
 /**
  * Parameter list
  */
