@@ -46,13 +46,13 @@ class Timeslot extends \yii\db\ActiveRecord
                 $end_validity = NULL;
 
 
-            if($model->last_generation == NULL)
-                $last_generation = $today;
+            if($model->generated_until == NULL)
+                $generated_until = $today;
             else
-                $last_generation =  new \DateTime($model->last_generation);
+                $generated_until =  new \DateTime($model->generated_until);
 
             //check if the model is still valid and if
-            if(!($end_validity < $today && $end_validity!= NULL) && $last_generation < $until){
+            if(!($end_validity < $today && $end_validity!= NULL) && $generated_until < $until){
 
                 if($end_validity < $until && $end_validity != NULL)
                     $stop =  $end_validity;
@@ -60,8 +60,8 @@ class Timeslot extends \yii\db\ActiveRecord
                     $stop = $until;
 
 
-                if($last_generation > new \DateTime($model->start_validity))
-                    $start = $last_generation;
+                if($generated_until > new \DateTime($model->start_validity))
+                    $start = $generated_until;
                 else
                     $start = new \DateTime($model->start_validity);
 
@@ -97,11 +97,16 @@ class Timeslot extends \yii\db\ActiveRecord
     public static function createFromModel(TimeSlotModel $model, $day) {
         $temp = new Timeslot();
         $temp->id_simulator = $model->id_simulator;
-        $temp->start = date_format($day,"Y-m-d") . ' '. $model->start_time;
-        $temp->end = date_format($day,"Y-m-d") . ' '. $model->end_time;
-        if (!$temp->save()) {
+        $temp->start = date_format($day,"Y-m-d") . ' ' . $model->start_time;
+        $temp->end = date_format($day,"Y-m-d") . ' ' . $model->end_time;
+        $temp->id_simulator = $model->id;
+        if (!$temp->save())
             throw new ErrorException();
-        }
+
+
+        //$model->generated_until = date('Y-m-d', strtotime('now'));
+        if (!$model->save())
+            throw new ErrorException();
     }
 
 
@@ -145,7 +150,7 @@ class Timeslot extends \yii\db\ActiveRecord
         $slots = $command->queryAll();
 */
         $condition = ['id_simulator' => $this->id_simulator,
-            'DATE(start)=DATE(:start)'];
+            'DATE(start)'=> 'DATE(:start)'];
 
         if($this->id != NULL){
             $condition[] = ['not',['id' => $this->id]];
