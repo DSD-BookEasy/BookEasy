@@ -95,109 +95,104 @@ class TimeSlotModel extends ActiveRecord
 
     /**
      * This method creates all the timeslot for each timeslotmodel in the db, until a given date passed as parameters.
-     * @param $until
+     * @param DateTime $until
      */
-    public static function generateNextTimeSlot($until){
-        $models =  TimeSlotModel::find()
+    public static function generateNextTimeSlot(DateTime $until){
+        $models = TimeSlotModel::find()
             ->all(); //load all models
 
         foreach($models as $model){
-            $model->createTimeSlotFromModel($until);
+            $model->advanceModelGeneration($until);
             //check this usage of date. Maybe move this control to db condition
         }
     }
 
     /**
      * Generates the TimeSlots based on the TimeSlotModel until a given date
-     * @param $model
-     * @param $start
-     * @param $stop
-     * @throws ErrorException
+     * @param DateTime $until the date until the generation will be performed
+     * @return bool if the operation was successful
      */
-    public function createTimeSlotFromModel($until){
-        $today = new \DateTime();
-        //convert strings to datetime
-        if(!$this->end_validity == NULL)
-            $endValidity = new \DateTime($this->end_validity);
-        else
-            $endValidity = NULL;
+    public function advanceModelGeneration(DateTime $until)
+    {
+        $today = new DateTime();
 
-        if($this->generated_until == NULL)
-            $generatedUntil = $today;
-        else
-            $generatedUntil =  new \DateTime($this->generated_until);
+        $startValidity = new DateTime($this->start_validity);
 
-        //check if the model is still valid and if
-        if(!($endValidity < $today && $endValidity!= NULL) && $generatedUntil < $until){
-
-            if($endValidity < $until && $endValidity != NULL)
-                $stop =  $endValidity;
-            else
-                $stop = $until;
-
-            if($generatedUntil > new \DateTime($this->start_validity))
-                $start = $generatedUntil;
-            else
-                $start = new \DateTime($this->start_validity);
-
-            $time_scan = new \DateTime( date('Y-m-d', strtotime('next ' . $this->repeatDayToString(), $start->getTimestamp() )));
-
-            $time_increment = new \DateInterval($this->frequency);
-
-            while($time_scan <= $stop){
-                Timeslot::createFromModel($this, $time_scan);
-
-                //increment time scan
-                date_add($time_scan, $time_increment);
-            }
+        if (!$this->end_validity == null) {
+            $endValidity = new DateTime($this->end_validity);
+        } else {
+            $endValidity = null;
         }
+
+        if ($this->generated_until == null) {
+            $generatedUntil = $today;
+        } else {
+            $generatedUntil = new DateTime($this->generated_until);
+        }
+
+        // Check whether the requested TimeSlots where already covered by a previous generation
+        if ($generatedUntil > $until) {
+            return false;
+        }
+
+        // Check whether the TimeSlotModel is already outside its validity
+        if ($endValidity != null && $endValidity < $today) {
+            return false;
+        }
+
+        // Start the generation from the last one generated (if any), don't start from scratch
+        if ($generatedUntil > $startValidity) {
+            $start = $generatedUntil;
+        } else {
+            $start = $startValidity;
+        }
+
+        // Check whether $until is outside the validity scope of the TimeSlotModel. If so, the generation
+        // will stop at the correct validity boundary
+        if ($endValidity < $until && $endValidity != null) {
+            $stop = $endValidity;
+        } else {
+            $stop = $until;
+        }
+
+        return $this->createTimeSlots($start, $stop);
+
     }
 
-
     /**
-     * Generates the TimeSlots based on the TimeSlotModel until a given date
-     * @param $until
+     * Create TimeSlots based on $this in between the given dates
+     * @param DateTime $from starting date of the range
+     * @param DateTime $to ending date date of the range
      * @throws ErrorException
+     * @return bool if the operation was successful
      */
-    public function spawnTimeSlots($until)
+    public function createTimeSlots(DateTime $from, DateTime $to)
     {
 
-        $stopSpawning = new Datetime($until);
-        $endValidity = new DateTime($this->end_validity);
+        $time_scan = clone $from;
 
-        if ($endValidity < new DateTime()) {
-            // Model is already invalid, can't spawn new TimeSlots
-            throw new ErrorException();
-        }
-
-        if ($stopSpawning > $endValidity) {
-            // Requesting to spawn ahead of the validity of the model
-            $stopSpawning = $endValidity;
-        }
-
-        $currDate = new DateTime();
-
-        if (empty($this->generated_until)) {
-            // If this is the first time the generation is performed
-            $currDate->modify($this->start_validity);
+        if ($from->format('l') !== $this->repeatDayToString()) {
+            $time_scan->modify('next ' . $this->repeatDayToString());
         } else {
-            $currDate->modify($this->generated_until);
+            // probably redundant
+            $time_scan->modify('this ' . $this->repeatDayToString());
         }
 
-        if ($currDate->format('l') !== $this->repeatDayToString()) {
-            // If the starting date is not in the week day set for $this->repeat_day
-            $currDate->modify('next ' . $this->repeatDayToString());
+        $time_increment = new DateInterval($this->frequency);
+
+        $result = true;
+
+        while ($time_scan <= $to && $result) {
+            $result &= Timeslot::createFromModel($this, $time_scan);
+
+            //increment time scan
+            $time_scan->add($time_increment);
         }
 
-        while ($currDate <= $stopSpawning) {
+        return $result;
 
-            TimeSlot::createFromModel($this, $currDate);
+    }
 
-            $currDate->add(new \DateInterval($this->frequency));
-        }
-
-        $this->generated_until = $currDate->format('Y-m-d'); // not sure about the format
-        $this->last_generation = date('Y-m-d');
 
 
         if (!$this->save()) {
