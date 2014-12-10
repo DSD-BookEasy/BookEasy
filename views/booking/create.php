@@ -36,7 +36,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>Provide the following information to continue.</p>
 
     <?= $this->render('_form', [
-        'model' => $model
+        'model' => $model,
+        'showAddress' => false
     ]) ?>
 
 </div>
