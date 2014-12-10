@@ -96,6 +96,48 @@ class TimeSlotModel extends ActiveRecord
     }
 
     /**
+     * Allows to update TimeSlot's validity
+     * @param TimeSlotModel $new
+     * @return bool if the operation was successful
+     */
+    public function updateModel(TimeSlotModel $new)
+    {
+        $result = true;
+        if ($new->start_validity !== $this->start_validity) {
+
+            if ($new->start_validity < $this->start_validity) {
+                $result &= $this->createTimeSlots(new DateTime($new->start_validity), new DateTime($this->start_validity));
+            } else {
+                $result &= $this->deleteTimeSlots(new DateTime($this->start_validity), new DateTime($$new->start_validity));
+            }
+
+            $this->start_validity = $new->start_validity;
+
+        }
+
+        if ($new->end_validity !== $this->end_validity) {
+
+            if ($new->end_validity < $this->end_validity) {
+                $result &= $this->deleteTimeSlots(new DateTime($new->end_validity), new DateTime($this->end_validity));
+
+            } else {
+                $result &= $this->createTimeSlots(new DateTime($this->end_validity), new DateTime($new->end_validity));
+
+            }
+
+            $this->end_validity = $new->end_validity;
+
+        }
+
+        if ( $result ) {
+            return $this->save();
+        }
+
+        return false;
+
+    }
+
+    /**
      * Deletes the TimeSlotModel with the TimeSlots that were generated from it
      * @return bool
      */
@@ -105,6 +147,7 @@ class TimeSlotModel extends ActiveRecord
 
         return $this->delete();
     }
+
 
     /**
      * This method creates all the timeslot for each timeslotmodel in the db, until a given date passed as parameters.
