@@ -2,7 +2,10 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
+use yii\base\ErrorException;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "timeslot".
@@ -15,7 +18,7 @@ use Yii;
  * @property integer $id_simulator
  * @property integer $id_booking
  */
-class Timeslot extends \yii\db\ActiveRecord
+class Timeslot extends ActiveRecord
 {
 
     const STD_FORMAT = 'Y-m-d';
@@ -30,10 +33,11 @@ class Timeslot extends \yii\db\ActiveRecord
     /**
      * This method insert in the db a timeslot generated from the model and in the day passed as parameters.
      * @param TimeSlotModel $model model that contains data for the timeslot to create
-     * @param $day day of the timeslot to create
+     * @param DateTime $day day of the TimeSlot to create
      * @throws ErrorException
+     * @return bool if the operation was successful
      */
-    public static function createFromModel(TimeSlotModel $model, $day) {
+    public static function createFromModel(TimeSlotModel $model, DateTime $day) {
         $temp = new Timeslot();
         $temp->id_simulator = $model->id_simulator;
         $temp->start = date_format($day,"Y-m-d") . ' ' . $model->start_time;
@@ -43,10 +47,10 @@ class Timeslot extends \yii\db\ActiveRecord
             throw new ErrorException();
 
         $model->generated_until = date('Y-m-d', strtotime('now'));
-        /*
-        if (!$model->save())
-            throw new ErrorException();
-        */
+
+        return $model->save();
+
+
     }
 
     /**
