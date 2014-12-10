@@ -95,6 +95,16 @@ class TimeSlotModel extends ActiveRecord
         ];
     }
 
+    /**
+     * Deletes the TimeSlotModel with the TimeSlots that were generated from it
+     * @return bool
+     */
+    public function deleteModel()
+    {
+        $this->deleteTimeSlots(new DateTime($this->start_validity), new DateTime($this->end_validity));
+
+        return $this->delete();
+    }
 
     /**
      * This method creates all the timeslot for each timeslotmodel in the db, until a given date passed as parameters.
