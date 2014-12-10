@@ -5,6 +5,7 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
+/* @var $entry_fee integer */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
@@ -24,6 +25,25 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
+
+    <?php
+    $timeslots=$model->timeslots;
+    ?>
+
+    <p>You booked the following simulator:</p>
+
+    <?php
+    $flight_price = $timeslots[0]->cost>0?$timeslots[0]->cost:$timeslots[0]->simulator->price_simulation;
+    ?>
+
+    <?= Html::ul([
+        Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->start)),
+        Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->end)),
+        Yii::t('app','Entrance: {0, number, currency}', $entry_fee),
+        Yii::t('app','Flight Simulation: {0, number, currency}', $flight_price),
+        Yii::t('app','Total Cost: {0, number, currency}', $entry_fee + $flight_price),
+    ]);
+    ?>
 
     <?= DetailView::widget([
         'model' => $model,

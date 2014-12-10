@@ -5,6 +5,7 @@ $params = require(__DIR__ . '/params.php');
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
+    'language' => 'sv-SE',
     'bootstrap' => ['log'],
     'modules' => [
         'api' => [
@@ -53,6 +54,18 @@ $config = [
             'rules' => [
                 '<controller>/<id:\d+>/<action>' => '<controller>/<action>'
             ]
+        ],
+        'i18n' => [
+            'translations' => [
+                'app*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    //'basePath' => '@app/messages',
+                    'sourceLanguage' => 'en-US',
+                    /*'fileMap' => [
+                        'app' => 'app.php',
+                    ],*/
+                ],
+            ],
         ],
     ],
     'params' => $params,

@@ -48,10 +48,10 @@ use yii\widgets\ActiveForm;
 </div>
 <div>
     <form style="float:left" method="get" action="<?= \yii\helpers\Url::to(['execute']) ?>">
-        <input type="submit" class="btn btn-warning btn-lg" value="Click me once">
+        <input id="execute" type="submit" class="btn btn-warning btn-lg" value="Click me once">
     </form>
     <form method="get" action="<?= \yii\helpers\Url::to(['clear']) ?>"
           onsubmit="return confirm('This action will completely remove every row in your database. Are you sure?');">
-        <input style="margin-left: 50px" type="submit" class="btn btn-danger btn-lg" value="Clear database">
+        <input id="clear" style="margin-left: 50px" type="submit" class="btn btn-danger btn-lg" value="Clear database">
     </form>
 </div>
