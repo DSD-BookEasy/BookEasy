@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Agenda')];
         <h1><?= Html::encode($this->title) ?></h1>
 
         <p><?= \Yii::t('app', 'Click on a timeslot to make a booking'); ?></p>
+        <p><?= \Yii::t('app', 'Click on an empty spot in the calendar to send a request for a special booking'); ?></p>
 
         <div id="calendar_buttons">
             <a href="<?= Url::to([
