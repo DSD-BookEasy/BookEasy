@@ -79,7 +79,7 @@ class TimeSlotModelController extends Controller
             $weekDays = [];
 
             for ($i = 0; $i <= 6; $i++) {
-                $weekDays[] = date('l', strtotime("this week + $i days"));
+                $weekDays[$i+1] = date('l', strtotime("this week + $i days"));
             }
 
             $simulators = new ActiveDataProvider([
