@@ -52,9 +52,9 @@ class TimeSlotModel extends ActiveRecord
     public function rules()
     {
         return [
-            [['start_time', 'end_time'], 'date', 'format' => 'php:H:i'],
-            [['start_validity', 'end_validity'], 'date', 'format' => 'php:Y-m-d'],
-            [['last_generation'], 'date'],
+            [['start_time', 'end_time'], 'safe'],
+            [['start_validity', 'end_validity'], 'safe'],
+            [['generated_until'], 'safe'],
             [['frequency'], 'string'],
             [['repeat_day', 'id_simulator'], 'integer']
         ];
