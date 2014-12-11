@@ -73,6 +73,7 @@ class TimeSlotModelController extends Controller
         $model = new TimeSlotModel();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->advanceModelGeneration( new \DateTime($model->start_validity . '+ 3 months') );
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
 
@@ -122,7 +123,7 @@ class TimeSlotModelController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $this->findModel($id)->deleteModel();
 
         return $this->redirect(['index']);
     }
