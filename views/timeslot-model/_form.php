@@ -1,6 +1,6 @@
 <?php
 
-use app\models\TimeSlotModel;
+use app\models\TimeslotModel;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -8,7 +8,7 @@ use kartik\time\TimePicker;
 use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\TimeSlotModel */
+/* @var $model app\models\TimeslotModel */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $weekDays string[] */
 /* @var $simulators app\models\Simulator[] */
@@ -50,8 +50,8 @@ use kartik\date\DatePicker;
         </div>
         <div class="col-md-2">
             <?= $form->field($model, 'frequency')->dropDownList([
-                TimeSlotModel::DAILY => Yii::t('app', 'Daily'),
-                TimeSlotModel::WEEKLY => Yii::t('app', 'Weekly')
+                TimeslotModel::DAILY => Yii::t('app', 'Daily'),
+                TimeslotModel::WEEKLY => Yii::t('app', 'Weekly')
             ]) ?>
         </div>
     </div>

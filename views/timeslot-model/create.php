@@ -4,7 +4,7 @@ use yii\helpers\Html;
 
 
 /* @var $this yii\web\View */
-/* @var $model app\models\TimeSlotModel */
+/* @var $model app\models\TimeslotModel */
 /* @var $simulators app\models\Simulator[]*/
 
 

@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\TimeSlotModel */
+/* @var $model app\models\TimeslotModel */
 
 $this->title = Yii::t('app', 'Update {modelClass}: ', [
     'modelClass' => 'Time Slot Model',

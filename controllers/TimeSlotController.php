@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-use app\models\TimeSlotModel;
+use app\models\TimeslotModel;
 use Yii;
 use app\models\Timeslot;
 use yii\data\ActiveDataProvider;
@@ -11,9 +11,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * TimeSlotController implements the CRUD actions for Timeslot model.
+ * TimeslotController implements the CRUD actions for Timeslot model.
  */
-class TimeSlotController extends Controller
+class TimeslotController extends Controller
 {
 
 

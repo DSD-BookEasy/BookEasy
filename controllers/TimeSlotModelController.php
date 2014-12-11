@@ -4,16 +4,16 @@ namespace app\controllers;
 
 use app\models\Simulator;
 use Yii;
-use app\models\TimeSlotModel;
+use app\models\TimeslotModel;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * TimeSlotModelController implements the CRUD actions for TimeSlotModel model.
+ * TimeslotModelController implements the CRUD actions for TimeslotModel model.
  */
-class TimeSlotModelController extends Controller
+class TimeslotModelController extends Controller
 {
     public function behaviors()
     {
@@ -31,19 +31,19 @@ class TimeSlotModelController extends Controller
         //set the value of interval for the creation of timeslot
         $scope = new \DateInterval('P2M');
 
-        TimeSlotModel::generateNextTimeSlot( date_add(new \DateTime(), $scope ));
+        TimeslotModel::generateNextTimeslot( date_add(new \DateTime(), $scope ));
 
         return $this->redirect('index', []);
     }
 
     /**
-     * Lists all TimeSlotModel models.
+     * Lists all TimeslotModel models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => TimeSlotModel::find(),
+            'query' => TimeslotModel::find(),
         ]);
 
         return $this->render('index', [
@@ -52,7 +52,7 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Displays a single TimeSlotModel model.
+     * Displays a single TimeslotModel model.
      * @param integer $id
      * @return mixed
      */
@@ -64,13 +64,13 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Creates a new TimeSlotModel model.
+     * Creates a new TimeslotModel model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new TimeSlotModel();
+        $model = new TimeslotModel();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $model->advanceModelGeneration( new \DateTime($model->start_validity . '+ 3 months') );
@@ -97,7 +97,7 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Updates an existing TimeSlotModel model.
+     * Updates an existing TimeslotModel model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -116,7 +116,7 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Deletes an existing TimeSlotModel model.
+     * Deletes an existing TimeslotModel model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -129,15 +129,15 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Finds the TimeSlotModel model based on its primary key value.
+     * Finds the TimeslotModel model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return TimeSlotModel the loaded model
+     * @return TimeslotModel the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = TimeSlotModel::findOne($id)) !== null) {
+        if (($model = TimeslotModel::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

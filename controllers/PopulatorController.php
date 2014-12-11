@@ -21,7 +21,7 @@ use app\models\Booking;
 use app\models\Simulator;
 use app\models\Staff;
 use app\models\Timeslot;
-use app\models\TimeSlotModel;
+use app\models\TimeslotModel;
 use Yii;
 use yii\base\ErrorException;
 
@@ -76,7 +76,7 @@ class PopulatorController extends \yii\web\Controller
         Booking::deleteAll();
         Simulator::deleteAll();
         Staff::deleteAll();
-        TimeSlotModel::deleteAll();
+        TimeslotModel::deleteAll();
         return $this->render('index');
     }
 
@@ -221,7 +221,7 @@ class PopulatorController extends \yii\web\Controller
             }
             foreach ($simulators_ids as $id) {
                 $currentSlotTime = clone $sunday;
-                $timeslotmodel = new TimeSlotModel();
+                $timeslotmodel = new TimeslotModel();
                 $timeslotmodel->id_simulator = $id;
                 $timeslotmodel->start_validity = $tempDateStart;
                 $timeslotmodel->end_validity = $tempDateEnd;
@@ -238,7 +238,7 @@ class PopulatorController extends \yii\web\Controller
             }
             $sunday->add($interval);
         }
-        TimeSlotModel::generateNextTimeSlot(\DateTime::createFromFormat("Y-m-d","2014-12-31"));
+        TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d","2014-12-31"));
         return $this->render('index');
     }
 

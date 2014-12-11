@@ -32,11 +32,11 @@ class Timeslot extends ActiveRecord
 
     /**
      * This method insert in the db a timeslot generated from the model and in the day passed as parameters.
-     * @param TimeSlotModel $model model that contains data for the timeslot to create
-     * @param DateTime $day day of the TimeSlot to create
+     * @param TimeslotModel $model model that contains data for the timeslot to create
+     * @param DateTime $day day of the Timeslot to create
      * @return bool if the operation was successful
      */
-    public static function createFromModel(TimeSlotModel $model, DateTime $day) {
+    public static function createFromModel(TimeslotModel $model, DateTime $day) {
 
         $newTS = new Timeslot();
         $newTS->id_simulator = $model->id_simulator;
