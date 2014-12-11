@@ -284,7 +284,7 @@ class TimeSlotModel extends ActiveRecord
      * @return string
      */
     public function repeatDayToString(){
-        return date('l', strtotime("this week + ($this->repeat_day - 1) days"));
+        return date('l', strtotime("this Sunday + $this->repeat_day days"));
 
     }
 
