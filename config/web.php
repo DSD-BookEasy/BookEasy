@@ -26,6 +26,7 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\Staff',
             'enableAutoLogin' => true,
+            'loginUrl' => ['staff/login'],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',

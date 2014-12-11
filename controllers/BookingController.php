@@ -11,6 +11,7 @@ use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\db\Transaction;
 use yii\web\BadRequestHttpException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -29,6 +30,18 @@ class BookingController extends Controller
                 'actions' => [
                     'delete' => ['post'],
                 ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['update'],
+                'rules' => [
+                    [
+                    'allow' => true,
+                    'actions' => ['update'],
+                    'roles' => ['@']
+                    ],
+                ],
+
             ],
         ];
     }
