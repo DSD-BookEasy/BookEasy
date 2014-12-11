@@ -137,14 +137,15 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
         ]); ?>
         </div>
 </div>
-    <div id="datepick"  style="float: right; overflow: auto;padding-top:25px ">
+    <div id="datepick"  style="float: right; overflow: auto;padding-top:52px ">
         <?php $form = ActiveForm::begin(); ?>
         <?php $nex='js:document.location.href='.'"agenda?week='.$nextWeek.'"'; ?>
 
-        <?= $form->field($simulator, 'selDate')->widget($dt=DatePicker::className(),['value'=>$currWeek,'inline'=>true,//'clientOptions'=>['onSelect'=>'js: function(date) {
-                //$form->validate();
-                //}',]]
-            ]
+        <?= $form->field($simulator, 'selDate')->label(false)->widget($dt=DatePicker::className(),['value'=>$currWeek,'inline'=>true,
+            'clientOptions'=>['onSelect'=>'js: function(date) {
+                $form->validate();
+                }',]]
+
         ) ?>
 
 
