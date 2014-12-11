@@ -35,9 +35,14 @@ class ParameterController extends Controller
         $dataProvider = new ActiveDataProvider([
             'query' => Parameter::find(),
         ]);
-
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'paramsNatures'=> [
+                'entryFee' => 'text',
+                'coordinatorEmail' => 'text',
+                //'businessTimeStart' => 'time',
+                //'businessTimeEnd' => 'time',
+            ]
         ]);
     }
 
