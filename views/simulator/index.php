@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'description:ntext',
             'flight_duration',
             'price_simulation',
+
            ['class' => 'yii\grid\ActionColumn'],
         ],
 

@@ -11,6 +11,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
+
 /**
  * SimulatorController implements the CRUD actions for Simulator model.
  */
@@ -42,6 +43,8 @@ class SimulatorController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+
+
 
     /**
      * Displays a single simulator model.
@@ -79,6 +82,12 @@ class SimulatorController extends Controller
      * @param integer $id
      * @return mixed
      */
+
+
+
+
+
+
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
@@ -112,15 +121,26 @@ class SimulatorController extends Controller
      * @throws NotFoundHttpException: if $_GET['id'] is not set
      * @return mixed
      */
+
+
+
+
+
+
     public function actionAgenda()
     {
+        $model= new Simulator;
+
+
+
+
         $simId = \Yii::$app->request->get("id");
 
         if (empty($simId) || ((int)$simId) == 0) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        $week = \Yii::$app->request->get("week");
+        $week = \Yii::$app->request->get("week");$week = \Yii::$app->request->get("week");
 
         if (empty($week) || !strtotime($week)) {
             // If the week is not set (properly), it's the today's one
@@ -128,8 +148,13 @@ class SimulatorController extends Controller
         }
 
         // Initialize the week
-        $currWeek = new DateTime($week);
-
+//if i change the date through the datepicker
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        $currWeek = new DateTime($model->selDate);
+        }
+        else{
+            $currWeek = new DateTime($week);
+        }
         // and the week before the current one
         $prevWeek = clone $currWeek;
         $prevWeek->modify("previous week");
@@ -145,7 +170,7 @@ class SimulatorController extends Controller
         where(['id_simulator' => $simId])->
         andWhere(['>=', 'start', $weekBorders['first']->format("c")])->
         andWhere(['<=', 'end', $weekBorders['last']->format("c")])->all();
-
+       //
         return $this->render('agenda', [
             'currWeek' => $currWeek,
             'prevWeek' => $prevWeek->format("Y\WW"),
@@ -153,6 +178,8 @@ class SimulatorController extends Controller
             'slots' => $slots,
             'simulator' => $this->findModel($simId),
         ]);
+
+
     }
 
     /**

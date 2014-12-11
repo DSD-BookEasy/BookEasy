@@ -4,7 +4,11 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
+<<<<<<< Updated upstream
     "hash": "b88e273ebf7e388a83cea595c41b2ffa",
+=======
+    "hash": "bd83efcbb0c336cdc129bde3160c1737",
+>>>>>>> Stashed changes
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -127,6 +131,7 @@
         },
         {
             "name": "bower-asset/jquery.inputmask",
+<<<<<<< Updated upstream
             "version": "3.1.45",
             "source": {
                 "type": "git",
@@ -137,6 +142,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/b656c5b61b05d2a479b69b20de5bc01b837a43c5",
                 "reference": "b656c5b61b05d2a479b69b20de5bc01b837a43c5",
+=======
+            "version": "3.1.42",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RobinHerbots/jquery.inputmask.git",
+                "reference": "ba392f1c9c1f7a05d1b89a5e49cbd0610face768"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/ba392f1c9c1f7a05d1b89a5e49cbd0610face768",
+                "reference": "ba392f1c9c1f7a05d1b89a5e49cbd0610face768",
+>>>>>>> Stashed changes
                 "shasum": ""
             },
             "require": {
