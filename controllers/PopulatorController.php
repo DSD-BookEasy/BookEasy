@@ -23,6 +23,7 @@ use app\models\Staff;
 use app\models\Timeslot;
 use app\models\TimeSlotModel;
 use Yii;
+use yii\base\ErrorException;
 
 class PopulatorController extends \yii\web\Controller
 {
@@ -75,6 +76,7 @@ class PopulatorController extends \yii\web\Controller
         Booking::deleteAll();
         Simulator::deleteAll();
         Staff::deleteAll();
+        TimeSlotModel::deleteAll();
         return $this->render('index');
     }
 
@@ -205,13 +207,12 @@ class PopulatorController extends \yii\web\Controller
             $time_slot->id_booking = $ele;
             $time_slot->save();
         }
-/*
+
         //TimeslotModel for sundays:
-        $tempDateEnd = \DateTime::createFromFormat($format_string, _sunday . " 00:00:00");
+        $tempDateEnd = \DateTime::createFromFormat("Y-m-d", _sunday);
         $tempDateEnd->add(\DateInterval::createFromDateString("+6 weeks"));
-        $tempDateEnd = $tempDateEnd->format($format_string);
-        $tempDateStart = \DateTime::createFromFormat($format_string,
-            _sunday . ' 00:00:00')->format($format_string);
+        $tempDateEnd = $tempDateEnd->format("Y-m-d");
+        $tempDateStart = _sunday;
         $sunday = \DateTime::createFromFormat($format_string,
             _sunday . ' ' . _beginDay_H . ':' . _beginDay_M . ':00');
         while ($sunday < $endDay) {
@@ -224,14 +225,20 @@ class PopulatorController extends \yii\web\Controller
                 $timeslotmodel->id_simulator = $id;
                 $timeslotmodel->start_validity = $tempDateStart;
                 $timeslotmodel->end_validity = $tempDateEnd;
+                //$timeslotmodel->last_generation = null;
+                //$timeslotmodel->generated_until = null;
                 $timeslotmodel->repeat_day = 7;
-                $timeslotmodel->frequency = 7;
+                $timeslotmodel->frequency = "P1W";
                 $timeslotmodel->start_time = $currentSlotTime->format($format_string_time);
                 $timeslotmodel->end_time = $currentSlotTime->add($interval)->format($format_string_time);
-                $timeslotmodel->save();
+                if (!$timeslotmodel->save()) {
+                    throw new ErrorException("Couldn't save: sim id: ". $id. " start validity: ". $tempDateStart
+                        ." end validity: " . $tempDateEnd . " start_time: ". $timeslotmodel->start_time . " end_time: " .$timeslotmodel->end_time );
+                };
             }
             $sunday->add($interval);
-        }*/
+        }
+        TimeSlotModel::generateNextTimeSlot(\DateTime::createFromFormat("Y-m-d","2014-12-31"));
         return $this->render('index');
     }
 
