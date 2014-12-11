@@ -90,9 +90,26 @@ a.desc:after {
     margin: 0 0 15px 0;
 }
 
+.clear{
+    clear: both;
+}
+
 /**
  * Book Timeslot in Week Calendar View
  */
+#cal_datepicker{
+}
+
+#cal_datepicker #calendar{
+    float: left;
+    width: 75%;
+}
+
+#cal_datepicker #datepicker{
+    float: right;
+    padding-top:52px;
+}
+
 .fc-event.available{
     background-color: #008000;
     border-color: #32CD32;
