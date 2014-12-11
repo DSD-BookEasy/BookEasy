@@ -228,15 +228,14 @@ class TimeSlotModel extends ActiveRecord
      */
     public function createTimeSlots(DateTime $from, DateTime $to)
     {
+        $from->modify('00:00:00');
         $to->modify('23:59:59');
 
         $time_scan = clone $from;
 
-        if ($from->format('l') !== $this->repeatDayToString()) {
+        // Account for the fact that $from could be in a different week day from the one set by the repetition
+        if ($from->format('l') !== $this->repeatDayToString() && $this->frequency == TimeSlotModel::WEEKLY) {
             $time_scan->modify('next ' . $this->repeatDayToString());
-        } else {
-            // probably redundant
-            $time_scan->modify('this ' . $this->repeatDayToString());
         }
 
         $time_increment = new DateInterval($this->frequency);
@@ -246,9 +245,11 @@ class TimeSlotModel extends ActiveRecord
         while ($time_scan <= $to && $result) {
             $result &= Timeslot::createFromModel($this, $time_scan);
 
-            //increment time scan
             $time_scan->add($time_increment);
         }
+
+        $this->generated_until = $to->format('Y-m-d');
+        $this->save();
 
         return $result;
 
