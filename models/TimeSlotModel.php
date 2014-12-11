@@ -240,18 +240,16 @@ class TimeSlotModel extends ActiveRecord
 
         $time_increment = new DateInterval($this->frequency);
 
-        $result = true;
 
-        while ($time_scan <= $to && $result) {
-            $result &= Timeslot::createFromModel($this, $time_scan);
+        while ($time_scan <= $to) {
+            Timeslot::createFromModel($this, $time_scan);
 
             $time_scan->add($time_increment);
         }
 
         $this->generated_until = $to->format('Y-m-d');
-        $this->save();
 
-        return $result;
+        return $this->save();;
 
     }
 
