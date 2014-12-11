@@ -62,18 +62,20 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 
 <div id="cal+datepick" style="float: left;clear: none">
 <div style="padding-right: 300px">
-    <div id="calendare" style=" float: left;overflow: auto">
+    <div id="calendar" style=" float: left;overflow: auto">
         <?php
         $businessHours = [//TODO Make these dynamic
             'start' => '8:00',
             'end' => '19:00'
         ];
+
         /**
          * We will use this to track the interval of hours to show in the calendar
          * Initially it will be equal to the business hours, but if there are explicit
          * timeslots exceeding it, we should make space for them too
          */
         $borders = $businessHours;
+
         $events = [
             [//Show Business Hours.
                 'start' => $businessHours['start'],
@@ -100,6 +102,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             checkBorders($borders, $s->start, $s->end);
             $events[] = $a;
         }
+
         $bookUrl = Url::to(['booking/create', 'timeslots[]' => '']);
         $bookUrlWeekday = Url::to(['booking/create-weekdays']);
 
@@ -148,8 +151,6 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 
         ) ?>
 
-
-
         <?= Html::submitButton(Yii::t('app', 'Change Date'), ['class' => 'btn btn-primary'])?>
         <?php ActiveForm::end(); ?>
 
@@ -158,13 +159,13 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
     </div>
     <script type="text/javascript">
         function slotBooking(event, element) {
-
             if (event.rendering != "background" && event.rendering != "inverse-background") {
                 if (element.hasClass("available")) {
                     element.attr("title", "<?=\Yii::t('app',"This timeslot is available. and it costs {price}SEK for {duration} minutes",[
                     'price' => $price,
                     'duration' => $duration
                     ])?>");
+
                     element.tooltip();
                     element.click(function (ev) {
                         ev.preventDefault();
@@ -177,6 +178,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 }
             }
         }
+
         function goToCreateWeekdays(start, end, jsEvent) {
             var $d = $('#dialog');
             if ($d.length == 0) {
@@ -202,6 +204,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 }
             });
         }
+
         function getSimulatorId() {
             var url = window.location.href;
             var paths = url.split('/');

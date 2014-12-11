@@ -75,19 +75,13 @@ class SimulatorController extends Controller
             ]);
         }
     }
- //public function actionEdit
+
     /**
      * Updates an existing simulator model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
      */
-
-
-
-
-
-
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
@@ -121,18 +115,9 @@ class SimulatorController extends Controller
      * @throws NotFoundHttpException: if $_GET['id'] is not set
      * @return mixed
      */
-
-
-
-
-
-
     public function actionAgenda()
     {
         $model= new Simulator;
-
-
-
 
         $simId = \Yii::$app->request->get("id");
 
@@ -140,7 +125,7 @@ class SimulatorController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        $week = \Yii::$app->request->get("week");$week = \Yii::$app->request->get("week");
+        $week = \Yii::$app->request->get("week");
 
         if (empty($week) || !strtotime($week)) {
             // If the week is not set (properly), it's the today's one
@@ -148,9 +133,10 @@ class SimulatorController extends Controller
         }
 
         // Initialize the week
-//if i change the date through the datepicker
+        //if i change the date through the datepicker
+        //TODO avoid using POST
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-        $currWeek = new DateTime($model->selDate);
+            $currWeek = new DateTime($model->selDate);
         }
         else{
             $currWeek = new DateTime($week);
