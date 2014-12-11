@@ -23,6 +23,7 @@ use app\models\Staff;
 use app\models\Timeslot;
 use app\models\TimeSlotModel;
 use Yii;
+use yii\base\ErrorException;
 
 class PopulatorController extends \yii\web\Controller
 {
@@ -116,6 +117,7 @@ class PopulatorController extends \yii\web\Controller
             $object->save();
             array_push($simulators_ids, $object->id);
         }
+        throw new ErrorException("".count($simulators_ids));
         //This section can be changed to generate time slots in different dates
         $format_string = "Y-m-d H:i:s";
         $format_string_time = "H:i:s";

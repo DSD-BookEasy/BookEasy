@@ -3,7 +3,7 @@ use app\models\Booking;
 use tests\codeception\_pages\PopulatePage;
 
 $I = new AcceptanceTester($scenario);
-$I->wantTo('ensure that cancel booking works');
+$I->wantTo('ensure that cancel booking works story #13');
 
 $populatePage = PopulatePage::openBy($I);
 $populatePage->populate();

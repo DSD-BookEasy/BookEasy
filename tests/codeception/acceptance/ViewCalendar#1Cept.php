@@ -2,7 +2,7 @@
 use tests\codeception\_pages\PopulatePage;
 
 $I = new AcceptanceTester($scenario);
-$I->wantTo("test that calendar view works for current week");
+$I->wantTo("test that calendar view works for current week story #1");
 
 $populatePage = PopulatePage::openBy($I);
 $populatePage->populate();
