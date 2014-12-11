@@ -20,7 +20,6 @@ use yii\db\ActiveRecord;
  * @property string $start_validity Starting date of validity of the model
  * @property string $end_validity Ending date of validity of the model
  * @property integer $repeat_day Day of the week in which the repetitions takes place
- * @property DateTime $last_generation Last time the model was used to generate TimeSlot
  * @property string $generated_until Date of the last generated TimeSlot
  */
 class TimeSlotModel extends ActiveRecord
