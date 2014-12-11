@@ -146,13 +146,30 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 
             <?= Html::submitButton(Yii::t('app', 'Change Date'), ['class' => 'btn btn-primary'])?>
             <?php ActiveForm::end(); ?>
+        </div>
 
+        <div class="row">
+            <div class="col-md-4">
+                <label>Pick date</label>
+                <?= \kartik\date\DatePicker::widget([
+                    'name' => 'dp_1',
+                    'type' => \kartik\date\DatePicker::TYPE_COMPONENT_APPEND,
+                    'pluginEvents' => ["changeDate" => "function(e){document.location.href= 'agenda?week='+e.date.getFullYear()+'W'+e.date.getWeek();}"]
+                ]) ?>
+            </div>
         </div>
         <!-- Floatings always need to be cleared to prevent graphical glitches -->
         <div class="clear"></div>
     </div>
 </div>
 <script type="text/javascript">
+    Date.prototype.getWeek = function() {
+        var onejan = new Date(this.getFullYear(),0,1);
+        var today = new Date(this.getFullYear(),this.getMonth(),this.getDate());
+        var dayOfYear = ((today - onejan + 86400000)/86400000);
+        return Math.ceil(dayOfYear/7)
+    };
+
     function slotBooking(event, element) {
         if (event.rendering != "background" && event.rendering != "inverse-background") {
             if (element.hasClass("available")) {
