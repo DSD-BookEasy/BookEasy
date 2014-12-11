@@ -99,9 +99,10 @@ class TimeSlotModel extends ActiveRecord
      * @param TimeSlotModel $new
      * @return bool if the operation was successful
      */
-    public function updateModel(TimeSlotModel $new)
+/*    public function updateModel(TimeSlotModel $new)
     {
         $result = true;
+
         if ($new->start_validity !== $this->start_validity) {
 
             if ($new->start_validity < $this->start_validity) {
@@ -134,7 +135,7 @@ class TimeSlotModel extends ActiveRecord
 
         return false;
 
-    }
+    }*/
 
     /**
      * Deletes the TimeSlotModel with the TimeSlots that were generated from it
