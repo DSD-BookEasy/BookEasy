@@ -3,7 +3,7 @@
 namespace app\models;
 
 use Yii;
-
+use DateTime;
 /**
  * This is the model class for table "Simulator".
  *
@@ -12,12 +12,17 @@ use Yii;
  * @property string $description
  * @property integer $flight_duration
  * @property integer $price_simulation
+* @property DateTime $date
+
+
+
  */
 class Simulator extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
+    public  $selDate;
     public static function tableName()
     {
         return 'Simulator';
@@ -26,12 +31,20 @@ class Simulator extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
+    public  function  getDate(){
+
+        return $this->selDate;
+    }
     public function rules()
     {
         return [
             [['description'], 'string'],
             [['flight_duration', 'price_simulation'], 'integer'],
-            [['name'], 'string', 'max' => 255]
+            [['name'], 'string', 'max' => 255],
+            [['selDate'],'date'],
+            [['selDate'],'required'],
+
+
         ];
     }
 

@@ -11,6 +11,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
+
 /**
  * SimulatorController implements the CRUD actions for Simulator model.
  */
@@ -43,6 +44,8 @@ class SimulatorController extends Controller
         ]);
     }
 
+
+
     /**
      * Displays a single simulator model.
      * @param integer $id
@@ -72,7 +75,7 @@ class SimulatorController extends Controller
             ]);
         }
     }
- //public function actionEdit
+
     /**
      * Updates an existing simulator model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -114,6 +117,8 @@ class SimulatorController extends Controller
      */
     public function actionAgenda()
     {
+        $model= new Simulator;
+
         $simId = \Yii::$app->request->get("id");
 
         if (empty($simId) || ((int)$simId) == 0) {
@@ -128,8 +133,14 @@ class SimulatorController extends Controller
         }
 
         // Initialize the week
-        $currWeek = new DateTime($week);
-
+        //if i change the date through the datepicker
+        //TODO avoid using POST
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $currWeek = new DateTime($model->selDate);
+        }
+        else{
+            $currWeek = new DateTime($week);
+        }
         // and the week before the current one
         $prevWeek = clone $currWeek;
         $prevWeek->modify("previous week");
@@ -145,7 +156,7 @@ class SimulatorController extends Controller
         where(['id_simulator' => $simId])->
         andWhere(['>=', 'start', $weekBorders['first']->format("c")])->
         andWhere(['<=', 'end', $weekBorders['last']->format("c")])->all();
-
+       //
         return $this->render('agenda', [
             'currWeek' => $currWeek,
             'prevWeek' => $prevWeek->format("Y\WW"),
@@ -153,6 +164,8 @@ class SimulatorController extends Controller
             'slots' => $slots,
             'simulator' => $this->findModel($simId),
         ]);
+
+
     }
 
     /**
