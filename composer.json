@@ -18,7 +18,7 @@
         "yiisoft/yii2": "2.0.1",
         "yiisoft/yii2-bootstrap": "2.0.1",
         "yiisoft/yii2-swiftmailer": "2.0.1",
-        "paolomanca/yii2-fullcalendar": "v2.2.3.2",
+        "paolomanca/yii2-fullcalendar": "v2.2.3.3",
         "kartik-v/yii2-widget-datepicker": "1.2.0",
         "kartik-v/yii2-widget-timepicker": "1.0.0",
         "kartik-v/yii2-widget-datetimepicker": "1.2.0"
