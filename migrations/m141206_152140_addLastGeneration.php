@@ -13,7 +13,5 @@ class m141206_152140_addLastGeneration extends Migration
     public function down()
     {
 		$this->dropColumn('TimeSlotModel', 'last_generation');
-		
-        return false;
     }
 }

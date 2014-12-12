@@ -13,7 +13,5 @@ class m141129_141506_booking_assigned_instructor extends Migration
     public function down()
     {
         $this->dropColumn("Booking",'assigned_instructor');
-
-        return false;
     }
 }
