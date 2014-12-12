@@ -39,7 +39,8 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 'simulator/agenda',
                 'id' => $simulator->getAttribute("id"),
                 'week' => $prevWeek
-            ]) ?>"  class="btn btn-default glyphicon glyphicon-chevron-left">
+            ]) ?>"  class="btn btn-default">
+                <span class="glyphicon glyphicon-chevron-left"></span>
                 <?= \Yii::t('app', "Previous week"); ?>
             </a>
 
@@ -54,8 +55,9 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 'simulator/agenda',
                 'id' => $simulator->getAttribute("id"),
                 'week' => $nextWeek
-            ]) ?>" class="btn btn-default glyphicon glyphicon-chevron-right">
+            ]) ?>" class="btn btn-default">
                 <?= \Yii::t('app', "Next week"); ?>
+                <span class="glyphicon glyphicon-chevron-right"></span>
             </a>
 
     </div>
