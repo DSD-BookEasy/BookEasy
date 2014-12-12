@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b88e273ebf7e388a83cea595c41b2ffa",
+    "hash": "d319d88789dd527cc4cd935ba2b193f0",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -127,16 +127,16 @@
         },
         {
             "name": "bower-asset/jquery.inputmask",
-            "version": "3.1.45",
+            "version": "3.1.47",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RobinHerbots/jquery.inputmask.git",
-                "reference": "b656c5b61b05d2a479b69b20de5bc01b837a43c5"
+                "reference": "9ff37e85bc2fa2350475c4a7fa60aa20cd211481"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/b656c5b61b05d2a479b69b20de5bc01b837a43c5",
-                "reference": "b656c5b61b05d2a479b69b20de5bc01b837a43c5",
+                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/9ff37e85bc2fa2350475c4a7fa60aa20cd211481",
+                "reference": "9ff37e85bc2fa2350475c4a7fa60aa20cd211481",
                 "shasum": ""
             },
             "require": {
@@ -535,16 +535,16 @@
         },
         {
             "name": "paolomanca/yii2-fullcalendar",
-            "version": "v2.2.3.2",
+            "version": "v2.2.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paolomanca/yii2-fullcalendar-widget.git",
-                "reference": "476acdc8df85d98dcae16a7f3cbbe065cee2a8f3"
+                "reference": "b0036962194578b735cb3e734e949d638b9c9408"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paolomanca/yii2-fullcalendar-widget/zipball/476acdc8df85d98dcae16a7f3cbbe065cee2a8f3",
-                "reference": "476acdc8df85d98dcae16a7f3cbbe065cee2a8f3",
+                "url": "https://api.github.com/repos/paolomanca/yii2-fullcalendar-widget/zipball/b0036962194578b735cb3e734e949d638b9c9408",
+                "reference": "b0036962194578b735cb3e734e949d638b9c9408",
                 "shasum": ""
             },
             "require": {
@@ -580,7 +580,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2014-12-09 13:24:49"
+            "time": "2014-12-12 17:02:52"
         },
         {
             "name": "swiftmailer/swiftmailer",
