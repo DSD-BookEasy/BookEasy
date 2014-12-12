@@ -21,6 +21,11 @@ use yii\db\ActiveRecord;
 class Timeslot extends ActiveRecord
 {
 
+    //creationMode constant
+    const WEEKDAYS = 1; //creation by request for booking in weekdays
+    const MODEL = 2;    //model creation
+    const DEFAUL = 3;   //default creation (manually)
+
     const STD_FORMAT = 'Y-m-d';
     /**
      * @inheritdoc
@@ -95,30 +100,17 @@ class Timeslot extends ActiveRecord
         return $this->hasOne(Simulator::className(), ['id' => 'id_simulator']);
     }
 
-    public static function unbindBooking($id_booking){
-        $query = self::find()
-            ->where(['id_booking' => $id_booking]);
-
-        $timeslots = $query->all();
+    public static function handleDeleteBooking($booking){
+        $timeslots = $booking->timeslots;
 
         foreach($timeslots as $slot){
-            $slot->id_booking = NULL;
-            if(!$slot->save()){
-                throw new \ErrorException();
-            }
-        }
-    }
-
-    public static function handleDelete($id_booking){
-        $query = self::find()
-            ->where(['id_booking' => $id_booking]);
-
-        $timeslots = $query->all();
-
-        foreach($timeslots as $slot){
-            $slot->id_booking = NULL;
-            if(!$slot->save()){
-                throw new \ErrorException();
+            if($slot->creationMode == WEEKDAYS ){
+                $slot->delete();
+            }else{
+                $slot->id_booking = NULL;
+                if(!$slot->save()){
+                    throw new \ErrorException();
+                }
             }
         }
     }
