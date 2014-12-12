@@ -97,24 +97,17 @@ a.desc:after {
 /**
  * Book Timeslot in Week Calendar View
  */
+#calendar_buttons {
+    margin: 30px 15px;
+}
+
 #cal_datepicker{
 }
 
-#cal_datepicker #calendar{
-    float: left;
-    width:77%;
-
-}
-
 #cal_datepicker #datepicker{
-
-    float: right;
     padding-top:52px;
 }
-#datepicker{
-    float: left;
-    width: 20%;
-}
+
 
 .fc-event.available{
     background-color: #008000;

@@ -1,12 +1,10 @@
 <?php
 
 use app\models\Simulator;
+use kartik\date\DatePicker;
 use yii\helpers\Html;
 use talma\widgets\FullCalendar;
 use yii\helpers\Url;
-use yii\jui\DatePicker;
-use yii\jui\TimePicker;
-use yii\bootstrap\ActiveForm;
 
 
 /* @var $form yii\bootstrap\ActiveForm */
@@ -38,25 +36,32 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 
     <div id="calendar_buttons">
         <a href="<?= Url::to([
-            'simulator/agenda',
-            'id' => $simulator->getAttribute("id"),
-            'week' => $prevWeek
-        ]) ?>">
-            <?= \Yii::t('app', "Previous Week"); ?>
-        </a>&nbsp;
+                'simulator/agenda',
+                'id' => $simulator->getAttribute("id"),
+                'week' => $prevWeek
+            ]) ?>"  class="btn btn-default glyphicon glyphicon-chevron-left">
+                <?= \Yii::t('app', "Previous week"); ?>
+            </a>
 
         <a href="<?= Url::to([
-            'simulator/agenda',
-            'id' => $simulator->getAttribute("id"),
-            'week' => $nextWeek
-        ]) ?>">
-            <?= \Yii::t('app', "Next Week"); ?>
-        </a>
+                'simulator/agenda',
+                'id' => $simulator->getAttribute("id"),
+            ]) ?>" class="btn btn-default">
+                <?= \Yii::t('app', "Today"); ?>
+            </a>
+
+        <a href="<?= Url::to([
+                'simulator/agenda',
+                'id' => $simulator->getAttribute("id"),
+                'week' => $nextWeek
+            ]) ?>" class="btn btn-default glyphicon glyphicon-chevron-right">
+                <?= \Yii::t('app', "Next week"); ?>
+            </a>
+
     </div>
 
-
-    <div id="cal_datepicker">
-        <div id="calendar">
+    <div id="cal_datepicker" class="row">
+        <div id="calendar" class="col-md-10">
             <?php
             $businessHours = [//TODO Make these dynamic
                 'start' => '8:00',
@@ -133,25 +138,30 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 ]
             ]); ?>
         </div>
-        <div id="datepicker">
+        <div id="datepicker" class="col-md-2">
 
-            <label>Pick date</label>
-                    <?= \kartik\date\DatePicker::widget([
-                        'name' => 'dp_1',
-                        'type' => \kartik\date\DatePicker::TYPE_COMPONENT_PREPEND,
-                        'pluginOptions'=>['format' => 'M-dd-yyyy',
-                            'todayHighlight' => true,
-                            'todayBtn' => true,
-                        ],
-                        'pluginEvents' => [
+            <label><?= \Yii::t('app', "Pick a date"); ?></label>
+            <?php
+            $agenda_url = Url::to([
+                'simulator/agenda',
+                'id' => $simulator->getAttribute("id"),
+            ]);
+            echo DatePicker::widget([
+                'name' => 'dp_1',
+                'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                'pluginOptions' => [
+                    'todayHighlight' => true,
+                    'todayBtn' => true,
+                    'weekStart' => '1',
+                    'startDate' => 'today',
 
-                            'changeDate' => "function(e){document.location.href= 'agenda?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"]
-                    ]) ?>
+                ],
+                'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
+
+            ]);
+            ?>
         </div>
 
-
-        <!-- Floatings always need to be cleared to prevent graphical glitches -->
-        <div class="clear"></div>
     </div>
 </div>
 <script type="text/javascript">
