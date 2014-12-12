@@ -134,30 +134,22 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             ]); ?>
         </div>
         <div id="datepicker">
-            <?php $form = ActiveForm::begin(); ?>
-            <?php $nex='js:document.location.href='.'"agenda?week='.$nextWeek.'"'; ?>
 
-            <?= $form->field($simulator, 'selDate')->label(false)->widget($dt=DatePicker::className(),['value'=>$currWeek,'inline'=>true,
-                'clientOptions'=>['onSelect'=>'js: function(date) {
-                    $form->validate();
-                    }',]]
+            <label>Pick date</label>
+                    <?= \kartik\date\DatePicker::widget([
+                        'name' => 'dp_1',
+                        'type' => \kartik\date\DatePicker::TYPE_COMPONENT_PREPEND,
+                        'pluginOptions'=>['format' => 'M-dd-yyyy',
+                            'todayHighlight' => true,
+                            'todayBtn' => true,
+                        ],
+                        'pluginEvents' => [
 
-            ) ?>
-
-            <?= Html::submitButton(Yii::t('app', 'Change Date'), ['class' => 'btn btn-primary'])?>
-            <?php ActiveForm::end(); ?>
+                            'changeDate' => "function(e){document.location.href= 'agenda?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"]
+                    ]) ?>
         </div>
 
-        <div class="row">
-            <div class="col-md-4">
-                <label>Pick date</label>
-                <?= \kartik\date\DatePicker::widget([
-                    'name' => 'dp_1',
-                    'type' => \kartik\date\DatePicker::TYPE_COMPONENT_APPEND,
-                    'pluginEvents' => ["changeDate" => "function(e){document.location.href= 'agenda?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"]
-                ]) ?>
-            </div>
-        </div>
+
         <!-- Floatings always need to be cleared to prevent graphical glitches -->
         <div class="clear"></div>
     </div>
