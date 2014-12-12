@@ -151,6 +151,7 @@ class BookingController extends Controller
 
                 foreach ($timeSlots as $slot) {
                     $slot->id_booking = $model->id;
+                    $slot->creation_mode = Timeslot::WEEKDAYS;
                     if (!$slot->save()) {
                         //rise error
                         throw new ErrorException();
@@ -273,8 +274,9 @@ class BookingController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-        Timeslot::handleDelete($id);
+        $model =  $this->findModel($id);
+        Timeslot::handleDeleteBooking($model);
+        $model->delete();
         return $this->redirect(['index']);
     }
 

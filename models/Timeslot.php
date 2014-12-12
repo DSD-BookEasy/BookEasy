@@ -17,9 +17,15 @@ use yii\db\ActiveRecord;
  * @property integer $id_timeSlotModel
  * @property integer $id_simulator
  * @property integer $id_booking
+ * @property integer $creation_mode
  */
 class Timeslot extends ActiveRecord
 {
+
+    //creationMode constant
+    const WEEKDAYS = 1; //creation by request for booking in weekdays
+    const MODEL = 2;    //model creation
+    const DEFAUL = 3;   //default creation (manually)
 
     const STD_FORMAT = 'Y-m-d';
     /**
@@ -43,6 +49,7 @@ class Timeslot extends ActiveRecord
         $newTS->start = $day->format('Y-m-d') . ' ' . $model->start_time;
         $newTS->end = $day->format('Y-m-d') . ' ' . $model->end_time;
         $newTS->id_timeSlotModel = $model->id;
+        $newTS->creation_mode = MODEL;
 
         return $newTS->save();
 
@@ -55,7 +62,7 @@ class Timeslot extends ActiveRecord
     {
         return [
             [['start', 'end'], 'checkConsistency'],
-            [['cost', 'id_timeSlotModel', 'id_simulator'], 'integer']
+            [['cost', 'id_timeSlotModel', 'id_simulator', 'creation_mode'], 'integer']
         ];
     }
 
@@ -71,6 +78,7 @@ class Timeslot extends ActiveRecord
             'cost' => Yii::t('app', 'Cost'),
             'id_timeSlotModel' => Yii::t('app', 'Id Time Slot Model'),
             'id_simulator' => Yii::t('app', 'Id Simulator'),
+            'creation_mode' => Yii::t('app', 'Creation Mode')
         ];
     }
 
@@ -95,30 +103,17 @@ class Timeslot extends ActiveRecord
         return $this->hasOne(Simulator::className(), ['id' => 'id_simulator']);
     }
 
-    public static function unbindBooking($id_booking){
-        $query = self::find()
-            ->where(['id_booking' => $id_booking]);
-
-        $timeslots = $query->all();
+    public static function handleDeleteBooking($booking){
+        $timeslots = $booking->timeslots;
 
         foreach($timeslots as $slot){
-            $slot->id_booking = NULL;
-            if(!$slot->save()){
-                throw new \ErrorException();
-            }
-        }
-    }
-
-    public static function handleDelete($id_booking){
-        $query = self::find()
-            ->where(['id_booking' => $id_booking]);
-
-        $timeslots = $query->all();
-
-        foreach($timeslots as $slot){
-            $slot->id_booking = NULL;
-            if(!$slot->save()){
-                throw new \ErrorException();
+            if($slot->creation_mode == Timeslot::WEEKDAYS ){
+                $slot->delete();
+            }else{
+                $slot->id_booking = NULL;
+                if(!$slot->save()){
+                    throw new \ErrorException();
+                }
             }
         }
     }
