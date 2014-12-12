@@ -38,10 +38,6 @@ class Simulator extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['flight_duration', 'price_simulation'], 'integer'],
             [['name'], 'string', 'max' => 255],
-            [['selDate'],'date'],
-
-
-
         ];
     }
 
