@@ -17,6 +17,7 @@ use yii\db\ActiveRecord;
  * @property integer $id_timeSlotModel
  * @property integer $id_simulator
  * @property integer $id_booking
+ * @property integer $creation_mode
  */
 class Timeslot extends ActiveRecord
 {
@@ -48,6 +49,7 @@ class Timeslot extends ActiveRecord
         $newTS->start = $day->format('Y-m-d') . ' ' . $model->start_time;
         $newTS->end = $day->format('Y-m-d') . ' ' . $model->end_time;
         $newTS->id_timeSlotModel = $model->id;
+        $newTS->creation_mode = MODEL;
 
         return $newTS->save();
 
@@ -60,7 +62,7 @@ class Timeslot extends ActiveRecord
     {
         return [
             [['start', 'end'], 'checkConsistency'],
-            [['cost', 'id_timeSlotModel', 'id_simulator'], 'integer']
+            [['cost', 'id_timeSlotModel', 'id_simulator', 'creation_mode'], 'integer']
         ];
     }
 
@@ -76,6 +78,7 @@ class Timeslot extends ActiveRecord
             'cost' => Yii::t('app', 'Cost'),
             'id_timeSlotModel' => Yii::t('app', 'Id Time Slot Model'),
             'id_simulator' => Yii::t('app', 'Id Simulator'),
+            'creation_mode' => Yii::t('app', 'Creation Mode')
         ];
     }
 
@@ -104,7 +107,7 @@ class Timeslot extends ActiveRecord
         $timeslots = $booking->timeslots;
 
         foreach($timeslots as $slot){
-            if($slot->creationMode == WEEKDAYS ){
+            if($slot->creation_mode == Timeslot::WEEKDAYS ){
                 $slot->delete();
             }else{
                 $slot->id_booking = NULL;

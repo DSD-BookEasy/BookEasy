@@ -151,6 +151,7 @@ class BookingController extends Controller
 
                 foreach ($timeSlots as $slot) {
                     $slot->id_booking = $model->id;
+                    $slot->creation_mode = Timeslot::WEEKDAYS;
                     if (!$slot->save()) {
                         //rise error
                         throw new ErrorException();
