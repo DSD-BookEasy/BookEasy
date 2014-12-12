@@ -18,11 +18,10 @@ $I->click("(//a[contains(text(),'Book »')])[2]");
 if (method_exists($I, 'wait')) {
     $I->wait(1); // only for selenium
 }
-$date = new \DateTime("now");
-$week = $date->format("W");
-while ($week != 50) { //TODO: not maintainable
-    $I->click('Previous Week');
-    $week = ($week - 2)%52 + 1;
+$I->fillField("#w1", "12/12/2014");
+
+if (method_exists($I, 'wait')) {
+    $I->wait(1); // only for selenium
 }
 $I->see("Unavailable", "//div[@id='w0']/div[2]/div/table/tbody/tr/td/div/div/div[3]/table/tbody/tr/td[2]/div/a[2]/div/div[2]");
 $I->see("Available", "//div[@id='w0']/div[2]/div/table/tbody/tr/td/div/div/div[3]/table/tbody/tr/td[8]/div/a/div/div[2]");
