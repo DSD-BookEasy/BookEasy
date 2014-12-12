@@ -274,7 +274,7 @@ class BookingController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-        Timeslot::unbindBooking($id);
+        Timeslot::handleDelete($id);
         return $this->redirect(['index']);
     }
 

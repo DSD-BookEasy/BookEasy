@@ -108,6 +108,20 @@ class Timeslot extends ActiveRecord
             }
         }
     }
+
+    public static function handleDelete($id_booking){
+        $query = self::find()
+            ->where(['id_booking' => $id_booking]);
+
+        $timeslots = $query->all();
+
+        foreach($timeslots as $slot){
+            $slot->id_booking = NULL;
+            if(!$slot->save()){
+                throw new \ErrorException();
+            }
+        }
+    }
     /**
      * Check whether exist an other timeSlot with the same simulator, in the same day, overlapping
      * @return bool
