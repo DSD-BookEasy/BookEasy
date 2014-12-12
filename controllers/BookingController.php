@@ -137,6 +137,7 @@ class BookingController extends Controller
         }
 
         $model = new Booking();
+        $model->scenario = 'weekdays';
         if ($model->load(Yii::$app->request->post())) {
             //lock
             $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
