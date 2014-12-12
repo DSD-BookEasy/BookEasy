@@ -4,7 +4,6 @@ namespace app\models;
 
 use DateTime;
 use Yii;
-use yii\base\ErrorException;
 use yii\db\ActiveRecord;
 
 /**
@@ -49,7 +48,7 @@ class Timeslot extends ActiveRecord
         $newTS->start = $day->format('Y-m-d') . ' ' . $model->start_time;
         $newTS->end = $day->format('Y-m-d') . ' ' . $model->end_time;
         $newTS->id_timeSlotModel = $model->id;
-        $newTS->creation_mode = MODEL;
+        $newTS->creation_mode = self::MODEL;
 
         return $newTS->save();
 
@@ -107,7 +106,7 @@ class Timeslot extends ActiveRecord
         $timeslots = $booking->timeslots;
 
         foreach($timeslots as $slot){
-            if($slot->creation_mode == Timeslot::WEEKDAYS ){
+            if($slot->creation_mode == self::WEEKDAYS ){
                 $slot->delete();
             }else{
                 $slot->id_booking = NULL;
