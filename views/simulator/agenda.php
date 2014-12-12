@@ -154,7 +154,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 <?= \kartik\date\DatePicker::widget([
                     'name' => 'dp_1',
                     'type' => \kartik\date\DatePicker::TYPE_COMPONENT_APPEND,
-                    'pluginEvents' => ["changeDate" => "function(e){document.location.href= 'agenda?week='+e.date.getFullYear()+'W'+e.date.getWeek();}"]
+                    'pluginEvents' => ["changeDate" => "function(e){document.location.href= 'agenda?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"]
                 ]) ?>
             </div>
         </div>
@@ -164,10 +164,28 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 </div>
 <script type="text/javascript">
     Date.prototype.getWeek = function() {
-        var onejan = new Date(this.getFullYear(),0,1);
-        var today = new Date(this.getFullYear(),this.getMonth(),this.getDate());
-        var dayOfYear = ((today - onejan + 86400000)/86400000);
-        return Math.ceil(dayOfYear/7)
+        var date = new Date(this.getTime());
+        date.setHours(0, 0, 0, 0);
+        // Thursday in current week decides the year.
+        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+        // January 4 is always in week 1.
+        var week1 = new Date(date.getFullYear(), 0, 4);
+        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+        var $result = 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+        - 3 + (week1.getDay() + 6) % 7) / 7);
+
+        if ( $result < 10 ) {
+            $result = '0' + $result;
+        }
+
+        return $result;
+    };
+
+    // Returns the four-digit year corresponding to the ISO week of the date.
+    Date.prototype.getWeekYear = function() {
+        var date = new Date(this.getTime());
+        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+        return date.getFullYear();
     };
 
     function slotBooking(event, element) {
