@@ -274,8 +274,7 @@ class BookingController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-        //TODO delete foreign keys! e.g. references to this booking in timeslots
-
+        Timeslot::unbindBooking($id);
         return $this->redirect(['index']);
     }
 
