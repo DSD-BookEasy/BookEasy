@@ -29,7 +29,7 @@ use yii\widgets\ActiveForm;
     }
     ?>
 
-    <?= $form->field($model, 'comments', ['inputOptions' => ['placeholder' => '(e.g. preferred instruction language, ...)']])->textarea(['rows' => 3]) ?>
+    <?= $form->field($model, 'comments', ['inputOptions' => ['placeholder' => Yii::t('app', '(e.g. preferred instruction language, additional guided tour required?, ...)')]])->textarea(['rows' => 4, 'style'=>'width:100%;']) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
