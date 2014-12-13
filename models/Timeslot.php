@@ -13,16 +13,80 @@ use Yii;
  * @property integer $cost
  * @property integer $id_timeSlotModel
  * @property integer $id_simulator
+ * @property integer $id_booking
  */
-class TimeSlot extends \yii\db\ActiveRecord
+class Timeslot extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'timeslot';
+        return 'TimeSlot';
     }
+
+    /**
+     * @param $until date
+     */
+    public static function generateNextTimeSlot($until){
+        $models =  TimeSlotModel::findAll(''); //load all models
+        $today = strtotime(date("Y-m-d"));
+
+        foreach($models as $model){
+            //check this usage of date. Maybe move this control to db condition
+
+            //convert strings to datetime
+            $end_validity = strtotime($model->end_validity);
+            if($model->last_generation == NULL)
+                $last_generation = $today;
+            else
+                $last_generation = strtotime($model->last_generation);
+
+            //check if the model is still valid and if
+            if(!($end_validity < $today) && $last_generation < $until){
+                if($end_validity < $until){
+                    $stop =  $end_validity;
+                }else{
+                    $stop = $until;
+                }
+
+                if($last_generation > strtotime($model->start_validity)){
+                    $start = $last_generation;
+                }else
+                    $start = strtotime($model->start_validity);
+
+                createTimeSlotFromModel($model, $start, $stop);
+            }
+        }
+    }
+
+    private function createTimeSlotFromModel($model, $start, $stop){
+
+        $time_scan = strtotime('next ' . $model->repeat_day_string(), $start);
+
+        //map frequency with its increment
+        switch($model->frequency){
+            case TimeSlotModel::DAILY:
+                $time_increment = new \DateInterval(TimeSlotModel::DAILY_INCREMENT);
+                break;
+            case TimeSlotModel::WEEKLY:
+                $time_increment = new \DateInterval(TimeSlotModel::WEEKLY_INCREMENT);
+                break;
+            default:
+                throw new \Exception();
+        }
+
+        while($time_scan < $stop){
+            //create new time slot
+            $temp = new Timeslot();
+            $temp->id_simulator = $model->id_simulator;
+            $temp->start = date_format($time_scan,"Y-m-d") . $model->start_time;
+            $temp->end = date_format($time_scan,"Y-m-d") . $model->end_time;
+            //increment time scan
+            date_add($time_scan, $time_increment);
+        }
+    }
+
 
     /**
      * @inheritdoc
@@ -51,6 +115,27 @@ class TimeSlot extends \yii\db\ActiveRecord
     }
 
     /**
+     * Getter for finding the data of the booking associated with the current timeslot
+     * You can access it by calling $timeslot->booking
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBooking()
+    {
+        // Timeslot has_one Booking via Booking.id -> id_booking
+        return $this->hasOne(Booking::className(), ['id' => 'id_booking']);
+    }
+
+    /**
+     * Getter for finding the data of the simulator associated with the current timeslot
+     * You can access it by calling $timeslot->simulator
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSimulator()
+    {
+        return $this->hasOne(Simulator::className(), ['id' => 'id_simulator']);
+    }
+
+    /**
      * Check whether exist an other timeSlot with the same simulator, in the same day, overlapping
      * @return bool
      */
@@ -70,7 +155,7 @@ class TimeSlot extends \yii\db\ActiveRecord
             $condition[] = ['not',['id' => $this->id]];
         }
 
-        $slots = TimeSlot::find()
+        $slots = self::find()
             ->where($condition,
                 [':start' => $this->start])
             ->all();
@@ -102,5 +187,6 @@ class TimeSlot extends \yii\db\ActiveRecord
         }
         return false;
     }
+
 
 }

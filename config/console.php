@@ -28,4 +28,9 @@ return [
         'db' => $db,
     ],
     'params' => $params,
+    'controllerMap' => [
+        'fixture' => [
+            'class' => 'yii\faker\FixtureController',
+        ],
+    ],
 ];

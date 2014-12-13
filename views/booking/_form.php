@@ -6,11 +6,14 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $showAddress boolean */
 ?>
 
 <div class="booking-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'action' => ['']//Necessary to avoid automatic re-use of GET parameters
+    ]); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 255]) ?>
 
@@ -20,7 +23,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'email')->textInput(['maxlength' => 255]) ?>
 
-    <?= $form->field($model, 'address')->textInput(['maxlength' => 255]) ?>
+    <?php
+    if($showAddress) {
+        echo $form->field($model, 'address')->textInput(['maxlength' => 255]);
+    }
+    ?>
 
     <?= $form->field($model, 'comments', ['inputOptions' => ['placeholder' => '(e.g. preferred instruction language, ...)']])->textarea(['rows' => 3]) ?>
 

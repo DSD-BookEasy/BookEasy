@@ -21,9 +21,18 @@ use yii\web\IdentityInterface;
  * @property string $password
  * @property string $last_login
  * @property string $auth_key
+ * @property string $plain_password
  */
 class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
+    /**
+     * Set this property to change the password of a user.
+     * If you change this property password will be automatically encrypted
+     * If you change the $password attribute you will change directly
+     * the encrypted password
+     */
+    public $plain_password;
+
     /**
      * @inheritdoc
      */

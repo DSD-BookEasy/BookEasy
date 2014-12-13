@@ -5,6 +5,7 @@ $params = require(__DIR__ . '/params.php');
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
+    'language' => 'sv-SE',
     'bootstrap' => ['log'],
     'modules' => [
         'api' => [
@@ -34,7 +35,7 @@ $config = [
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
-            //'useFileTransport' => true,
+            'useFileTransport' => true,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -50,6 +51,21 @@ $config = [
             'class'=>'yii\web\UrlManager',
             'enablePrettyUrl' => true,
             'showScriptName' => true,
+            'rules' => [
+                '<controller>/<id:\d+>/<action>' => '<controller>/<action>'
+            ]
+        ],
+        'i18n' => [
+            'translations' => [
+                'app*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    //'basePath' => '@app/messages',
+                    'sourceLanguage' => 'en-US',
+                    /*'fileMap' => [
+                        'app' => 'app.php',
+                    ],*/
+                ],
+            ],
         ],
     ],
     'params' => $params,

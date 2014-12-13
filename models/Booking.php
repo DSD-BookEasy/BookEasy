@@ -16,6 +16,7 @@ use Yii;
  * @property string $email
  * @property string $address
  * @property string $comments
+ * @property integer $assigned_instructor
  */
 class Booking extends \yii\db\ActiveRecord
 {
@@ -55,5 +56,10 @@ class Booking extends \yii\db\ActiveRecord
             'address' => Yii::t('app', 'Address'),
             'comments' => Yii::t('app', 'Comments'),
         ];
+    }
+
+    public function getTimeslots() {
+        // Booking has_many Timeslot via timeslot.id_booking -> id
+        return $this->hasMany(Timeslot::className(), ['id_booking' => 'id']);
     }
 }
