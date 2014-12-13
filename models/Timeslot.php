@@ -2,7 +2,9 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "timeslot".
@@ -14,9 +16,17 @@ use Yii;
  * @property integer $id_timeSlotModel
  * @property integer $id_simulator
  * @property integer $id_booking
+ * @property integer $creation_mode
  */
-class Timeslot extends \yii\db\ActiveRecord
+class Timeslot extends ActiveRecord
 {
+
+    //creationMode constant
+    const WEEKDAYS = 1; //creation by request for booking in weekdays
+    const MODEL = 2;    //model creation
+    const DEFAUL = 3;   //default creation (manually)
+
+    const STD_FORMAT = 'Y-m-d';
     /**
      * @inheritdoc
      */
@@ -26,67 +36,23 @@ class Timeslot extends \yii\db\ActiveRecord
     }
 
     /**
-     * @param $until date
+     * This method insert in the db a timeslot generated from the model and in the day passed as parameters.
+     * @param TimeslotModel $model model that contains data for the timeslot to create
+     * @param DateTime $day day of the Timeslot to create
+     * @return bool if the operation was successful
      */
-    public static function generateNextTimeSlot($until){
-        $models =  TimeSlotModel::findAll(''); //load all models
-        $today = strtotime(date("Y-m-d"));
+    public static function createFromModel(TimeslotModel $model, DateTime $day) {
 
-        foreach($models as $model){
-            //check this usage of date. Maybe move this control to db condition
+        $newTS = new Timeslot();
+        $newTS->id_simulator = $model->id_simulator;
+        $newTS->start = $day->format('Y-m-d') . ' ' . $model->start_time;
+        $newTS->end = $day->format('Y-m-d') . ' ' . $model->end_time;
+        $newTS->id_timeSlotModel = $model->id;
+        $newTS->creation_mode = self::MODEL;
 
-            //convert strings to datetime
-            $end_validity = strtotime($model->end_validity);
-            if($model->last_generation == NULL)
-                $last_generation = $today;
-            else
-                $last_generation = strtotime($model->last_generation);
+        return $newTS->save();
 
-            //check if the model is still valid and if
-            if(!($end_validity < $today) && $last_generation < $until){
-                if($end_validity < $until){
-                    $stop =  $end_validity;
-                }else{
-                    $stop = $until;
-                }
-
-                if($last_generation > strtotime($model->start_validity)){
-                    $start = $last_generation;
-                }else
-                    $start = strtotime($model->start_validity);
-
-                createTimeSlotFromModel($model, $start, $stop);
-            }
-        }
     }
-
-    private function createTimeSlotFromModel($model, $start, $stop){
-
-        $time_scan = strtotime('next ' . $model->repeat_day_string(), $start);
-
-        //map frequency with its increment
-        switch($model->frequency){
-            case TimeSlotModel::DAILY:
-                $time_increment = new \DateInterval(TimeSlotModel::DAILY_INCREMENT);
-                break;
-            case TimeSlotModel::WEEKLY:
-                $time_increment = new \DateInterval(TimeSlotModel::WEEKLY_INCREMENT);
-                break;
-            default:
-                throw new \Exception();
-        }
-
-        while($time_scan < $stop){
-            //create new time slot
-            $temp = new Timeslot();
-            $temp->id_simulator = $model->id_simulator;
-            $temp->start = date_format($time_scan,"Y-m-d") . $model->start_time;
-            $temp->end = date_format($time_scan,"Y-m-d") . $model->end_time;
-            //increment time scan
-            date_add($time_scan, $time_increment);
-        }
-    }
-
 
     /**
      * @inheritdoc
@@ -94,8 +60,8 @@ class Timeslot extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['start', 'end'], 'safe'],
-            [['cost', 'id_timeSlotModel', 'id_simulator'], 'integer']
+            [['start', 'end'], 'checkConsistency'],
+            [['cost', 'id_timeSlotModel', 'id_simulator', 'creation_mode'], 'integer']
         ];
     }
 
@@ -111,6 +77,7 @@ class Timeslot extends \yii\db\ActiveRecord
             'cost' => Yii::t('app', 'Cost'),
             'id_timeSlotModel' => Yii::t('app', 'Id Time Slot Model'),
             'id_simulator' => Yii::t('app', 'Id Simulator'),
+            'creation_mode' => Yii::t('app', 'Creation Mode')
         ];
     }
 
@@ -135,34 +102,47 @@ class Timeslot extends \yii\db\ActiveRecord
         return $this->hasOne(Simulator::className(), ['id' => 'id_simulator']);
     }
 
+    public static function handleDeleteBooking($booking){
+        $timeslots = $booking->timeslots;
+
+        foreach($timeslots as $slot){
+            if($slot->creation_mode == self::WEEKDAYS ){
+                $slot->delete();
+            }else{
+                $slot->id_booking = NULL;
+                if(!$slot->save()){
+                    throw new \ErrorException();
+                }
+            }
+        }
+    }
     /**
      * Check whether exist an other timeSlot with the same simulator, in the same day, overlapping
      * @return bool
      */
     public function checkConsistency($attr,$params){
-        $connection = \Yii::$app->db;/*
-        $command = $connection->createCommand('SELECT * FROM TimeSlot WHERE id_simulator = :simulator &&
-                                              date(start) = date(:start)'
-                                              );
-        $command = bindValue(':simulator',  $this->id_simulator);
-        $command = bindValue(':start',  $this->start);
-        $slots = $command->queryAll();
-*/
-        $condition = ['id_simulator' => $this->id_simulator,
-            'DATE(start)=DATE(:start)'];
 
-        if($this->id != NULL){
-            $condition[] = ['not',['id' => $this->id]];
+        if($this->start >= $this->end){
+            $this->addError($attr, 'Start point of timeslot is greater or equal than the end');
+            return false;
         }
 
-        $slots = self::find()
-            ->where($condition,
-                [':start' => $this->start])
-            ->all();
+
+        $startDate=strftime("%Y-%m-%d",strtotime($this->start));
+
+        $query = self::find()
+            ->where(['id_simulator' => $this->id_simulator]);
+
+        if($this->id != NULL){
+            $query->andWhere(['not',['id' => $this->id]]);
+        }
+        $query->andWhere(['DATE(start)'=>$startDate]);
+
+        $slots = $query->all();
 
         foreach($slots as $slot){
             if($this->overlapping($slot)) {
-                $this->addError($attr, 'The current timeslot is overlapping with existing ones');
+                $this->addError($attr, 'The current timeslot is overlapping with the timeslot with code: ' . $slot->id);
                 return false;
             }
         }
@@ -182,7 +162,7 @@ class Timeslot extends \yii\db\ActiveRecord
         if((strtotime($this->end) > strtotime($slot->start) )&& (strtotime($this->end) < strtotime($slot->end))){
             return true;
         }
-        if((strtotime($slot->start) == strtotime($this->start) )&& (strtotime($slot->start) == strtotime($this->end))){
+        if((strtotime($slot->start) == strtotime($this->start) )&& (strtotime($slot->end) == strtotime($this->end))){
             return true;
         }
         return false;

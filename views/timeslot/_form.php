@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="timeslot-form">
+<div class="time-slot-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -18,9 +18,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'cost')->textInput() ?>
 
-    <?= $form->field($model, 'id_timeSlotModel')->textInput() ?>
+    <?= $model->isNewRecord ? $form->field($model, 'id_timeSlotModel')->textInput() : ''?>
 
-    <?= $form->field($model, 'id_simulator')->textInput() ?>
+    <?= $model->isNewRecord ? $form->field($model, 'id_simulator')->textInput() : ''?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

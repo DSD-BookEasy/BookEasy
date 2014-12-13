@@ -13,7 +13,5 @@ class m141124_135932_addTimeSlotBookingKey extends Migration
     public function down()
     {
         $this->dropColumn('TimeSlot', 'id_booking');
-
-        return false;
     }
 }

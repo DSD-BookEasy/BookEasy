@@ -135,12 +135,7 @@ class SimulatorController extends Controller
         // Initialize the week
         //if i change the date through the datepicker
         //TODO avoid using POST
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $currWeek = new DateTime($model->selDate);
-        }
-        else{
-            $currWeek = new DateTime($week);
-        }
+        $currWeek = new DateTime($week);
         // and the week before the current one
         $prevWeek = clone $currWeek;
         $prevWeek->modify("previous week");

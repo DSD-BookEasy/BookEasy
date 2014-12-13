@@ -11,6 +11,7 @@ use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\db\Transaction;
 use yii\web\BadRequestHttpException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -30,6 +31,18 @@ class BookingController extends Controller
                     'delete' => ['post'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['update'],
+                'rules' => [
+                    [
+                    'allow' => true,
+                    'actions' => ['update'],
+                    'roles' => ['@']
+                    ],
+                ],
+
+            ],
         ];
     }
 
@@ -43,10 +56,18 @@ class BookingController extends Controller
         $model = new Booking();
 
         if ((Yii::$app->request->post())) {
-            $id = (Yii::$app->request->post($name = 'Booking'));
+            if(!$model->load((Yii::$app->request->post()))){
+                throw new \ErrorException();
+            }
+
+            //this line solve a bug! Don't delete id!
+            $model->id = Yii::$app->request->post('Booking')['id']; //I don't know why but the load doesn't load the id
+
+            $model = $this->findModelForSearch($model);
+
             return $this->redirect([
                 'view',
-                'id' => $id['id'],
+                'id' => $model->id
             ]);
         } else {
             return $this->render('search', [
@@ -124,6 +145,7 @@ class BookingController extends Controller
         }
 
         $model = new Booking();
+        $model->scenario = 'weekdays';
         if ($model->load(Yii::$app->request->post())) {
             //lock
             $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
@@ -137,6 +159,7 @@ class BookingController extends Controller
 
                 foreach ($timeSlots as $slot) {
                     $slot->id_booking = $model->id;
+                    $slot->creation_mode = Timeslot::WEEKDAYS;
                     if (!$slot->save()) {
                         //rise error
                         throw new ErrorException();
@@ -259,9 +282,9 @@ class BookingController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-        //TODO delete foreign keys! e.g. references to this booking in timeslots
-
+        $model =  $this->findModel($id);
+        Timeslot::handleDeleteBooking($model);
+        $model->delete();
         return $this->redirect(['index']);
     }
 
@@ -280,6 +303,27 @@ class BookingController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    /**
+     * Return the model that match with the model in input
+     * @param $model_input should contain at least id, name and surname
+     * @throws NotFoundHttpException
+     */
+    protected function findModelForSearch($model_input)
+    {
+        $query = Booking::find()
+            ->where(['id' => $model_input->id,
+                    'name' => $model_input->name,
+                    'surname' => $model_input->surname
+                    ]);
+
+        if (($model = $query->one()) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('Incorrect input');
+        }
+    }
+
 
     private function notifyCoordinators($booking)
     {

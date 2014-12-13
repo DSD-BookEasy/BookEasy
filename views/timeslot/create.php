@@ -7,12 +7,12 @@ use yii\helpers\Html;
 /* @var $model app\models\Timeslot */
 
 $this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Timeslot',
+    'modelClass' => 'Time Slot',
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Timeslots'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slots'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="timeslot-create">
+<div class="time-slot-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

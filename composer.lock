@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b88e273ebf7e388a83cea595c41b2ffa",
+    "hash": "d319d88789dd527cc4cd935ba2b193f0",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -127,16 +127,16 @@
         },
         {
             "name": "bower-asset/jquery.inputmask",
-            "version": "3.1.45",
+            "version": "3.1.47",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RobinHerbots/jquery.inputmask.git",
-                "reference": "b656c5b61b05d2a479b69b20de5bc01b837a43c5"
+                "reference": "9ff37e85bc2fa2350475c4a7fa60aa20cd211481"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/b656c5b61b05d2a479b69b20de5bc01b837a43c5",
-                "reference": "b656c5b61b05d2a479b69b20de5bc01b837a43c5",
+                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/9ff37e85bc2fa2350475c4a7fa60aa20cd211481",
+                "reference": "9ff37e85bc2fa2350475c4a7fa60aa20cd211481",
                 "shasum": ""
             },
             "require": {
@@ -341,17 +341,210 @@
             "time": "2013-11-30 08:25:19"
         },
         {
-            "name": "paolomanca/yii2-fullcalendar",
-            "version": "v2.2.3.2",
+            "name": "kartik-v/yii2-krajee-base",
+            "version": "v1.5.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/paolomanca/yii2-fullcalendar-widget.git",
-                "reference": "476acdc8df85d98dcae16a7f3cbbe065cee2a8f3"
+                "url": "https://github.com/kartik-v/yii2-krajee-base.git",
+                "reference": "662835bf3fe1579277cf727f942ae87959ab2f3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paolomanca/yii2-fullcalendar-widget/zipball/476acdc8df85d98dcae16a7f3cbbe065cee2a8f3",
-                "reference": "476acdc8df85d98dcae16a7f3cbbe065cee2a8f3",
+                "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/662835bf3fe1579277cf727f942ae87959ab2f3f",
+                "reference": "662835bf3fe1579277cf727f942ae87959ab2f3f",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2-bootstrap": "@dev"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\base\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "Base library and foundation components for all Yii2 Krajee extensions.",
+            "homepage": "https://github.com/kartik-v/yii2-krajee-base",
+            "keywords": [
+                "base",
+                "extension",
+                "foundation",
+                "krajee",
+                "widget",
+                "yii2"
+            ],
+            "time": "2014-12-06 10:44:45"
+        },
+        {
+            "name": "kartik-v/yii2-widget-datepicker",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-widget-datepicker.git",
+                "reference": "c38f9ac17fe6a9b3e53a08fd0efffb14b1d49ee4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-datepicker/zipball/c38f9ac17fe6a9b3e53a08fd0efffb14b1d49ee4",
+                "reference": "c38f9ac17fe6a9b3e53a08fd0efffb14b1d49ee4",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/yii2-krajee-base": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\date\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "Enhanced Yii2 wrapper for the bootstrap datepicker plugin (sub repo split from yii2-widgets).",
+            "homepage": "https://github.com/kartik-v/yii2-widget-datepicker",
+            "keywords": [
+                "date",
+                "extension",
+                "form",
+                "jquery",
+                "picker",
+                "plugin",
+                "select2",
+                "widget",
+                "yii2"
+            ],
+            "time": "2014-12-04 09:58:33"
+        },
+        {
+            "name": "kartik-v/yii2-widget-datetimepicker",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-widget-datetimepicker.git",
+                "reference": "da53ee75fcde78e9d3b80307b33ad0157fd0c07c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-datetimepicker/zipball/da53ee75fcde78e9d3b80307b33ad0157fd0c07c",
+                "reference": "da53ee75fcde78e9d3b80307b33ad0157fd0c07c",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/yii2-krajee-base": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\datetime\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "Enhanced Yii2 wrapper for the bootstrap datetimepicker plugin (sub repo split from yii2-widgets)",
+            "homepage": "https://github.com/kartik-v/yii2-widget-datetimepicker",
+            "keywords": [
+                "datetime",
+                "extension",
+                "form",
+                "jquery",
+                "picker",
+                "plugin",
+                "select2",
+                "widget",
+                "yii2"
+            ],
+            "time": "2014-12-04 09:58:45"
+        },
+        {
+            "name": "kartik-v/yii2-widget-timepicker",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-widget-timepicker.git",
+                "reference": "432a8e166f89c2172fd5b86f6badcd943dbd3bc2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-timepicker/zipball/432a8e166f89c2172fd5b86f6badcd943dbd3bc2",
+                "reference": "432a8e166f89c2172fd5b86f6badcd943dbd3bc2",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/yii2-krajee-base": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\time\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "Enhanced Yii2 wrapper for the bootstrap timepicker plugin (sub repo split from yii2-widgets)",
+            "homepage": "https://github.com/kartik-v/yii2-widget-timepicker",
+            "keywords": [
+                "bootstrap",
+                "extension",
+                "form",
+                "jquery",
+                "picker",
+                "plugin",
+                "time",
+                "widget",
+                "yii2"
+            ],
+            "time": "2014-11-08 20:01:29"
+        },
+        {
+            "name": "paolomanca/yii2-fullcalendar",
+            "version": "v2.2.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paolomanca/yii2-fullcalendar-widget.git",
+                "reference": "b0036962194578b735cb3e734e949d638b9c9408"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paolomanca/yii2-fullcalendar-widget/zipball/b0036962194578b735cb3e734e949d638b9c9408",
+                "reference": "b0036962194578b735cb3e734e949d638b9c9408",
                 "shasum": ""
             },
             "require": {
@@ -387,7 +580,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2014-12-09 13:24:49"
+            "time": "2014-12-12 17:02:52"
         },
         {
             "name": "swiftmailer/swiftmailer",

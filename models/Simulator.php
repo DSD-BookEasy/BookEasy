@@ -22,7 +22,7 @@ class Simulator extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public  $selDate;
+
     public static function tableName()
     {
         return 'Simulator';
@@ -31,20 +31,13 @@ class Simulator extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public  function  getDate(){
 
-        return $this->selDate;
-    }
     public function rules()
     {
         return [
             [['description'], 'string'],
             [['flight_duration', 'price_simulation'], 'integer'],
             [['name'], 'string', 'max' => 255],
-            [['selDate'],'date'],
-            [['selDate'],'required'],
-
-
         ];
     }
 

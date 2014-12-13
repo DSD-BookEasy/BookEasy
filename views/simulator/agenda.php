@@ -1,12 +1,10 @@
 <?php
 
 use app\models\Simulator;
+use kartik\date\DatePicker;
 use yii\helpers\Html;
 use talma\widgets\FullCalendar;
 use yii\helpers\Url;
-use yii\jui\DatePicker;
-use yii\jui\TimePicker;
-use yii\bootstrap\ActiveForm;
 
 
 /* @var $form yii\bootstrap\ActiveForm */
@@ -38,25 +36,34 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 
     <div id="calendar_buttons">
         <a href="<?= Url::to([
-            'simulator/agenda',
-            'id' => $simulator->getAttribute("id"),
-            'week' => $prevWeek
-        ]) ?>">
-            <?= \Yii::t('app', "Previous Week"); ?>
-        </a>&nbsp;
+                'simulator/agenda',
+                'id' => $simulator->getAttribute("id"),
+                'week' => $prevWeek
+            ]) ?>"  class="btn btn-default">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                <?= \Yii::t('app', "Previous week"); ?>
+            </a>
 
         <a href="<?= Url::to([
-            'simulator/agenda',
-            'id' => $simulator->getAttribute("id"),
-            'week' => $nextWeek
-        ]) ?>">
-            <?= \Yii::t('app', "Next Week"); ?>
-        </a>
+                'simulator/agenda',
+                'id' => $simulator->getAttribute("id"),
+            ]) ?>" class="btn btn-default">
+                <?= \Yii::t('app', "Today"); ?>
+            </a>
+
+        <a href="<?= Url::to([
+                'simulator/agenda',
+                'id' => $simulator->getAttribute("id"),
+                'week' => $nextWeek
+            ]) ?>" class="btn btn-default">
+                <?= \Yii::t('app', "Next week"); ?>
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+
     </div>
 
-
-    <div id="cal_datepicker">
-        <div id="calendar">
+    <div id="cal_datepicker" class="row">
+        <div id="calendar" class="col-md-10">
             <?php
             $businessHours = [//TODO Make these dynamic
                 'start' => '8:00',
@@ -133,26 +140,58 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 ]
             ]); ?>
         </div>
-        <div id="datepicker">
-            <?php $form = ActiveForm::begin(); ?>
-            <?php $nex='js:document.location.href='.'"agenda?week='.$nextWeek.'"'; ?>
+        <div id="datepicker" class="col-md-2">
 
-            <?= $form->field($simulator, 'selDate')->label(false)->widget($dt=DatePicker::className(),['value'=>$currWeek,'inline'=>true,
-                'clientOptions'=>['onSelect'=>'js: function(date) {
-                    $form->validate();
-                    }',]]
+            <label><?= \Yii::t('app', "Pick a date"); ?></label>
+            <?php
+            $agenda_url = Url::to([
+                'simulator/agenda',
+                'id' => $simulator->getAttribute("id"),
+            ]);
+            echo DatePicker::widget([
+                'name' => 'dp_1',
+                'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                'pluginOptions' => [
+                    'todayHighlight' => true,
+                    'todayBtn' => true,
+                    'weekStart' => '1',
+                    'startDate' => 'today',
 
-            ) ?>
+                ],
+                'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
 
-            <?= Html::submitButton(Yii::t('app', 'Change Date'), ['class' => 'btn btn-primary'])?>
-            <?php ActiveForm::end(); ?>
-
+            ]);
+            ?>
         </div>
-        <!-- Floatings always need to be cleared to prevent graphical glitches -->
-        <div class="clear"></div>
+
     </div>
 </div>
 <script type="text/javascript">
+    Date.prototype.getWeek = function() {
+        var date = new Date(this.getTime());
+        date.setHours(0, 0, 0, 0);
+        // Thursday in current week decides the year.
+        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+        // January 4 is always in week 1.
+        var week1 = new Date(date.getFullYear(), 0, 4);
+        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+        var $result = 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+        - 3 + (week1.getDay() + 6) % 7) / 7);
+
+        if ( $result < 10 ) {
+            $result = '0' + $result;
+        }
+
+        return $result;
+    };
+
+    // Returns the four-digit year corresponding to the ISO week of the date.
+    Date.prototype.getWeekYear = function() {
+        var date = new Date(this.getTime());
+        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+        return date.getFullYear();
+    };
+
     function slotBooking(event, element) {
         if (event.rendering != "background" && event.rendering != "inverse-background") {
             if (element.hasClass("available")) {
@@ -180,14 +219,15 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             $('body').append('<div id="dialog"></div>');
             $d = $('#dialog');
             $d.dialog({
-                modal: true
+                modal: true,
+                autoOpen: false
             });
         }
 
         $d.html('<?=\Yii::t('app',"Do you want to send a request for making a special booking for this simulator?") ?><br />\
         <?= \Yii::t('app',"Starting from")?>: <span class="new_timeslot">' + start.format("d-M-YYYY HH:mm") + '</span> <br />\
         <?= \Yii::t('app',"Ending")?>: <span class="new_timeslot">' + end.format("d-M-YYYY HH:mm") + '</span>');
-        $d.dialog("option", "buttons", [{
+        $d.dialog("option", "buttons", {
             "<?=\Yii::t('app',"Confirm");?>": function () {
                 window.location.href = '<?=$bookUrlWeekday?>?'
                 + encodeURIComponent('timeslots[0][start]') + '=' + encodeURIComponent(start.format())
@@ -198,7 +238,9 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 $('.fullcalendar').fullCalendar('unselect');
                 $(this).dialog("close");
             }
-        }]);
+        });
+
+        $d.dialog('open');
     }
 
     function getSimulatorId() {

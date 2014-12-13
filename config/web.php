@@ -5,7 +5,7 @@ $params = require(__DIR__ . '/params.php');
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'language' => 'sv-SE',
+    //'language' => 'sv-SE',
     'bootstrap' => ['log'],
     'modules' => [
         'api' => [
@@ -26,6 +26,7 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\Staff',
             'enableAutoLogin' => true,
+            'loginUrl' => ['staff/login'],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',

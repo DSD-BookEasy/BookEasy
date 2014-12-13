@@ -2,18 +2,21 @@
 
 namespace app\controllers;
 
+use app\models\TimeslotModel;
 use Yii;
-use app\models\TimeSlotModel;
+use app\models\Timeslot;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * TimeSlotModelController implements the CRUD actions for TimeSlotModel model.
+ * TimeslotController implements the CRUD actions for Timeslot model.
  */
-class TimeSlotModelController extends Controller
+class TimeslotController extends Controller
 {
+
+
     public function behaviors()
     {
         return [
@@ -27,13 +30,13 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Lists all TimeSlotModel models.
+     * Lists all Timeslot models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => TimeSlotModel::find(),
+            'query' => Timeslot::find(),
         ]);
 
         return $this->render('index', [
@@ -42,7 +45,7 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Displays a single TimeSlotModel model.
+     * Displays a single Timeslot model.
      * @param integer $id
      * @return mixed
      */
@@ -54,13 +57,13 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Creates a new TimeSlotModel model.
+     * Creates a new Timeslot model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new TimeSlotModel();
+        $model = new Timeslot();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -72,7 +75,7 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Updates an existing TimeSlotModel model.
+     * Updates an existing Timeslot model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -81,8 +84,11 @@ class TimeSlotModelController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())){
+            $model->id_timeSlotModel = NULL;
+            if($model->save()){
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -91,7 +97,7 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Deletes an existing TimeSlotModel model.
+     * Deletes an existing Timeslot model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -104,15 +110,15 @@ class TimeSlotModelController extends Controller
     }
 
     /**
-     * Finds the TimeSlotModel model based on its primary key value.
+     * Finds the Timeslot model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return TimeSlotModel the loaded model
+     * @return Timeslot the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = TimeSlotModel::findOne($id)) !== null) {
+        if (($model = Timeslot::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
