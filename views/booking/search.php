@@ -14,6 +14,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'id')->textInput() ?>
 
+    <?= $form->field($model, 'name')->textInput() ?>
+
+    <?= $form->field($model, 'surname')->textInput() ?>
+
     <div class="form-group">
         <?= Html::submitButton($content = "search")?>
     </div>
