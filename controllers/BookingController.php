@@ -56,10 +56,18 @@ class BookingController extends Controller
         $model = new Booking();
 
         if ((Yii::$app->request->post())) {
-            $id = (Yii::$app->request->post($name = 'Booking'));
+            if(!$model->load((Yii::$app->request->post()))){
+                throw new \ErrorException();
+            }
+
+            //this line solve a bug! Don't delete id!
+            $model->id = Yii::$app->request->post('Booking')['id']; //I don't know why but the load doesn't load the id
+
+            $model = $this->findModelForSearch($model);
+
             return $this->redirect([
                 'view',
-                'id' => $id['id'],
+                'id' => $model->id
             ]);
         } else {
             return $this->render('search', [
@@ -295,6 +303,27 @@ class BookingController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    /**
+     * Return the model that match with the model in input
+     * @param $model_input should contain at least id, name and surname
+     * @throws NotFoundHttpException
+     */
+    protected function findModelForSearch($model_input)
+    {
+        $query = Booking::find()
+            ->where(['id' => $model_input->id,
+                    'name' => $model_input->name,
+                    'surname' => $model_input->surname
+                    ]);
+
+        if (($model = $query->one()) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('Incorrect input');
+        }
+    }
+
 
     private function notifyCoordinators($booking)
     {
