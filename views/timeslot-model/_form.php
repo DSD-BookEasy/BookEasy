@@ -46,14 +46,15 @@ use kartik\date\DatePicker;
 
     <div class="row">
         <div class="col-md-2">
-            <?= $form->field($model, 'repeat_day')->dropDownList($weekDays) ?>
-        </div>
-        <div class="col-md-2">
             <?= $form->field($model, 'frequency')->dropDownList([
                 TimeslotModel::DAILY => Yii::t('app', 'Daily'),
                 TimeslotModel::WEEKLY => Yii::t('app', 'Weekly')
             ]) ?>
         </div>
+        <div class="col-md-2">
+            <?= $form->field($model, 'repeat_day')->dropDownList($weekDays) ?>
+        </div>
+
     </div>
 
     <div class="row">

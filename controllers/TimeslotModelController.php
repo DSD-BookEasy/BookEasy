@@ -106,11 +106,24 @@ class TimeslotModelController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->updateModel(Yii::$app->request->post())) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
+
+            $weekDays = [];
+
+            for ($i = 0; $i <= 6; $i++) {
+                $weekDays[$i+1] = date('l', strtotime("this week + $i days"));
+            }
+
+            $simulators = new ActiveDataProvider([
+                'query' => Simulator::find(),
+            ]);
+
             return $this->render('update', [
                 'model' => $model,
+                'weekDays' => $weekDays,
+                'simulators' => $simulators->getModels()
             ]);
         }
     }

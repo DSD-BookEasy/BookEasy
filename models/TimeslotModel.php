@@ -28,6 +28,8 @@ class TimeslotModel extends ActiveRecord
     const DAILY = 'P1D';
     const WEEKLY = 'P1W';
 
+    const DEFAULT_CREATION_SPAN = 'P3M';
+
     //repeat day const
     const MONDAY = 1;
     const TUESDAY = 2;
@@ -95,47 +97,35 @@ class TimeslotModel extends ActiveRecord
     }
 
     /**
-     * Allows to update Timeslot's validity
-     * @param TimeslotModel $new
+     * Updates the TimeslotModel and the generated Timeslots
+     * @param array|mixed $params parameters to be changed
      * @return bool if the operation was successful
      */
-/*    public function updateModel(TimeslotModel $new)
+    public function updateModel($params)
     {
         $result = true;
 
-        if ($new->start_validity !== $this->start_validity) {
+        $result &= $this->deleteTimeslots(new DateTime($this->start_validity), new DateTime($this->end_validity));
 
-            if ($new->start_validity < $this->start_validity) {
-                $result &= $this->createTimeslots(new DateTime($new->start_validity), new DateTime($this->start_validity));
-            } else {
-                $result &= $this->deleteTimeslots(new DateTime($this->start_validity), new DateTime($$new->start_validity));
-            }
+        $result &= $this->load($params);
 
-            $this->start_validity = $new->start_validity;
+        // Reset the generation date, since everything has been deleted
+        $this->generated_until = null;
 
-        }
+        // Update the model
+        $result &= $this->update();
 
-        if ($new->end_validity !== $this->end_validity) {
+        $genDate = new DateTime('today midnight');
+        $genDate->add(new DateInterval(self::DEFAULT_CREATION_SPAN));
 
-            if ($new->end_validity < $this->end_validity) {
-                $result &= $this->deleteTimeslots(new DateTime($new->end_validity), new DateTime($this->end_validity));
+        // Generate the new Timeslots
+        $result &= $this->advanceModelGeneration($genDate);
 
-            } else {
-                $result &= $this->createTimeslots(new DateTime($this->end_validity), new DateTime($new->end_validity));
+        $result &= $this->save();
 
-            }
+        return $result;
 
-            $this->end_validity = $new->end_validity;
-
-        }
-
-        if ( $result ) {
-            return $this->save();
-        }
-
-        return false;
-
-    }*/
+    }
 
     /**
      * Deletes the TimeslotModel with the Timeslots that were generated from it
@@ -156,7 +146,7 @@ class TimeslotModel extends ActiveRecord
     public static function generateNextTimeslot(DateTime $until){
         $until->modify('23:59:59');
 
-        $models = TimeslotModel::find()
+        $models = self::find()
             ->all(); //load all models
 
         foreach($models as $model){
@@ -192,12 +182,12 @@ class TimeslotModel extends ActiveRecord
 
         // Check whether the requested Timeslots where already covered by a previous generation
         if ($generatedUntil > $until) {
-            return false;
+            return true;
         }
 
         // Check whether the TimeslotModel is already outside its validity
         if ($endValidity != null && $endValidity < $today) {
-            return false;
+            return true;
         }
 
         // Start the generation from the last one generated (if any), don't start from scratch
@@ -221,20 +211,30 @@ class TimeslotModel extends ActiveRecord
 
     /**
      * Create Timeslots based on $this in between the given dates
-     * @param DateTime $from starting date of the range
-     * @param DateTime $to ending date date of the range (included)
-     * @throws ErrorException
+     * @param DateTime $from starting date (included) of the range (can't be in the past)
+     * @param DateTime $to ending date date (included) of the range (can't be in the past)
      * @return bool if the operation was successful
      */
     public function createTimeslots(DateTime $from, DateTime $to)
     {
+        // Make sure that each day is fully included
         $from->modify('00:00:00');
         $to->modify('23:59:59');
+
+        // The past can't be changed through the model
+        if ( $from < new DateTime() ) {
+            $from = new DateTime();
+        }
+
+        // Respect the chronological order
+        if ( $from > $to ) {
+            return false;
+        }
 
         $time_scan = clone $from;
 
         // Account for the fact that $from could be in a different week day from the one set by the repetition
-        if ($from->format('l') !== $this->repeatDayToString() && $this->frequency == TimeslotModel::WEEKLY) {
+        if ($from->format('l') !== $this->repeatDayToString() && $this->frequency == self::WEEKLY) {
             $time_scan->modify('next ' . $this->repeatDayToString());
         }
 
@@ -249,26 +249,38 @@ class TimeslotModel extends ActiveRecord
 
         $this->generated_until = $to->format('Y-m-d');
 
-        return $this->save();;
+        return $this->save();
 
     }
 
 
     /**
      * Deletes the Timeslots generated by this TimeslotModel between the given dates
-     * @param $from
-     * @param $to
+     * @param DateTime $from starting date (included) of the range (can't be in the past)
+     * @param DateTime $to ending date date (included) of the range (can't be in the past)
      * @return bool if the operation was successful
      */
     public function deleteTimeslots(DateTime $from, DateTime $to)
     {
+        // Make sure that each day is fully included
+        $from->modify('00:00:00');
         $to->modify('23:59:59');
+
+        // The past can't be changed through the model
+        if ( $from < new DateTime() ) {
+            $from = new DateTime();
+        }
+
+        // Respect the chronological order
+        if ( $from > $to ) {
+            return false;
+        }
 
         $result = true;
 
         $timeslots = Timeslot::find()
             ->where(['id_timeSlotModel' => $this->id])
-            ->andWhere(['between', 'start', $from->format('Y-m-d 00:00:00'), $to->format('Y-m-d 23:59:59')])
+            ->andWhere(['between', 'start', $from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])
             ->all();
 
         foreach ($timeslots as $timeslot) {

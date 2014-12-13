@@ -4,6 +4,8 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TimeslotModel */
+/* @var $weekDays string[] */
+/* @var $simulators app\models\Simulator[]*/
 
 $this->title = Yii::t('app', 'Update {modelClass}: ', [
     'modelClass' => 'Time Slot Model',
@@ -18,6 +20,8 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'weekDays' => $weekDays,
+        'simulators' => $simulators
     ]) ?>
 
 </div>

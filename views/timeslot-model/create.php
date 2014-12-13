@@ -5,6 +5,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TimeslotModel */
+/* @var $weekDays string[] */
 /* @var $simulators app\models\Simulator[]*/
 
 
