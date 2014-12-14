@@ -6,6 +6,7 @@ use app\models\Simulator;
 use Yii;
 use app\models\TimeslotModel;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -23,6 +24,16 @@ class TimeslotModelController extends Controller
                 'actions' => [
                     'delete' => ['post'],
                 ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+                ],
+
             ],
         ];
     }
