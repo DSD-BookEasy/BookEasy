@@ -149,6 +149,14 @@ class Timeslot extends ActiveRecord
         return true;
     }
 
+    /**
+     * @return bool says if the Timeslot is booked
+     */
+    public function isBooked()
+    {
+        return $this->id_booking == null;
+    }
+
     public function overlapping($slot){
         if((strtotime($slot->start) > strtotime($this->start) )&& (strtotime($slot->start) < strtotime($this->end))){
             return true;
