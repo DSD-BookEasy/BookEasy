@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d319d88789dd527cc4cd935ba2b193f0",
+    "hash": "4856cb45a5ef6ece1ca84caf6006caa2",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -127,16 +127,16 @@
         },
         {
             "name": "bower-asset/jquery.inputmask",
-            "version": "3.1.47",
+            "version": "3.1.48",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RobinHerbots/jquery.inputmask.git",
-                "reference": "9ff37e85bc2fa2350475c4a7fa60aa20cd211481"
+                "reference": "d9ebcf6ce4be6bd8642a10c633fe950c0c0f0a9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/9ff37e85bc2fa2350475c4a7fa60aa20cd211481",
-                "reference": "9ff37e85bc2fa2350475c4a7fa60aa20cd211481",
+                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/d9ebcf6ce4be6bd8642a10c633fe950c0c0f0a9d",
+                "reference": "d9ebcf6ce4be6bd8642a10c633fe950c0c0f0a9d",
                 "shasum": ""
             },
             "require": {
@@ -342,16 +342,16 @@
         },
         {
             "name": "kartik-v/yii2-krajee-base",
-            "version": "v1.5.0",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-krajee-base.git",
-                "reference": "662835bf3fe1579277cf727f942ae87959ab2f3f"
+                "reference": "01ae10573ea0aed2dea511439fa4f6ec1ef9f10b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/662835bf3fe1579277cf727f942ae87959ab2f3f",
-                "reference": "662835bf3fe1579277cf727f942ae87959ab2f3f",
+                "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/01ae10573ea0aed2dea511439fa4f6ec1ef9f10b",
+                "reference": "01ae10573ea0aed2dea511439fa4f6ec1ef9f10b",
                 "shasum": ""
             },
             "require": {
@@ -384,7 +384,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2014-12-06 10:44:45"
+            "time": "2014-12-13 17:48:51"
         },
         {
             "name": "kartik-v/yii2-widget-datepicker",
