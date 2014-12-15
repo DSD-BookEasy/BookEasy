@@ -18,6 +18,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'surname')->textInput() ?>
 
+    <?= $form->field($model, 'token')->textInput() ?>
+
     <div class="form-group">
         <?= Html::submitButton($content = "search")?>
     </div>

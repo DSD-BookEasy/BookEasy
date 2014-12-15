@@ -54,20 +54,23 @@ class BookingController extends Controller
     {
 
         $model = new Booking();
-
+        $model->scenario = 'search';
         if ((Yii::$app->request->post())) {
+
             if(!$model->load((Yii::$app->request->post()))){
                 throw new \ErrorException();
             }
 
-            //this line solve a bug! Don't delete id!
-            $model->id = Yii::$app->request->post('Booking')['id']; //I don't know why but the load doesn't load the id
+            //this line solve a bug! Don't delete it!--> bug solved?? wait more to delete these 2 lines
+            //$model->id = Yii::$app->request->post('Booking')['id']; //I don't know why but the load doesn't load the id
+            //$model->token = Yii::$app->request->post('Booking')['token'];
 
             $model = $this->findModelForSearch($model);
 
             return $this->redirect([
                 'view',
-                'id' => $model->id
+                'id' => $model->id,
+                'token' => $model->token
             ]);
         } else {
             return $this->render('search', [
@@ -99,6 +102,13 @@ class BookingController extends Controller
     public function actionView($id)
     {
         $booking = $this->findModel($id);
+
+        $token = Yii::$app->request->get('token');
+
+        if(strcmp($booking->token, $token) != 0){
+            //error page
+            throw new \ErrorException();
+        }
 
         return $this->render('view', [
             'model' => $booking,
@@ -169,7 +179,7 @@ class BookingController extends Controller
                 $transaction->commit();
                 unset(Yii::$app->session['timeslots']);
                 $this->notifyCoordinators($model);
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['view', 'id' => $model->id, 'token' => $model->token]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
                 unset(Yii::$app->session['timeslots']);
@@ -214,22 +224,29 @@ class BookingController extends Controller
             throw new BadRequestHttpException("You must specify the timeslots to book");
         }
 
+
         if ($model->load(Yii::$app->request->post())) {
             //lock
+
             $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
             try {
                 $timeSlots = Yii::$app->session['timeslots'];
 
                 if (!$model->save()) {//Note: does the framework automatically update the id on insert?
                     //rise error
-                    throw new ErrorException();
+                    throw new \ErrorException('jjfjfg');
                 }
 
+
                 foreach ($timeSlots as $slot) {
-                    $slot->id_booking = $model->id;
                     //rise error for problems on save or if booking is not available
-                    if ($slot->isBooked() || !$slot->save()) {
-                        throw new ErrorException();
+                    if (!$slot->isBooked()){
+                        $slot->id_booking = $model->id;
+                        if(!$slot->save()){
+                            throw new ErrorException($slot->id);
+                        }
+                    }else{
+                        throw new ErrorException($slot->id);
                     }
                 }
 
@@ -239,7 +256,7 @@ class BookingController extends Controller
                 $transaction->commit();
                 $this->notifyCoordinators($model);
                 // Fix exception
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['view', 'id' => $model->id, 'token' => $model->token]);
             } catch (Exception $e) {
                 $transaction->rollBack();
                 //TODO here we should go to error page
@@ -314,7 +331,8 @@ class BookingController extends Controller
         $query = Booking::find()
             ->where(['id' => $model_input->id,
                     'name' => $model_input->name,
-                    'surname' => $model_input->surname
+                    'surname' => $model_input->surname,
+                    'token' => $model_input->token
                     ]);
 
         if (($model = $query->one()) !== null) {
