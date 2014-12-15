@@ -21,6 +21,7 @@ use yii\db\ActiveRecord;
  * @property string $end_validity Ending date of validity of the model
  * @property integer $repeat_day Day of the week in which the repetitions takes place
  * @property string $generated_until Date of the last generated Timeslot
+ * @property bool $blocking
  */
 class TimeslotModel extends ActiveRecord
 {
