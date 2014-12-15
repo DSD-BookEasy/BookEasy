@@ -17,6 +17,7 @@ use yii\db\ActiveRecord;
  * @property integer $id_simulator
  * @property integer $id_booking
  * @property integer $creation_mode
+ * @property bool $blocking if this is a blocking Timeslot to allow for breaks, pauses, etc.
  */
 class Timeslot extends ActiveRecord
 {
