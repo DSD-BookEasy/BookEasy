@@ -227,8 +227,8 @@ class BookingController extends Controller
 
                 foreach ($timeSlots as $slot) {
                     $slot->id_booking = $model->id;
-                    if (!$slot->save()) {
-                        //rise error
+                    //rise error for problems on save or if booking is not available
+                    if ($slot->isBooked() || !$slot->save()) {
                         throw new ErrorException();
                     }
                 }
