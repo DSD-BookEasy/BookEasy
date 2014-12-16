@@ -18,6 +18,7 @@ use yii\helpers\Url;
 /* @var $nextWeek string */
 /* @var $simulator Simulator */
 /* @var $model app\models\DatePicker */
+/* @var $simulators app\models\Simulator[]*/
 
 $price = $simulator->getAttribute("price_simulation");
 $duration = $simulator->getAttribute("flight_duration");
@@ -33,6 +34,29 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 
     <p><?= \Yii::t('app', 'Click on a timeslot to make a booking'); ?></p>
     <p><?= \Yii::t('app', 'Click on an empty spot in the calendar to send a request for a special booking'); ?></p>
+
+        <div class="row text-center">
+
+            <?php
+
+            foreach ($simulators as $simulator_model) {
+
+                ?>
+                <div class="col-md-3">
+                    <h2><?= $simulator_model->getAttribute("name") ?></h2>
+
+                    <p><img src="http://placehold.it/225"></p>
+
+                    <p><a class="btn btn-default"
+                          href="<?= Url::to(['simulator/agenda', 'id' => $simulator_model->getAttribute("id")]); ?>"><?= Yii::t('app',
+                                'Book &raquo;'); ?></a></p>
+                </div>
+            <?php
+
+            }
+
+            ?>
+        </div>
 
     <div id="calendar_buttons">
         <a href="<?= Url::to([
