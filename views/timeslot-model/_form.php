@@ -1,5 +1,6 @@
 <?php
 
+use app\controllers\TimeslotModelController;
 use app\models\TimeslotModel;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -10,7 +11,6 @@ use kartik\date\DatePicker;
 /* @var $this yii\web\View */
 /* @var $model app\models\TimeslotModel */
 /* @var $form yii\widgets\ActiveForm */
-/* @var $weekDays string[] */
 /* @var $simulators app\models\Simulator[] */
 
 ?>
@@ -52,7 +52,7 @@ use kartik\date\DatePicker;
             ]) ?>
         </div>
         <div class="col-md-2">
-            <?= $form->field($model, 'repeat_day')->dropDownList($weekDays) ?>
+            <?= $form->field($model, 'repeat_day')->dropDownList(TimeslotModelController::weekdays()) ?>
         </div>
 
     </div>
