@@ -89,6 +89,11 @@ use kartik\date\DatePicker;
             ]) ?>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <?= $form->field($model, 'blocking')->checkbox([ 'label' => Yii::t('app', 'Blocked Timeslots (non bookable)')]) ?>
+        </div>
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'),

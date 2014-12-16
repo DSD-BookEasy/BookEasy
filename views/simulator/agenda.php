@@ -17,7 +17,6 @@ use yii\helpers\Url;
 /* @var $prevWeek string */
 /* @var $nextWeek string */
 /* @var $simulator Simulator */
-/* @var $model app\models\DatePicker */
 
 $price = $simulator->price_simulation;
 $duration = $simulator->flight_duration;
@@ -99,6 +98,11 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 } else {
                     $a['title'] = \Yii::t('app', 'Available');
                     $a['className'] = 'available';
+                }
+
+                if($s->blocking) {
+                    $a['title'] = \Yii::t('app', 'Closed');
+                    $a['className'] = 'closed';
                 }
                 checkBorders($borders, $s->start, $s->end);
                 $events[] = $a;
@@ -207,7 +211,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 })
             }
             else {
-                element.attr("title", "<?=\Yii::t('app',"This timeslot is already booked. Choose another one, please.")?>");
+                element.attr("title", "<?=\Yii::t('app',"This timeslot can't be booked. Choose another one, please.")?>");
                 element.tooltip();
             }
         }
