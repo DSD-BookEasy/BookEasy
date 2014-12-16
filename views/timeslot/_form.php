@@ -1,26 +1,65 @@
 <?php
 
+use kartik\datetime\DateTimePicker;
+use kartik\form\ActiveForm;
+use kartik\money\MaskMoney;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Timeslot */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $simulators app\models\Simulator[] */
+
 ?>
 
 <div class="time-slot-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'start')->textInput() ?>
+    <div class="row">
+        <div class="col-md-3">
+            <?= $form->field($model, 'start')->widget(DateTimePicker::className(), [
+                'removeButton' => false,
+                'options' => ['placeholder' => Yii::t('app', 'Enter starting time ...')],
+                'pluginOptions' => [
+                    'autoclose' => true,
+                ]
+            ]) ?>
+        </div>
+        <div class="col-md-3">
+            <?= $form->field($model, 'end')->widget(DateTimePicker::className(), [
+                'removeButton' => false,
+                'options' => ['placeholder' => Yii::t('app', 'Enter ending time ...')],
+                'pluginOptions' => [
+                    'autoclose' => true,
+                ]
+            ]) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'end')->textInput() ?>
+    <?php if ($model->isNewRecord) { ?>
+    <div class="row">
+        <div class="col-md-3">
+            <?= $form->field($model, 'id_simulator')->dropDownList(ArrayHelper::map($simulators, 'id', 'name')) ?>
+        </div>
+    </div>
+    <?php } ?>
 
-    <?= $form->field($model, 'cost')->textInput() ?>
+    <div class="row">
+        <div class="col-md-3">
+            <?= $form->field($model, 'cost',
+                ['addon' => ['prepend' => ['content' => '<i class="glyphicon glyphicon-tag"></i>']]])->widget(MaskMoney::classname(),
+                [
+                    'pluginOptions' => [
+                        'prefix' => '',
+                        'suffix' => ' kr',
+                        'allowNegative' => false
+                    ]
+                ]); ?>
+        </div>
+    </div>
 
-    <?= $model->isNewRecord ? $form->field($model, 'id_timeSlotModel')->textInput() : ''?>
-
-    <?= $model->isNewRecord ? $form->field($model, 'id_simulator')->textInput() : ''?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

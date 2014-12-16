@@ -19,11 +19,15 @@ use kartik\date\DatePicker;
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <?php if ($model->isNewRecord) { ?>
+
     <div class="row">
         <div class="col-md-4">
             <?= $form->field($model, 'id_simulator')->dropDownList(ArrayHelper::map($simulators, 'id', 'name')) ?>
         </div>
     </div>
+
+    <?php } ?>
 
     <div class="row">
         <div class="col-md-3">
@@ -64,6 +68,10 @@ use kartik\date\DatePicker;
                 'convertFormat' => true,
                 'pluginOptions' => [
                     'autoclose' => true,
+                    'todayHighlight' => true,
+                    'todayBtn' => true,
+                    'weekStart' => '1',
+                    'startDate' => 'today',
                 ]
             ]) ?>
         </div>
@@ -73,6 +81,10 @@ use kartik\date\DatePicker;
                 'convertFormat' => true,
                 'pluginOptions' => [
                     'autoclose' => true,
+                    'todayHighlight' => true,
+                    'todayBtn' => true,
+                    'weekStart' => '1',
+                    'startDate' => 'today',
                 ]
             ]) ?>
         </div>
