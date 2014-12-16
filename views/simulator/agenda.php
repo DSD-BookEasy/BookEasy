@@ -19,10 +19,10 @@ use yii\helpers\Url;
 /* @var $simulator Simulator */
 /* @var $model app\models\DatePicker */
 
-$price = $simulator->getAttribute("price_simulation");
-$duration = $simulator->getAttribute("flight_duration");
+$price = $simulator->price_simulation;
+$duration = $simulator->flight_duration;
 $this->title = Yii::t('app', "{simulator}'s agenda", [
-    'simulator' => $simulator->getAttribute("name")
+    'simulator' => $simulator->name
 ]);
 
 ?>
@@ -37,7 +37,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
     <div id="calendar_buttons">
         <a href="<?= Url::to([
                 'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
+                'id' => $simulator->id,
                 'week' => $prevWeek
             ]) ?>"  class="btn btn-default">
                 <span class="glyphicon glyphicon-chevron-left"></span>
@@ -46,14 +46,14 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 
         <a href="<?= Url::to([
                 'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
+                'id' => $simulator->id,
             ]) ?>" class="btn btn-default">
                 <?= \Yii::t('app', "Today"); ?>
             </a>
 
         <a href="<?= Url::to([
                 'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
+                'id' => $simulator->id,
                 'week' => $nextWeek
             ]) ?>" class="btn btn-default">
                 <?= \Yii::t('app', "Next week"); ?>
@@ -146,7 +146,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             <?php
             $agenda_url = Url::to([
                 'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
+                'id' => $simulator->id,
             ]);
             echo DatePicker::widget([
                 'name' => 'dp_1',
