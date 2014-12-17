@@ -260,7 +260,6 @@ class BookingController extends Controller
             $timeSlots = (array)Yii::$app->request->get($name = 'timeslots');
             //Accept only an array of integer values
             foreach ($timeSlots as $timeSlot) {
-                $timeSlot->getAttribute('start');
                 if (!is_numeric($timeSlot) or ((int)$timeSlot) != $timeSlot or $timeSlot <= 0) {
                     throw new BadRequestHttpException("Invalid timeslots were specified");
                 }
