@@ -19,7 +19,7 @@ $this->title = 'Västerås Flygmuseum';
 
 
         <div class="row text-center">
-
+            <!-- Shows a selection of all available simulators. -->
             <?php
 
             foreach ($simulators as $simulator) {
@@ -27,9 +27,10 @@ $this->title = 'Västerås Flygmuseum';
             ?>
             <div class="col-md-3">
                 <h2><?= $simulator->getAttribute("name") ?></h2>
-
-                <p><img src="http://placehold.it/225"></p>
-
+                <!-- You can book a simulator by either clicking on the picture... -->
+                <p><a href="<?= Url::to(['simulator/agenda', 'id' => $simulator->getAttribute("id")]); ?>">
+                        <img src="http://placehold.it/225"></a></p>
+                <!-- ... or by clicking on the button below the picture. -->
                 <p><a class="btn btn-default"
                       href="<?= Url::to(['simulator/agenda', 'id' => $simulator->getAttribute("id")]); ?>"><?= Yii::t('app',
                             'Book &raquo;'); ?></a></p>

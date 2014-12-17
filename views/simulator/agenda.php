@@ -32,8 +32,8 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
     <div class="simulator-availability">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p><?= \Yii::t('app', 'Click on a timeslot to make a booking'); ?></p>
-    <p><?= \Yii::t('app', 'Click on an empty spot in the calendar to send a request for a special booking'); ?></p>
+    <p><?= \Yii::t('app', 'Click on an available timeslot to make a booking.'); ?></p>
+    <p><?= \Yii::t('app', 'Click on an empty spot in the calendar to send a request for a special booking or hold and drag to request a longer time span.'); ?></p>
 
         <div class="row text-center">
 
@@ -42,14 +42,16 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             foreach ($simulators as $simulator_model) {
 
                 ?>
-                <div class="col-md-3">
-                    <h2><?= $simulator_model->getAttribute("name") ?></h2>
+                <!-- The simulators will be aligned in a column with width 2 of 12. -->
+                <div class="col-md-2">
+                    <h3><?= $simulator_model->getAttribute("name") ?></h3>
+                    <!-- This line inserts a clickable picture for each simulator. -->
+                    <p><a href="<?= Url::to(['simulator/agenda', 'id' => $simulator_model->getAttribute("id")]); ?>"> <img src="http://placehold.it/100"> </a></p>
 
-                    <p><img src="http://placehold.it/225"></p>
-
-                    <p><a class="btn btn-default"
-                          href="<?= Url::to(['simulator/agenda', 'id' => $simulator_model->getAttribute("id")]); ?>"><?= Yii::t('app',
-                                'Book &raquo;'); ?></a></p>
+                    <!-- Button under the picture, to change the simulator is deprecated due to embedded links in the pictures. -->
+              <!--      <p><a class="btn btn-default"
+                          href="<?/*= Url::to(['simulator/agenda', 'id' => $simulator_model->getAttribute("id")]); */?>"><?/*= Yii::t('app',
+                                'Book &raquo;'); */?></a></p>-->
                 </div>
             <?php
 
@@ -85,7 +87,6 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             </a>
 
     </div>
-
     <div id="cal_datepicker" class="row">
         <div id="calendar" class="col-md-10">
             <?php
@@ -187,9 +188,10 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             ]);
             ?>
         </div>
-
     </div>
 </div>
+
+
 <script type="text/javascript">
     Date.prototype.getWeek = function() {
         var date = new Date(this.getTime());
