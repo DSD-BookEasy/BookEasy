@@ -51,19 +51,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php
-            // Check whether the user is logged in
-            if (Yii::$app->user->getId() != null) {
-                echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
-            }
-        ?>
 
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
+        // Display 'edit' button to logged in users only
+        if (Yii::$app->user->getId() != null) {
+            echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+        }
+
+        // Display 'delete' button
+        echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
                 'method' => 'post',
             ],
-        ]) ?>
+        ]);
+
+        ?>
     </p>
 
 </div>
