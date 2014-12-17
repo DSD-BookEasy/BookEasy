@@ -29,7 +29,7 @@ else {
         <?php
         foreach ($roles as $r) {
             $name = Html::tag('td', $r->name .
-                Html::tag('div', $r->description, ['class' => 'role_description']),
+                Html::tag('div', $r->description, ['class' => 'small']),
                 ['class' => 'role_title']
             );
             $Ubutton = Html::a(Yii::t('app', 'Change'), Url::to(['permissions/update-role', 'name' => $r->name]),['class' => 'btn btn-primary']);
