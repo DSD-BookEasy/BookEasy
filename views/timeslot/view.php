@@ -35,6 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id_timeSlotModel:datetime',
             'id_simulator',
             'id_booking',
+            'blocking'
         ],
     ]) ?>
 

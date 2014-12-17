@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Simulator;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -49,12 +50,18 @@ class SiteController extends Controller
     public function actionIndex()
     {
         $simulators = new ActiveDataProvider([
-            'query' => \app\models\Simulator::find(),
+            'query' => Simulator::find(),
         ]);
 
-        return $this->render('index', [
-            'simulators' => $simulators->getModels(),
-        ]);
+        if ( Yii::$app->user->isGuest ) {
+            return $this->render('index', [
+                'simulators' => $simulators->getModels(),
+            ]);
+        } else {
+            return $this->render('admin-index', [
+                'simulators' => $simulators->getModels(),
+            ]);
+        }
     }
 
     public function actionAbout()

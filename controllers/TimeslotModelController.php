@@ -6,6 +6,7 @@ use app\models\Simulator;
 use Yii;
 use app\models\TimeslotModel;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -23,6 +24,16 @@ class TimeslotModelController extends Controller
                 'actions' => [
                     'delete' => ['post'],
                 ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+                ],
+
             ],
         ];
     }
@@ -77,19 +88,12 @@ class TimeslotModelController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
 
-            $weekDays = [];
-
-            for ($i = 0; $i <= 6; $i++) {
-                $weekDays[$i+1] = date('l', strtotime("this week + $i days"));
-            }
-
             $simulators = new ActiveDataProvider([
                 'query' => Simulator::find(),
             ]);
 
             return $this->render('create', [
                 'model' => $model,
-                'weekDays' => $weekDays,
                 'simulators' => $simulators->getModels()
             ]);
         }
@@ -106,11 +110,17 @@ class TimeslotModelController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->updateModel(Yii::$app->request->post())) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
+
+            $simulators = new ActiveDataProvider([
+                'query' => Simulator::find(),
+            ]);
+
             return $this->render('update', [
                 'model' => $model,
+                'simulators' => $simulators->getModels()
             ]);
         }
     }
@@ -127,6 +137,20 @@ class TimeslotModelController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public static function weekdays()
+    {
+        return [
+            '1' => Yii::t('app', 'Monday'),
+            '2' => Yii::t('app', 'Tuesday'),
+            '3' => Yii::t('app', 'Wednesday'),
+            '4' => Yii::t('app', 'Thursday'),
+            '5' => Yii::t('app', 'Friday'),
+            '6' => Yii::t('app', 'Saturday'),
+            '7' => Yii::t('app', 'Sunday')
+        ];
+    }
+
 
     /**
      * Finds the TimeslotModel model based on its primary key value.

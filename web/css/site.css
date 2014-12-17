@@ -140,3 +140,13 @@ a.desc:after {
 .param_description{
     font-size: 0.8em;
 }
+
+.booking_view_secret_key{
+    font-weight: bold;
+    color: #CC3300;
+}
+
+.booking_view_tab_token{
+    font-size: 20px;
+    color: #CC3300;
+}

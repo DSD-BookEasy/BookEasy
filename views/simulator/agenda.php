@@ -17,12 +17,11 @@ use yii\helpers\Url;
 /* @var $prevWeek string */
 /* @var $nextWeek string */
 /* @var $simulator Simulator */
-/* @var $model app\models\DatePicker */
 
-$price = $simulator->getAttribute("price_simulation");
-$duration = $simulator->getAttribute("flight_duration");
+$price = $simulator->price_simulation;
+$duration = $simulator->flight_duration;
 $this->title = Yii::t('app', "{simulator}'s agenda", [
-    'simulator' => $simulator->getAttribute("name")
+    'simulator' => $simulator->name
 ]);
 
 ?>
@@ -37,7 +36,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
     <div id="calendar_buttons">
         <a href="<?= Url::to([
                 'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
+                'id' => $simulator->id,
                 'week' => $prevWeek
             ]) ?>"  class="btn btn-default">
                 <span class="glyphicon glyphicon-chevron-left"></span>
@@ -46,14 +45,14 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 
         <a href="<?= Url::to([
                 'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
+                'id' => $simulator->id,
             ]) ?>" class="btn btn-default">
                 <?= \Yii::t('app', "Today"); ?>
             </a>
 
         <a href="<?= Url::to([
                 'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
+                'id' => $simulator->id,
                 'week' => $nextWeek
             ]) ?>" class="btn btn-default">
                 <?= \Yii::t('app', "Next week"); ?>
@@ -99,6 +98,11 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 } else {
                     $a['title'] = \Yii::t('app', 'Available');
                     $a['className'] = 'available';
+                }
+
+                if($s->blocking) {
+                    $a['title'] = \Yii::t('app', 'Closed');
+                    $a['className'] = 'closed';
                 }
                 checkBorders($borders, $s->start, $s->end);
                 $events[] = $a;
@@ -146,7 +150,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             <?php
             $agenda_url = Url::to([
                 'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
+                'id' => $simulator->id,
             ]);
             echo DatePicker::widget([
                 'name' => 'dp_1',
@@ -207,7 +211,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 })
             }
             else {
-                element.attr("title", "<?=\Yii::t('app',"This timeslot is already booked. Choose another one, please.")?>");
+                element.attr("title", "<?=\Yii::t('app',"This timeslot can't be booked. Choose another one, please.")?>");
                 element.tooltip();
             }
         }
@@ -224,21 +228,35 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             });
         }
 
-        $d.html('<?=\Yii::t('app',"Do you want to send a request for making a special booking for this simulator?") ?><br />\
-        <?= \Yii::t('app',"Starting from")?>: <span class="new_timeslot">' + start.format("d-M-YYYY HH:mm") + '</span> <br />\
-        <?= \Yii::t('app',"Ending")?>: <span class="new_timeslot">' + end.format("d-M-YYYY HH:mm") + '</span>');
-        $d.dialog("option", "buttons", {
-            "<?=\Yii::t('app',"Confirm");?>": function () {
-                window.location.href = '<?=$bookUrlWeekday?>?'
-                + encodeURIComponent('timeslots[0][start]') + '=' + encodeURIComponent(start.format())
-                + '&' + encodeURIComponent('timeslots[0][end]') + '=' + encodeURIComponent(end.format())
-                + '&' + encodeURIComponent('timeslots[0][id_simulator]') + '=' + getSimulatorId();
-            },
-            "<?= \Yii::t('app',"Cancel")?>": function () {
-                $('.fullcalendar').fullCalendar('unselect');
-                $(this).dialog("close");
-            }
-        });
+        // Restrict selection in the past
+        if (start < new Date()) {
+            // Set dialog's content message
+            $d.html('<?=\Yii::t('app',"Selected time span is in the past!") ?>');
+
+            // Set dialog's option buttons
+            $d.dialog("option", "buttons", {
+                "<?= \Yii::t('app',"Cancel")?>": function () {
+                    $('.fullcalendar').fullCalendar('unselect');
+                    $(this).dialog("close");
+                }
+            });
+        } else {
+            $d.html('<?=\Yii::t('app',"Do you want to send a request for making a special booking for this simulator?") ?><br />\
+            <?= \Yii::t('app',"Starting from")?>: <span class="new_timeslot">' + start.format("d-M-YYYY HH:mm") + '</span> <br />\
+            <?= \Yii::t('app',"Ending")?>: <span class="new_timeslot">' + end.format("d-M-YYYY HH:mm") + '</span>');
+            $d.dialog("option", "buttons", {
+                "<?=\Yii::t('app',"Confirm");?>": function () {
+                    window.location.href = '<?=$bookUrlWeekday?>?'
+                    + encodeURIComponent('timeslots[0][start]') + '=' + encodeURIComponent(start.format())
+                    + '&' + encodeURIComponent('timeslots[0][end]') + '=' + encodeURIComponent(end.format())
+                    + '&' + encodeURIComponent('timeslots[0][id_simulator]') + '=' + getSimulatorId();
+                },
+                "<?= \Yii::t('app',"Cancel")?>": function () {
+                    $('.fullcalendar').fullCalendar('unselect');
+                    $(this).dialog("close");
+                }
+            });
+        }
 
         $d.dialog('open');
     }

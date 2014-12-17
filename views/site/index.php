@@ -26,12 +26,12 @@ $this->title = 'Västerås Flygmuseum';
 
             ?>
             <div class="col-md-3">
-                <h2><?= $simulator->getAttribute("name") ?></h2>
+                <h2><?= $simulator->name ?></h2>
 
                 <p><img src="http://placehold.it/225"></p>
 
                 <p><a class="btn btn-default"
-                      href="<?= Url::to(['simulator/agenda', 'id' => $simulator->getAttribute("id")]); ?>"><?= Yii::t('app',
+                      href="<?= Url::to(['simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
                             'Book &raquo;'); ?></a></p>
             </div>
             <?php
