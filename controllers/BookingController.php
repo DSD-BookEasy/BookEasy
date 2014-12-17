@@ -23,6 +23,10 @@ use yii\web\ServerErrorHttpException;
  */
 class BookingController extends Controller
 {
+    const SESSION_BOOKING = 'booking_data';
+    const SESSION_TIMESLOT = 'timeslots';
+    const SESSION_WEEKDAYS = 'weekdays';
+
     public function behaviors()
     {
         return [
@@ -45,6 +49,55 @@ class BookingController extends Controller
 
             ],
         ];
+    }
+
+    /**
+     * Lists all Booking models.
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Booking::find(),
+        ]);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+
+    /**
+     * Updates an existing Booking model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        } else {
+            return $this->render('update', [
+                'model' => $model,
+            ]);
+        }
+    }
+
+    /**
+     * Deletes an existing Booking model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($id)
+    {
+        $model =  $this->findModel($id);
+        Timeslot::handleDeleteBooking($model);
+        $model->delete();
+        return $this->redirect(['index']);
     }
 
     /**
@@ -81,21 +134,6 @@ class BookingController extends Controller
     }
 
     /**
-     * Lists all Booking models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Booking::find(),
-        ]);
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
      * Displays a single Booking model.
      * @param integer $id
      * @return mixed
@@ -107,7 +145,6 @@ class BookingController extends Controller
             $token = $booking->token;
         }else{
             $token = Yii::$app->request->get('token');
-
         }
 
         if(strcmp($booking->token, $token) != 0){
@@ -116,7 +153,21 @@ class BookingController extends Controller
         }
 
         return $this->render('view', [
+            'summarize' => false,
             'model' => $booking,
+            'entry_fee' => Parameter::getValue('entryFee', 80)
+        ]);
+    }
+
+    /**
+     * Display booking and timeslots present in session variable
+     * @return string
+     */
+    public function actionSummarizeBooking(){
+        return $this->render('view', [
+            'summarize' => true,
+            'model' => Yii::$app->session[self::SESSION_BOOKING],
+            'timeslots' => Yii::$app->session[self::SESSION_TIMESLOT],
             'entry_fee' => Parameter::getValue('entryFee', 80)
         ]);
     }
@@ -130,69 +181,35 @@ class BookingController extends Controller
      */
     public function actionCreate()
     {
-        $timeSlotIDs = Yii::$app->request->get('timeslots');
+        // Check for 'timeslots' in the GET-Request
+        if($timeSlotIDs = Yii::$app->request->get('timeslots')){
+            //Accept only an array of integer values
+            foreach ($timeSlotIDs as $timeSlotID) {
+                if (!is_numeric($timeSlotID) or ((int)$timeSlotID) != $timeSlotID or $timeSlotID <= 0) {
+                    throw new BadRequestHttpException("Invalid timeslots were specified");
+                }
+            }
+
+            $sessionTimeSlots = Timeslot::findAll($timeSlotIDs);
+
+            $this->saveTimeSlotsToSession($sessionTimeSlots);
+            //is this line necessary? the method called in the line before save timeslot in session too...
+            Yii::$app->session[self::SESSION_TIMESLOT] = $sessionTimeSlots;
+        }
 
         if ($timeSlotIDs == null) {
-
         }
 
-        //Accept only an array of integer values
-        foreach ($timeSlotIDs as $timeSlotID) {
-            if (!is_numeric($timeSlotID) or ((int)$timeSlotID) != $timeSlotID or $timeSlotID <= 0) {
-                throw new BadRequestHttpException("Invalid timeslots were specified");
-            }
-        }
-
-        $sessionTimeSlots = Timeslot::findAll($timeSlotIDs);
-
-        $this->saveTimeSlotsToSession($sessionTimeSlots);
-
-        Yii::$app->session['timeslots'] = $sessionTimeSlots;
-
-        if (empty(Yii::$app->session['timeslots'])) {
+        if (empty(Yii::$app->session[self::SESSION_TIMESLOT])) {
             throw new BadRequestHttpException("You must specify the timeslots to book");
         }
 
         $model = new Booking();
 
         if ($model->load(Yii::$app->request->post())) {
-            //lock
-
-            $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
-            try {
-                $timeSlots = Yii::$app->session['timeslots'];
-
-                if (!$model->save()) {//Note: does the framework automatically update the id on insert?
-                    //rise error
-                    throw new \ErrorException('jjfjfg');
-                }
-
-
-                foreach ($timeSlots as $slot) {
-                    //rise error for problems on save or if booking is not available
-                    if (!$slot->isBooked()){
-                        $slot->id_booking = $model->id;
-                        if(!$slot->save()){
-                            throw new ErrorException($slot->id);
-                        }
-                    }else{
-                        throw new ErrorException($slot->id);
-                    }
-                }
-
-                // Unset session, otherwise it will stay hanging forever
-                unset(Yii::$app->session['timeslots']);
-
-                $transaction->commit();
-                $this->notifyCoordinators($model);
-                // Fix exception
-                return $this->redirect(['view', 'id' => $model->id, 'token' => $model->token]);
-            } catch (Exception $e) {
-                $transaction->rollBack();
-                //TODO here we should go to error page
-                throw new ServerErrorHttpException("Saving your booking failed");
-            }
-
+            Yii::$app->session[self::SESSION_BOOKING] = $model;
+            Yii::$app->session[self::SESSION_WEEKDAYS] = false;
+            return $this->actionSummarizeBooking();
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -214,20 +231,21 @@ class BookingController extends Controller
     {
         // INFO: We could use a constant variable for the session parameter here
 
-        // This is an temporary GET-array of time slots
-        $tmpTimeSlots = Yii::$app->request->get('timeslots');
+        // Check for 'timeslots' in the GET-Request
+        if($tmpTimeSlots = Yii::$app->request->get('timeslots')){
+            $timeSlots = [];
+            foreach($tmpTimeSlots as $key => $value) {
+                $timeSlot = new Timeslot();
+                $timeSlot->load($value, '');
 
-        $timeSlots = [];
-        foreach($tmpTimeSlots as $key => $value) {
-            $timeSlot = new Timeslot();
-            $timeSlot->load($value, '');
+                $timeSlots[] = $timeSlot;
+            }
 
-            $timeSlots[] = $timeSlot;
+            $this->saveTimeSlotsToSession($timeSlots);
+
         }
 
-        $this->saveTimeSlotsToSession($timeSlots);
-
-        $sessionTimeSlots = Yii::$app->session['timeslots'];
+        $sessionTimeSlots = Yii::$app->session[self::SESSION_TIMESLOT];
 
         if (empty($sessionTimeSlots)) {
             throw new BadRequestHttpException("Invalid selection of time slots");
@@ -236,40 +254,66 @@ class BookingController extends Controller
         $model = new Booking();
         $model->scenario = 'weekdays';
         if ($model->load(Yii::$app->request->post())) {
-            //lock
-            $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
-            try {
-                $timeSlots = $sessionTimeSlots;
-
-                if (!$model->save()) {
-                    //rise error
-                    throw new ErrorException();
-                }
-
-                foreach ($timeSlots as $slot) {
-                    $slot->id_booking = $model->id;
-                    $slot->creation_mode = Timeslot::WEEKDAYS;
-                    if (!$slot->save()) {
-                        //rise error
-                        throw new ErrorException();
-                    }
-                }
-
-                $transaction->commit();
-                unset(Yii::$app->session['timeslots']);
-                $this->notifyCoordinators($model);
-                return $this->redirect(['view', 'id' => $model->id, 'token' => $model->token]);
-            } catch (ErrorException $e) {
-                $transaction->rollBack();
-                unset(Yii::$app->session['timeslots']);
-                throw new BadRequestHttpException();
-            }
+            Yii::$app->session[self::SESSION_BOOKING] = $model;
+            Yii::$app->session[self::SESSION_WEEKDAYS] = true;
+            return $this->actionSummarizeBooking();
         } else {
             return $this->render('createWeekdays', [
                 'model' => $model,
                 'timeslots' => Yii::$app->session['timeslots'],
                 'entry_fee' => Parameter::getValue('entryFee', 80)
             ]);
+        }
+    }
+
+    /**
+     * Save the booking in the current session and update timeslots booked.
+     * Requires the presence of a booking and one or more time slot in the session variable
+     * @throws BadRequestHttpException
+     * @throws \yii\db\Exception
+     */
+    public function actionConfirm(){
+        if(!isset(Yii::$app->session[self::SESSION_TIMESLOT]) || !isset(Yii::$app->session[self::SESSION_BOOKING])){
+            //anyway unset session to be sure (one of the two could be set)
+            unset(Yii::$app->session[self::SESSION_TIMESLOT]);
+            unset(Yii::$app->session[self::SESSION_BOOKING]);
+
+            throw new BadRequestHttpException();
+        }
+
+        $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
+        try {
+            $timeSlots = Yii::$app->session[self::SESSION_TIMESLOT];
+            $booking = Yii::$app->session[self::SESSION_BOOKING];
+
+            if (!$booking->save()) {
+                //rise error
+                throw new ErrorException();
+            }
+
+            foreach ($timeSlots as $slot) {
+                $slot->id_booking = $booking->id;
+                $slot->creation_mode = Timeslot::WEEKDAYS;
+                if (!$slot->save()) {
+                    //rise error
+                    throw new ErrorException();
+                }
+            }
+
+            $transaction->commit();
+
+            //is require also for the opening hours?
+            $this->notifyCoordinators($booking);
+
+            unset(Yii::$app->session[self::SESSION_TIMESLOT]);
+            unset(Yii::$app->session[self::SESSION_BOOKING]);
+            return $this->redirect(['view', 'id' => $booking->id, 'token' => $booking->token]);
+        } catch (ErrorException $e) {
+            $transaction->rollBack();
+            unset(Yii::$app->session[self::SESSION_TIMESLOT]);
+            unset(Yii::$app->session[self::SESSION_BOOKING]);
+
+            throw new BadRequestHttpException();
         }
     }
 
@@ -330,38 +374,6 @@ class BookingController extends Controller
         return $isValid;
     }
 
-    /**
-     * Updates an existing Booking model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Deletes an existing Booking model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $model =  $this->findModel($id);
-        Timeslot::handleDeleteBooking($model);
-        $model->delete();
-        return $this->redirect(['index']);
-    }
 
     /**
      * Finds the Booking model based on its primary key value.
