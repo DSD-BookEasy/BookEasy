@@ -131,12 +131,16 @@ class BookingController extends Controller
      */
     public function actionCreateWeekdays()
     {
+        // INFO: We could use a constant variable for the session parameter here
+
         $timeSlots = Yii::$app->request->get('timeslots');
 
         $this->saveTimeSlotsToSession($timeSlots);
 
-        if (empty(Yii::$app->session['timeslots'])) {
-            throw new BadRequestHttpException("No timeslots where selected for this booking");
+        $sessionTimeSlots = Yii::$app->session['timeslots'];
+
+        if (empty($sessionTimeSlots)) {
+            throw new BadRequestHttpException("Invalid selection of time slots");
         }
 
         $model = new Booking();
@@ -145,7 +149,7 @@ class BookingController extends Controller
             //lock
             $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
             try {
-                $timeSlots = Yii::$app->session['timeslots'];
+                $timeSlots = $sessionTimeSlots;
 
                 if (!$model->save()) {
                     //rise error
@@ -203,6 +207,7 @@ class BookingController extends Controller
             $sessionTimeSlots[] = $timeSlot;
         }
 
+        // Note that sessionTimeSlots can also be empty
         Yii::$app->session['timeslots'] = $sessionTimeSlots;
     }
 
