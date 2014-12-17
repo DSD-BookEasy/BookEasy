@@ -44,7 +44,7 @@ class Booking extends \yii\db\ActiveRecord
             ['email', 'email'],
             [['name', 'surname'], 'required'],
             ['email', 'required', 'on' => ['weekdays']],
-            [[name', 'surname', 'token'], 'required', 'on' => ['search']]
+            [['name', 'surname', 'token'], 'required', 'on' => ['search']]
 
         ];
     }
