@@ -340,8 +340,7 @@ class BookingController extends Controller
     protected function findModelForSearch($model_input)
     {
         $query = Booking::find()
-            ->where(['id' => $model_input->id,
-                    'name' => $model_input->name,
+            ->where(['name' => $model_input->name,
                     'surname' => $model_input->surname,
                     'token' => $model_input->token
                     ]);
