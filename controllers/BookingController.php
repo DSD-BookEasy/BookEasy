@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Parameter;
 use app\models\Timeslot;
+use Faker\Provider\DateTime;
 use Yii;
 use app\models\Booking;
 use yii\base\ErrorException;
@@ -131,14 +132,23 @@ class BookingController extends Controller
         if (!empty($getTimeSlots)) {
             $timeslots=[];
             foreach($getTimeSlots as $k=>$t){
-                $ts=new Timeslot();
-                $ts->load($t, '');
+                $timeslot = new Timeslot();
+                $timeslot->load($t, '');
 
-                if (!empty($ts)) {
-                    if (!empty($ts->id)) {
+                if (!empty($timeslot)) {
+                    // check whether the timeslot is valid
+                    if (!empty($timeslot->id)) {
                         throw new BadRequestHttpException("Invalid timeslot specified");
                     }
-                    $timeslots[] = $ts;
+
+                    // check whether the timeslot starts in the past
+                    $curretDate = date('Y-m-d');
+                    if ($timeslot->start < $curretDate) {
+                        throw new BadRequestHttpException("Invalid start specified");
+                    }
+
+                    $timeslots[] = $timeslot;
+
                 }
             }
 
@@ -211,6 +221,7 @@ class BookingController extends Controller
             $timeSlots = (array)Yii::$app->request->get($name = 'timeslots');
             //Accept only an array of integer values
             foreach ($timeSlots as $timeSlot) {
+                $timeSlot->getAttribute('start');
                 if (!is_numeric($timeSlot) or ((int)$timeSlot) != $timeSlot or $timeSlot <= 0) {
                     throw new BadRequestHttpException("Invalid timeslots were specified");
                 }
