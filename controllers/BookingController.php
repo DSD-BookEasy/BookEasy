@@ -103,8 +103,12 @@ class BookingController extends Controller
     public function actionView($id)
     {
         $booking = $this->findModel($id);
+        if (Yii::$app->user->getId() != null) {
+            $token = $booking->token;
+        }else{
+            $token = Yii::$app->request->get('token');
 
-        $token = Yii::$app->request->get('token');
+        }
 
         if(strcmp($booking->token, $token) != 0){
             //error page
