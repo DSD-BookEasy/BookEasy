@@ -7,13 +7,23 @@ use yii\rbac\Role;
 
 class PermissionsController extends \yii\web\Controller
 {
-    public function actionAddRole()
+    public function actionRoles()
     {
-        $post=Yii::$app->request->post();
-        if(!empty($post)){
+        return $this->render('roles',[
+            'roles' => Yii::$app->authManager->getRoles()
+        ]);
+    }
 
-        }
-        return $this->render('add-role');
+    public function actionAddRole(){
+
+    }
+
+    public function actionUpdateRole(){
+
+    }
+
+    public function actionDeleteRole(){
+
     }
 
     public function actionIndex()
