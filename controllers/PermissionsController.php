@@ -4,9 +4,14 @@ namespace app\controllers;
 
 use app\models\AdminRole;
 use \Yii;
+use yii\web\NotFoundHttpException;
 
 class PermissionsController extends \yii\web\Controller
 {
+    /**
+     * Shows an index of all available roles
+     * @return string
+     */
     public function actionRoles()
     {
         return $this->render('roles',[
@@ -14,6 +19,10 @@ class PermissionsController extends \yii\web\Controller
         ]);
     }
 
+    /**
+     * Adds a new role in the system
+     * @return string
+     */
     public function actionAddRole(){
         $post=Yii::$app->request->post('AdminRole');
         if(!empty($post) and !empty($post['name'])){
@@ -30,11 +39,36 @@ class PermissionsController extends \yii\web\Controller
         ]);
     }
 
-    public function actionUpdateRole(){
+    /**
+     * Updates an existing role
+     * @param $name: the name of the role to update
+     */
+    public function actionUpdateRole($name){
+        $r=Yii::$app->authManager->getRole($name);
+        if(empty($r)){
+            throw new NotFoundHttpException("The specified role could not be found");
+        }
 
+        $post=Yii::$app->request->post('AdminRole');
+        if(!empty($post) and !empty($post['name'])){
+            $r->name=$post['name'];
+            if(!empty($post['description'])) {
+                $r->description=$post['description'];
+            }
+            Yii::$app->authManager->update($name,$r);
+            $this->redirect(['permissions/roles']);
+        }
+
+        return $this->render('add-role',[
+            'role' => new AdminRole($r)
+        ]);
     }
 
-    public function actionDeleteRole(){
+    /**
+     * Deletes an existing role
+     * @param $name: the name of the role to delete
+     */
+    public function actionDeleteRole($name){
 
     }
 
