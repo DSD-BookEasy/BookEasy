@@ -218,10 +218,6 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
     }
 
     function goToCreateWeekdays(start, end, jsEvent) {
-        if (start < new Date()) {
-            return;
-        }
-
         var $d = $('#dialog');
         if ($d.length == 0) {
             $('body').append('<div id="dialog"></div>');
@@ -232,21 +228,35 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             });
         }
 
-        $d.html('<?=\Yii::t('app',"Do you want to send a request for making a special booking for this simulator?") ?><br />\
-        <?= \Yii::t('app',"Starting from")?>: <span class="new_timeslot">' + start.format("d-M-YYYY HH:mm") + '</span> <br />\
-        <?= \Yii::t('app',"Ending")?>: <span class="new_timeslot">' + end.format("d-M-YYYY HH:mm") + '</span>');
-        $d.dialog("option", "buttons", {
-            "<?=\Yii::t('app',"Confirm");?>": function () {
-                window.location.href = '<?=$bookUrlWeekday?>?'
-                + encodeURIComponent('timeslots[0][start]') + '=' + encodeURIComponent(start.format())
-                + '&' + encodeURIComponent('timeslots[0][end]') + '=' + encodeURIComponent(end.format())
-                + '&' + encodeURIComponent('timeslots[0][id_simulator]') + '=' + getSimulatorId();
-            },
-            "<?= \Yii::t('app',"Cancel")?>": function () {
-                $('.fullcalendar').fullCalendar('unselect');
-                $(this).dialog("close");
-            }
-        });
+        // Restrict selection in the past
+        if (start < new Date()) {
+            // Set dialog's content message
+            $d.html('<?=\Yii::t('app',"Selected time span is in the past!") ?>');
+
+            // Set dialog's option buttons
+            $d.dialog("option", "buttons", {
+                "<?= \Yii::t('app',"Cancel")?>": function () {
+                    $('.fullcalendar').fullCalendar('unselect');
+                    $(this).dialog("close");
+                }
+            });
+        } else {
+            $d.html('<?=\Yii::t('app',"Do you want to send a request for making a special booking for this simulator?") ?><br />\
+            <?= \Yii::t('app',"Starting from")?>: <span class="new_timeslot">' + start.format("d-M-YYYY HH:mm") + '</span> <br />\
+            <?= \Yii::t('app',"Ending")?>: <span class="new_timeslot">' + end.format("d-M-YYYY HH:mm") + '</span>');
+            $d.dialog("option", "buttons", {
+                "<?=\Yii::t('app',"Confirm");?>": function () {
+                    window.location.href = '<?=$bookUrlWeekday?>?'
+                    + encodeURIComponent('timeslots[0][start]') + '=' + encodeURIComponent(start.format())
+                    + '&' + encodeURIComponent('timeslots[0][end]') + '=' + encodeURIComponent(end.format())
+                    + '&' + encodeURIComponent('timeslots[0][id_simulator]') + '=' + getSimulatorId();
+                },
+                "<?= \Yii::t('app',"Cancel")?>": function () {
+                    $('.fullcalendar').fullCalendar('unselect');
+                    $(this).dialog("close");
+                }
+            });
+        }
 
         $d.dialog('open');
     }
