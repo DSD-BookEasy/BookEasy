@@ -34,7 +34,7 @@ else {
             );
             $Ubutton = Html::a(Yii::t('app', 'Change'), Url::to(['permissions/update-role', 'name' => $r->name]),['class' => 'btn btn-primary']);
             $Dbutton = Html::a(Yii::t('app', 'Delete'), Url::to(['permissions/delete-role', 'name' => $r->name]),['class' => 'btn btn-danger']);
-            $op = Html::tag('td', $Ubutton . '<br />' . $Dbutton);
+            $op = Html::tag('td', $Ubutton . '&nbsp;' . $Dbutton);
 
             echo Html::tag('tr', $name . $op);
         }
