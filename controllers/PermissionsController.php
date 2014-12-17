@@ -69,7 +69,22 @@ class PermissionsController extends \yii\web\Controller
      * @param $name: the name of the role to delete
      */
     public function actionDeleteRole($name){
+        $r=Yii::$app->authManager->getRole($name);
+        if(empty($r)){
+            throw new NotFoundHttpException("The specified role could not be found");
+        }
 
+        $post=Yii::$app->request->post();
+
+        if(empty($post)) {
+            echo $this->render('delete-role', [
+                'role' => new AdminRole($r)
+            ]);
+        }
+        else{
+            Yii::$app->authManager->remove($r);
+            $this->redirect('roles');
+        }
     }
 
     public function actionIndex()
