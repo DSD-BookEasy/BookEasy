@@ -122,88 +122,6 @@ class BookingController extends Controller
     }
 
     /**
-     * Creates a new Booking model for sunday or for day included in the timeSlotModel.
-     * Expects an array of timeSlot ids in the POST "timeslot" field.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * The action work as a transaction: the booking and timeslots update are performed in an atomic transaction
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $timeSlotIDs = Yii::$app->request->get('timeslots');
-
-        if ($timeSlotIDs == null) {
-
-        }
-
-        //Accept only an array of integer values
-        foreach ($timeSlotIDs as $timeSlotID) {
-            if (!is_numeric($timeSlotID) or ((int)$timeSlotID) != $timeSlotID or $timeSlotID <= 0) {
-                throw new BadRequestHttpException("Invalid timeslots were specified");
-            }
-        }
-
-        $sessionTimeSlots = Timeslot::findAll($timeSlotIDs);
-
-        $this->saveTimeSlotsToSession($sessionTimeSlots);
-
-        Yii::$app->session['timeslots'] = $sessionTimeSlots;
-
-        if (empty(Yii::$app->session['timeslots'])) {
-            throw new BadRequestHttpException("You must specify the timeslots to book");
-        }
-
-        $model = new Booking();
-
-        if ($model->load(Yii::$app->request->post())) {
-
-            //lock
-            $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
-
-            try {
-                $timeSlots = Yii::$app->session['timeslots'];
-
-                if (!$model->save()) {//Note: does the framework automatically update the id on insert?
-                    //rise error
-                    throw new \ErrorException('jjfjfg');
-                }
-
-
-                foreach ($timeSlots as $slot) {
-                    //rise error for problems on save or if booking is not available
-                    if (!$slot->isBooked()){
-                        $slot->id_booking = $model->id;
-                        if(!$slot->save()){
-                            throw new ErrorException($slot->id);
-                        }
-                    }else{
-                        throw new ErrorException($slot->id);
-                    }
-                }
-
-                // Unset session, otherwise it will stay hanging forever
-                unset(Yii::$app->session['timeslots']);
-
-                $transaction->commit();
-                $this->notifyCoordinators($model);
-                // Fix exception
-                return $this->redirect(['view', 'id' => $model->id, 'token' => $model->token]);
-            } catch (Exception $e) {
-                $transaction->rollBack();
-                //TODO here we should go to error page
-                throw new ServerErrorHttpException("Saving your booking failed");
-            }
-
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-                'timeslots' => Yii::$app->session['timeslots'],
-                'entry_fee' => Parameter::getValue('entryFee', 80)
-            ]);
-        }
-    }
-
-    /**
      * Creates a new Booking model for weekdays and also timeslots, passed in post, are insert in the database.
      * Expects to receive Timeslots in the GET "timeslots" field, as in the standard Yii format (as an array represeting
      * fields of the Timeslot model).
@@ -215,16 +133,7 @@ class BookingController extends Controller
     {
         // INFO: We could use a constant variable for the session parameter here
 
-        // This is an temporary GET-array of time slots
-        $tmpTimeSlots = Yii::$app->request->get('timeslots');
-
-        $timeSlots = [];
-        foreach($tmpTimeSlots as $key => $value) {
-            $timeSlot = new Timeslot();
-            $timeSlot->load($value, '');
-
-            $timeSlots[] = $timeSlot;
-        }
+        $timeSlots = Yii::$app->request->get('timeslots');
 
         $this->saveTimeSlotsToSession($timeSlots);
 
@@ -287,7 +196,10 @@ class BookingController extends Controller
         $sessionTimeSlots = [];
 
         // Retrieve time slots
-        foreach($timeSlots as $timeSlot) {
+        foreach($timeSlots as $key => $value){
+            $timeSlot = new Timeslot();
+            $timeSlot->load($value, '');
+
             if ($this->isValidTimeSlot($timeSlot) == false) {
                 continue;
             }
@@ -329,6 +241,85 @@ class BookingController extends Controller
         }
 
         return $isValid;
+    }
+
+    /**
+     * Creates a new Booking model for sunday or for day included in the timeSlotModel.
+     * Expects an array of timeSlot ids in the POST "timeslot" field.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * The action work as a transaction: the booking and timeslots update are performed in an atomic transaction
+     * @return mixed
+     */
+    public function actionCreate()
+    {
+        $model = new Booking();
+
+        // Check for 'timeslots' in the GET-Request
+        // Make sure 'timeslots' is available as a session parameter
+        if (Yii::$app->request->get($name = 'timeslots')) {
+            $timeSlots = (array)Yii::$app->request->get($name = 'timeslots');
+            //Accept only an array of integer values
+            foreach ($timeSlots as $timeSlot) {
+                $timeSlot->getAttribute('start');
+                if (!is_numeric($timeSlot) or ((int)$timeSlot) != $timeSlot or $timeSlot <= 0) {
+                    throw new BadRequestHttpException("Invalid timeslots were specified");
+                }
+            }
+
+            //And save them in the session
+            Yii::$app->session['timeslots'] = Timeslot::findAll(Yii::$app->request->get($name = 'timeslots'));
+        }
+
+        if (empty(Yii::$app->session['timeslots'])) {
+            throw new BadRequestHttpException("You must specify the timeslots to book");
+        }
+
+
+        if ($model->load(Yii::$app->request->post())) {
+            //lock
+
+            $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
+            try {
+                $timeSlots = Yii::$app->session['timeslots'];
+
+                if (!$model->save()) {//Note: does the framework automatically update the id on insert?
+                    //rise error
+                    throw new \ErrorException('jjfjfg');
+                }
+
+
+                foreach ($timeSlots as $slot) {
+                    //rise error for problems on save or if booking is not available
+                    if (!$slot->isBooked()){
+                        $slot->id_booking = $model->id;
+                        if(!$slot->save()){
+                            throw new ErrorException($slot->id);
+                        }
+                    }else{
+                        throw new ErrorException($slot->id);
+                    }
+                }
+
+                // Unset session, otherwise it will stay hanging forever
+                unset(Yii::$app->session['timeslots']);
+
+                $transaction->commit();
+                $this->notifyCoordinators($model);
+                // Fix exception
+                return $this->redirect(['view', 'id' => $model->id, 'token' => $model->token]);
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                //TODO here we should go to error page
+                throw new ServerErrorHttpException("Saving your booking failed");
+            }
+
+        } else {
+            return $this->render('create', [
+                'model' => $model,
+                'timeslots' => Yii::$app->session['timeslots'],
+                'entry_fee' => Parameter::getValue('entryFee', 80)
+            ]);
+        }
     }
 
     /**
