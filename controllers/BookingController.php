@@ -127,38 +127,9 @@ class BookingController extends Controller
      */
     public function actionCreateWeekdays()
     {
-        $getTimeSlots = Yii::$app->request->get('timeslots');
+        $timeSlots = Yii::$app->request->get('timeslots');
 
-        if (!empty($getTimeSlots)) {
-            $timeslots=[];
-            foreach($getTimeSlots as $k=>$t){
-                $timeslot = new Timeslot();
-                $timeslot->load($t, '');
-
-                if (!empty($timeslot)) {
-                    // check whether the timeslot is valid
-                    if (!empty($timeslot->id)) {
-                        throw new BadRequestHttpException("Invalid timeslot specified");
-                    }
-
-                    // check whether the timeslot starts in the past
-                    $curretDate = date('Y-m-d');
-                    if ($timeslot->start < $curretDate) {
-                        throw new BadRequestHttpException("Invalid start specified");
-                    }
-
-                    $timeslots[] = $timeslot;
-
-                }
-            }
-
-            if(empty($timeslots)){
-                unset(Yii::$app->session['timeslots']);
-                throw new BadRequestHttpException("You must specify a valid timeslot for this booking");
-            } else {
-                Yii::$app->session['timeslots'] = $timeslots;
-            }
-        }
+        $this->saveTimeSlotsToSession($timeSlots);
 
         if (empty(Yii::$app->session['timeslots'])) {
             throw new BadRequestHttpException("No timeslots where selected for this booking");
@@ -202,6 +173,65 @@ class BookingController extends Controller
                 'entry_fee' => Parameter::getValue('entryFee', 80)
             ]);
         }
+    }
+
+    /**
+     * Receives an array of time slots and saves it to the current session. Note that the given array can also be empty though.
+     *
+     * @param $timeSlots
+     */
+    private function saveTimeSlotsToSession($timeSlots) {
+        if ($timeSlots == null) {
+            return;
+        }
+
+        $sessionTimeSlots = [];
+
+        // Retrieve time slots
+        foreach($timeSlots as $key => $value){
+            $timeSlot = new Timeslot();
+            $timeSlot->load($value, '');
+
+            if ($this->isValidTimeSlot($timeSlot) == false) {
+                continue;
+            }
+
+            $sessionTimeSlots[] = $timeSlot;
+        }
+
+        Yii::$app->session['timeslots'] = $sessionTimeSlots;
+    }
+
+    /**
+     * Checks whether a time slot is valid based on its ID, start time and end time.
+     *
+     * @param $timeSlot
+     * @return bool
+     */
+    private function isValidTimeSlot ($timeSlot) {
+        $isValid = true;
+
+        if (empty($timeSlot)) {
+            $isValid = false;
+        }
+
+        // Make sure we deal with a valid time slot
+        if (!empty($timeSlot->id)) {
+            $isValid = false;
+        }
+
+        // Make sure start time is before end time
+        if ($timeSlot->start > $timeSlot->end) {
+            $isValid = false;
+        }
+
+        // Make sure start time is the future
+        $currentDate = date('Y-m-d');
+        if ($timeSlot->start < $currentDate) {
+            $isValid = false;
+        }
+
+        return $isValid;
     }
 
     /**
