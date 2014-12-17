@@ -103,8 +103,12 @@ class BookingController extends Controller
     public function actionView($id)
     {
         $booking = $this->findModel($id);
+        if (Yii::$app->user->getId() != null) {
+            $token = $booking->token;
+        }else{
+            $token = Yii::$app->request->get('token');
 
-        $token = Yii::$app->request->get('token');
+        }
 
         if(strcmp($booking->token, $token) != 0){
             //error page
@@ -370,8 +374,7 @@ class BookingController extends Controller
     protected function findModelForSearch($model_input)
     {
         $query = Booking::find()
-            ->where(['id' => $model_input->id,
-                    'name' => $model_input->name,
+            ->where(['name' => $model_input->name,
                     'surname' => $model_input->surname,
                     'token' => $model_input->token
                     ]);
