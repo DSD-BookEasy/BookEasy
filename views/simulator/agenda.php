@@ -218,6 +218,10 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
     }
 
     function goToCreateWeekdays(start, end, jsEvent) {
+        if (start < new Date()) {
+            return;
+        }
+
         var $d = $('#dialog');
         if ($d.length == 0) {
             $('body').append('<div id="dialog"></div>');
