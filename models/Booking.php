@@ -57,13 +57,14 @@ class Booking extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'status' => Yii::t('app', 'Status'),
-            'timestamp' => Yii::t('app', 'Timestamp'),
+            'timestamp' => Yii::t('app', 'Booking Created on'),
             'name' => Yii::t('app', 'Name'),
             'surname' => Yii::t('app', 'Surname'),
             'telephone' => Yii::t('app', 'Telephone'),
             'email' => Yii::t('app', 'Email'),
             'address' => Yii::t('app', 'Address'),
-            'comments' => Yii::t('app', 'Comments'),
+            'comments' => Yii::t('app', 'Your comments'),
+            'token' => Yii::t('app', 'Secret Key')
         ];
     }
 

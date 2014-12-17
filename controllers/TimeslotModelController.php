@@ -141,13 +141,13 @@ class TimeslotModelController extends Controller
     public static function weekdays()
     {
         return [
-            Yii::t('app', 'Monday'),
-            Yii::t('app', 'Tuesday'),
-            Yii::t('app', 'Wednesday'),
-            Yii::t('app', 'Thursday'),
-            Yii::t('app', 'Friday'),
-            Yii::t('app', 'Saturday'),
-            Yii::t('app', 'Sunday')
+            '1' => Yii::t('app', 'Monday'),
+            '2' => Yii::t('app', 'Tuesday'),
+            '3' => Yii::t('app', 'Wednesday'),
+            '4' => Yii::t('app', 'Thursday'),
+            '5' => Yii::t('app', 'Friday'),
+            '6' => Yii::t('app', 'Saturday'),
+            '7' => Yii::t('app', 'Sunday')
         ];
     }
 
