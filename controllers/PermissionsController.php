@@ -87,13 +87,31 @@ class PermissionsController extends \yii\web\Controller
         }
     }
 
+    /**
+     * Show all permissions assigned to the roles
+     * @return string
+     */
     public function actionIndex()
     {
         $post=Yii::$app->request->post();
         if(!empty($post)){
-
+            $this->updateAssignments($post);
         }
-        return $this->render('index');
+
+        $roles=Yii::$app->authManager->getRoles();
+        $assignments=[];
+        foreach($roles as $r){
+            $assignments[$r->name]=Yii::$app->authManager->getPermissionsByRole($r->name);
+        }
+
+        return $this->render('index',[
+            'roles' => $roles,
+            'permissions' => Yii::$app->authManager->getPermissions(),
+            'assignments' => $assignments
+        ]);
     }
 
+    private function updateAssignments($post){
+
+    }
 }
