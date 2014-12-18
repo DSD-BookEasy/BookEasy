@@ -35,6 +35,11 @@ $this->title = 'Västerås Flygmuseum';
                        'timeslot-model/index',
                    ]); ?>"><?= Yii::t('app',
                         'Timeslot Models'); ?></a>
+                <a class="btn btn-default btn-lg"
+                   href="<?= Url::to([
+                       'permissions/index',
+                   ]); ?>"><?= Yii::t('app',
+                        'Permissions Management'); ?></a>
             </p>
 
         </div>
