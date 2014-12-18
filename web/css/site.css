@@ -101,6 +101,13 @@ a.desc:after {
     margin: 30px 15px;
 }
 
+.cal_datepicker{
+}
+
+.cal_datepicker .datepicker{
+    padding-top:52px;
+}
+/* id's may be converted to classes?*/
 #cal_datepicker{
 }
 

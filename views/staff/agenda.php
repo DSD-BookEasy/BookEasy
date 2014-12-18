@@ -11,7 +11,7 @@ use app\models\Simulator;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $model app\models\DatePicker */
-/* @var $simulators array*/
+/* @var $simulators array */
 /* @var $currDay DateTime */
 /* @var $prevDay string */
 /* @var $nextDay string */
@@ -23,7 +23,7 @@ $this->title = Yii::t('app', "Todo: title");
     <a href="<?= Url::to([
         'staff/agenda',
         'day' => $prevDay
-    ]) ?>"  class="btn btn-default">
+    ]) ?>" class="btn btn-default">
         <span class="glyphicon glyphicon-chevron-left"></span>
         <?= \Yii::t('app', "Previous day"); ?>
     </a>
@@ -46,30 +46,48 @@ $this->title = Yii::t('app', "Todo: title");
 
 
 <div id="cal_datepicker" class="row">
-    <div class="col-md-10">
-        <?php
-        $businessHours = [//TODO Make these dynamic
-            'start' => '8:00',
-            'end' => '19:00'
-        ];
 
-        /**
-         * We will use this to track the interval of hours to show in the calendar
-         * Initially it will be equal to the business hours, but if there are explicit
-         * timeslots exceeding it, we should make space for them too
-         */
-        $borders = $businessHours;
+    <!--
+        Tabs usage reference: http://getbootstrap.com/javascript/#tabs-usage
+    -->
+    <?php
+    $businessHours = [//TODO Make these dynamic
+        'start' => '8:00',
+        'end' => '19:00'
+    ];
 
-        $events = [
-            [//Show Business Hours.
-                'start' => $businessHours['start'],
-                'end' => $businessHours['end'],
-                'dow' => [0, 1, 2, 3, 4, 5, 6],
-                'rendering' => 'inverse-background',
-                'className' => 'closed'
-            ]
-        ];
+    /**
+     * We will use this to track the interval of hours to show in the calendar
+     * Initially it will be equal to the business hours, but if there are explicit
+     * timeslots exceeding it, we should make space for them too
+     */
+    $borders = $businessHours;
 
+    $events = [
+        [//Show Business Hours.
+            'start' => $businessHours['start'],
+            'end' => $businessHours['end'],
+            'dow' => [0, 1, 2, 3, 4, 5, 6],
+            'rendering' => 'inverse-background',
+            'className' => 'closed'
+        ]
+    ];
+//    array_pop($simulators);
+//    array_pop($simulators);
+//    array_pop($simulators);
+    echo "<div id='calendar' class='col-md-10'>";
+    echo "<ul id='simulatorTab' class='nav nav-tabs'>";
+    $counter = 0;
+    foreach ($simulators as $simulator) {
+        $href = "#sim" . $counter++;
+        echo "<li role='presentation'><a href='$href' data-toggle='tab'>$simulator->name</a></li>";
+    }
+    echo "</ul>";
+    echo "<div class='tab-content'>";
+    $counter = 0;
+    foreach ($simulators as $simulator) {
+        $id = "sim" . $counter++;
+        echo "<div role='tabpanel' class='tab-pane fade' id='$id'>";
         echo FullCalendar::widget([
             'config' => [
                 'header' => [
@@ -102,8 +120,11 @@ $this->title = Yii::t('app', "Todo: title");
                 //'select' => new \yii\web\JsExpression("goToCreateWeekdays")
             ]
         ]);
-        ?>
-    </div>
+        echo "</div>";
+    }
+    echo "</div>";
+    echo "</div>";
+    ?>
     <div id="datepicker" class="col-md-2">
 
         <label><?= \Yii::t('app', "Pick a date"); ?></label>
@@ -127,13 +148,32 @@ $this->title = Yii::t('app', "Todo: title");
     </div>
 </div>
 
+<?php
+    $this->registerJs("
+        $(function () {
+            $('#simulatorTab a').click(function (e) {
+              e.preventDefault();
+              $(this).tab('show');
+            });
+            $('a[data-toggle=\'tab\']').on('shown.bs.tab', function (e) {
+                id = e.currentTarget.href[e.currentTarget.href.length - 1];
+                str = '#w' + id;
+                $(str).fullCalendar('render');
+            });
+            $('#simulatorTab a:first').tab('show');
+        });
+
+
+    ");
+?>
+
 <script type="text/javascript">
     //Get formatted string
-    Date.prototype.getDateString = function() {
+    Date.prototype.getDateString = function () {
         var date = new Date(this.getTime());
         var day = date.getUTCDate() + 1;
         var month = date.getUTCMonth() + 1;
         var year = date.getUTCFullYear();
-        return ""+year+"-"+month+"-"+day;
+        return "" + year + "-" + month + "-" + day;
     };
- </script>
+</script>
