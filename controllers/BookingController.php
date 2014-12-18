@@ -26,8 +26,6 @@ class BookingController extends Controller
     // GET parameter
     const GET_PARAMETER_TIME_SLOTS = "timeslots";
 
-    // POST parameter
-
     // Session parameter
     const SESSION_PARAMETER_BOOKING = 'booking_data';
     const SESSION_PARAMETER_TIME_SLOT = 'timeslots';
@@ -104,7 +102,7 @@ class BookingController extends Controller
      */
     public function actionDelete($id)
     {
-        $model =  $this->findModel($id);
+        $model = $this->findModel($id);
         Timeslot::handleDeleteBooking($model);
         $model->delete();
         return $this->redirect(['index']);
@@ -216,18 +214,24 @@ class BookingController extends Controller
             throw new BadRequestHttpException(self::ERROR_MESSAGE_NO_TIME_SLOTS);
         }
 
-        $model = new Booking();
+        // Populate model with data from the POST-Request
+        $booking = new Booking();
+        $wasPopulatedSuccessfully = $booking->load(Yii::$app->request->post());
 
-        if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $model;
+        if ($wasPopulatedSuccessfully) {
+            Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $booking;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = false;
+
+            // Summarize booking information
             return $this->actionSummarizeBooking();
         } else {
-            return $this->render('create', [
-                'model' => $model,
-                'timeslots' => $sessionTimeSlots,
-                'entry_fee' => Parameter::getValue('entryFee', 80)
-            ]);
+            $entranceFee = Parameter::getValue('entryFee', 80);
+
+            return $this->render('create'. [
+                    'model' => $booking,
+                    'timeslots' => $sessionTimeSlots,
+                    'entry_fee' => $entranceFee
+                ]);
         }
     }
 
@@ -246,7 +250,7 @@ class BookingController extends Controller
         // Check time slot values in the GET-Request
         $tmpTimeSlots = Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS);
 
-        //
+        // Provide an empty array for time slot
         $timeSlots = [];
 
         // Create time slots for every GET-Parameter
@@ -266,11 +270,12 @@ class BookingController extends Controller
         $sessionTimeSlots = Yii::$app->session->get(self::SESSION_PARAMETER_TIME_SLOT);
 
         if (empty($sessionTimeSlots)) {
-            throw new BadRequestHttpException("Invalid selection of time slots");
+            throw new BadRequestHttpException(self::ERROR_MESSAGE_NO_TIME_SLOTS);
         }
 
         $model = new Booking();
         $model->scenario = 'weekdays';
+
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $model;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
@@ -278,7 +283,7 @@ class BookingController extends Controller
         } else {
             return $this->render('createWeekdays', [
                 'model' => $model,
-                'timeslots' => Yii::$app->session['timeslots'],
+                'timeslots' => $sessionTimeSlots,
                 'entry_fee' => Parameter::getValue('entryFee', 80)
             ]);
         }
