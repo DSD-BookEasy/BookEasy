@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\AdminRole;
 use \Yii;
+use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
 
 class PermissionsController extends \yii\web\Controller
@@ -95,9 +96,8 @@ class PermissionsController extends \yii\web\Controller
      */
     public function actionIndex()
     {
-        $post = Yii::$app->request->post();
-        if (!empty($post)) {
-            $this->updateAssignments($post);
+        if(Yii::$app->request->getIsPost()) {
+            $this->updatePermissions(Yii::$app->request->post('permissions', []));
         }
 
         $roles = Yii::$app->authManager->getRoles();
@@ -113,8 +113,30 @@ class PermissionsController extends \yii\web\Controller
         ]);
     }
 
-    private function updateAssignments($post)
+    /**
+     * Updates the permissions associated to each role based on the POST input
+     * @param $post the permissions array coming from the POST request
+     */
+    private function updatePermissions($post)
     {
+        $roles=Yii::$app->authManager->getRoles();
+        foreach($roles as $roleName => $role){
+            $permissions=empty($post[$roleName])? []:$post[$roleName];
+            $oldPerms = Yii::$app->authManager->getPermissionsByRole($role->name);
 
+            $toDelete = array_diff_key($oldPerms,$permissions);
+            $toAdd = array_diff_key($permissions,$oldPerms);
+
+            foreach($toDelete as $perm){
+                Yii::$app->authManager->removeChild($role,$perm);
+            }
+
+            foreach($toAdd as $perm => $value){
+                $pObj=Yii::$app->authManager->getPermission($perm);
+                if(!empty($pObj)){
+                    Yii::$app->authManager->addChild($role,$pObj);
+                }
+            }
+        }
     }
 }
