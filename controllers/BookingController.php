@@ -27,6 +27,8 @@ class BookingController extends Controller
     const SESSION_TIMESLOT = 'timeslots';
     const SESSION_WEEKDAYS = 'weekdays';
 
+    const GET_TIME_SLOTS = "timeslots";
+
     public function behaviors()
     {
         return [
@@ -177,30 +179,32 @@ class BookingController extends Controller
      * Expects an array of timeSlot ids in the POST "timeslot" field.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * The action work as a transaction: the booking and timeslots update are performed in an atomic transaction
-     * @return mixed
+     *
+     * @return string
+     * @throws BadRequestHttpException
      */
     public function actionCreate()
     {
-        // Check for 'timeslots' in the GET-Request
-        if($timeSlotIDs = Yii::$app->request->get('timeslots')){
-            //Accept only an array of integer values
-            foreach ($timeSlotIDs as $timeSlotID) {
-                if (!is_numeric($timeSlotID) or ((int)$timeSlotID) != $timeSlotID or $timeSlotID <= 0) {
-                    throw new BadRequestHttpException("Invalid timeslots were specified");
-                }
+        // Check time slots in the GET-Request
+        $timeSlotIDs = Yii::$app->request->get(self::GET_TIME_SLOTS);
+
+        // Check whether time slot IDs are numeric and valid
+        foreach ($timeSlotIDs as $timeSlotID) {
+            if (!is_numeric($timeSlotID) or ((int)$timeSlotID) != $timeSlotID or $timeSlotID <= 0) {
+                throw new BadRequestHttpException("Invalid timeslots were specified");
             }
-
-            $sessionTimeSlots = Timeslot::findAll($timeSlotIDs);
-
-            $this->saveTimeSlotsToSession($sessionTimeSlots);
-            //is this line necessary? the method called in the line before save timeslot in session too...
-            Yii::$app->session[self::SESSION_TIMESLOT] = $sessionTimeSlots;
         }
 
-        if ($timeSlotIDs == null) {
-        }
+        // Retrieve time slots from the database with the given IDs
+        $timeSlots = Timeslot::findAll($timeSlotIDs);
 
-        if (empty(Yii::$app->session[self::SESSION_TIMESLOT])) {
+        // Save time slots to the session
+        $this->saveTimeSlotsToSession($timeSlots);
+
+        // Retrieve time slots from current sesscion
+        $sessionTimeSlots = Yii::$app->session->get(self::SESSION_TIMESLOT);
+
+        if (empty($sessionTimeSlots)) {
             throw new BadRequestHttpException("You must specify the timeslots to book");
         }
 
@@ -213,39 +217,43 @@ class BookingController extends Controller
         } else {
             return $this->render('create', [
                 'model' => $model,
-                'timeslots' => Yii::$app->session['timeslots'],
+                'timeslots' => $sessionTimeSlots,
                 'entry_fee' => Parameter::getValue('entryFee', 80)
             ]);
         }
     }
 
     /**
-     * Creates a new Booking model for weekdays and also timeslots, passed in post, are insert in the database.
-     * Expects to receive Timeslots in the GET "timeslots" field, as in the standard Yii format (as an array represeting
-     * fields of the Timeslot model).
+     * Creates a new Booking model for weekdays and also time slots, passed in post, are insert in the database.
+     * Expects to receive time slots in the GET "timeslots" field, as in the standard Yii format (as an array representing
+     * fields of the time slot model).
      * If creation is successful, the browser will be redirected to the 'view' page.
      * The action works as a transaction: the booking and timeslots insert are performed in an atomic transaction.
-     * @return mixed
+     *
+     * @return string
+     * @throws BadRequestHttpException
      */
     public function actionCreateWeekdays()
     {
-        // INFO: We could use a constant variable for the session parameter here
+        // Check time slot values in the GET-Request
+        $tmpTimeSlots = Yii::$app->request->get(self::GET_TIME_SLOTS);
 
-        // Check for 'timeslots' in the GET-Request
-        if($tmpTimeSlots = Yii::$app->request->get('timeslots')){
-            $timeSlots = [];
-            foreach($tmpTimeSlots as $key => $value) {
-                $timeSlot = new Timeslot();
-                $timeSlot->load($value, '');
+        //
+        $timeSlots = [];
 
-                $timeSlots[] = $timeSlot;
-            }
+        // Create time slots for every GET-Parameter
+        foreach($tmpTimeSlots as $tmpTimeSlot) {
+            $timeSlot = new Timeslot();
+            $timeSlot->load($tmpTimeSlot, '');
 
-            $this->saveTimeSlotsToSession($timeSlots);
-
+            $timeSlots[] = $timeSlot;
         }
 
-        $sessionTimeSlots = Yii::$app->session[self::SESSION_TIMESLOT];
+        // Save time slots to session
+        $this->saveTimeSlotsToSession($timeSlots);
+
+        // Retrieve time slots from current session
+        $sessionTimeSlots = Yii::$app->session->get(self::SESSION_TIMESLOT);
 
         if (empty($sessionTimeSlots)) {
             throw new BadRequestHttpException("Invalid selection of time slots");
@@ -269,6 +277,7 @@ class BookingController extends Controller
     /**
      * Save the booking in the current session and update timeslots booked.
      * Requires the presence of a booking and one or more time slot in the session variable
+     *
      * @throws BadRequestHttpException
      * @throws \yii\db\Exception
      */
@@ -339,7 +348,7 @@ class BookingController extends Controller
         }
 
         // Note that sessionTimeSlots can also be empty
-        Yii::$app->session['timeslots'] = $sessionTimeSlots;
+        Yii::$app->session[self::SESSION_TIMESLOT] = $sessionTimeSlots;
     }
 
     /**
@@ -355,10 +364,11 @@ class BookingController extends Controller
             $isValid = false;
         }
 
+        // NOTE: A time slots does not necessary needs to have an ID since they can also be chosen freely
         // Make sure we deal with a valid time slot
-        if (!empty($timeSlot->id)) {
-            $isValid = false;
-        }
+        //if (empty($timeSlot->id)) {
+            // $isValid = false;
+        //}
 
         // Make sure start time is before end time
         if ($timeSlot->start > $timeSlot->end) {
