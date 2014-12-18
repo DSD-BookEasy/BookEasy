@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
 <a href="<?=Url::to('permissions/add-role')?>" class="btn btn-success"><?=Yii::t('app',"Create New Role")?></a>
 <?php
 if(empty($roles)){
-    echo Html::tag('p',Yii::t('app','There are no roles in the system'));
+    echo Html::tag('p',Yii::t('app','There are no roles in the system'),['class' => 'alert alert-info']);
 }
 else {
     ?>
