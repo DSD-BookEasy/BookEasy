@@ -8,7 +8,7 @@ use \yii\rbac\Role;
 
 /**
  * This is just a wrapper for [[\yii\rbac\Role]]
- * To make easier to work it roles in forms
+ * To make easier to work with roles and [[\yii\widgets\ActiveForm]]
  *
  * @property string $name
  * @property string $description
