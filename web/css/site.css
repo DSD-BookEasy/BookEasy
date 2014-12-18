@@ -140,3 +140,8 @@ a.desc:after {
 .param_description{
     font-size: 0.8em;
 }
+
+/* Firefox hack for responsive tables */
+@-moz-document url-prefix() {
+    fieldset { display: table-cell; }
+}

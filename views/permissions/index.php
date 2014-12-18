@@ -21,33 +21,35 @@ if(empty($permissions) || empty($roles)){
 else {
     $form = ActiveForm::begin();
     ?>
-    <table>
-        <thead>
-            <tr>
-                <th><?= Yii::t('app',"Permissions\\Roles")?></th>
+    <div class="table-responsive">
+        <table class="table table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th><?= Yii::t('app',"Permissions\\Roles")?></th>
+                <?php
+                foreach($roles as $r){
+                    echo Html::tag('th',$r->name);
+                }
+                ?>
+                </tr>
+            </thead>
+            <tbody>
             <?php
-            foreach($roles as $r){
-                echo Html::tag('th',$r->name);
+            foreach($permissions as $p){
+                $out=Html::tag('td',$p->description);
+                foreach($roles as $r){
+                    $out .= Html::tag('td',
+                        Html::checkbox('permissions[' . $r->name . '][' . $p->name . ']',
+                            array_key_exists($p->name,$assignments[$r->name]),
+                            ['title' => $r->name . " | " . $p->name])
+                    );
+                }
+                echo Html::tag('tr',$out);
             }
             ?>
-            </tr>
-        </thead>
-        <tbody>
-        <?php
-        foreach($permissions as $p){
-            $out=Html::tag('td',$p->description);
-            foreach($roles as $r){
-                $out .= Html::tag('td',
-                    Html::checkbox('permissions[' . $r->name . '][' . $p->name . ']',
-                        array_key_exists($p->name,$assignments[$r->name]),
-                        ['title' => $r->name . " | " . $p->name])
-                );
-            }
-            echo Html::tag('tr',$out);
-        }
-        ?>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success']) ?>
     </div>
