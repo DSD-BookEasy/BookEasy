@@ -37,7 +37,7 @@ else {
             <tbody>
             <?php
             foreach($permissions as $p){
-                $out=Html::tag('td',$p->description);
+                $out=Html::tag('td','can '.$p->description);
                 foreach($roles as $r){
                     $out .= Html::tag('td',
                         Html::checkbox('permissions[' . $r->name . '][' . $p->name . ']',
