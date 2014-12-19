@@ -22,6 +22,7 @@ use yii\web\IdentityInterface;
  * @property string $last_login
  * @property string $auth_key
  * @property string $plain_password
+ * @property string $repeat_password
  */
 class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
