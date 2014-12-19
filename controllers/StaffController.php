@@ -70,7 +70,27 @@ class StaffController extends \yii\web\Controller
         return $this->goBack();
     }
 
-    public function actionEdit($id){
+    /**
+     * Shows a list of all the users in the system
+     * @return string
+     */
+    public function actionIndex()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Staff::find(),
+        ]);
+
+        return $this->render('index', [
+            'users' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Shows a form to edit the informations of a user
+     * @param integer $id the id of the user to edit
+     * @return string
+     */
+    public function actionUpdate($id){
         $s=Staff::findOne((int)$id);
         if(empty($s)){
             throw new NotFoundHttpException(Yii::t('app',"The specified user doesn't exist"));
@@ -83,7 +103,7 @@ class StaffController extends \yii\web\Controller
             }
         }
 
-        return $this->render('edit',[
+        return $this->render('update',[
             'user' => $s,
             'allRoles' => Yii::$app->authManager->getRoles(),
             'roles' => Yii::$app->authManager->getRolesByUser($s->id)

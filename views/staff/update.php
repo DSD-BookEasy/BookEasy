@@ -8,7 +8,7 @@
 $this->title = Yii::t('app', '{userName}\'s Profile', [
     'userName' => $user->user_name,
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Users'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Staff'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <h1><?= Yii::t('app',"Edit: {userName}",['userName' => $user->user_name]);?></h1>
