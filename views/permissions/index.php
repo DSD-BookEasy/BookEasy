@@ -5,6 +5,7 @@
 /* @var $assignments yii\rbac\Permission[][] */
 
 use \yii\helpers\Html;
+use \yii\helpers\Url;
 use \yii\widgets\ActiveForm;
 
 $this->title = Yii::t('app', Yii::t('app','Permissions Assignments'));
