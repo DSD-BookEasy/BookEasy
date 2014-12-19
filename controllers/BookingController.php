@@ -225,13 +225,11 @@ class BookingController extends Controller
             // Summarize booking information
             return $this->actionSummarizeBooking();
         } else {
-            $entranceFee = Parameter::getValue('entryFee', 80);
-
-            return $this->render('create'. [
-                    'model' => $booking,
-                    'timeslots' => $sessionTimeSlots,
-                    'entry_fee' => $entranceFee
-                ]);
+            return $this->render('create', [
+                'model' => $booking,
+                'timeslots' => $sessionTimeSlots,
+                'entry_fee' => Parameter::getValue('entryFee', 80)
+            ]);
         }
     }
 
@@ -386,13 +384,13 @@ class BookingController extends Controller
         //}
 
         // Make sure start time is before end time
-        if ($timeSlot->start > $timeSlot->end) {
+        if (strtotime($timeSlot->start) > strtotime($timeSlot->end)) {
             $isValid = false;
         }
 
         // Make sure start time is the future
-        $currentDate = date('Y-m-d');
-        if ($timeSlot->start < $currentDate) {
+        $currentDate = time();
+        if (strtotime($timeSlot->start) < $currentDate) {
             $isValid = false;
         }
 
