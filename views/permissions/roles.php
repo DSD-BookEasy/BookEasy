@@ -6,7 +6,7 @@ use \yii\helpers\Html;
 use \yii\helpers\Url;
 
 $this->title = Yii::t('app', Yii::t('app','Administrative Roles'));
-$this->params['breadcrumbs'][] = Yii::t('app','Permissions');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app','Permissions'), 'url' => ['permissions/index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
 ?>
 <h1><?=\Yii::t('app',"Administrative Roles") ?></h1>

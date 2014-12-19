@@ -8,10 +8,8 @@ use \yii\helpers\Html;
 use \yii\helpers\Url;
 use \yii\widgets\ActiveForm;
 
-$this->title = Yii::t('app', Yii::t('app','Permissions Assignments'));
-$this->params['breadcrumbs'][] = Yii::t('app','Permissions');
-$this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
-
+$this->title = Yii::t('app', Yii::t('app','Permissions'));
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app','Permissions'), 'url' => ['']];
 ?>
 <h1><?= Yii::t('app',"Permissions");?></h1>
 <p><?= Yii::t('app',"From here you can assign permissions to administrative roles");?></p>
