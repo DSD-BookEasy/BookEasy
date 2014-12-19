@@ -192,20 +192,23 @@ class BookingController extends Controller
     public function actionCreate()
     {
         // Check time slots in the GET-Request
-        $timeSlotIDs = Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS);
 
-        // Check whether time slot IDs are numeric and valid
-        foreach ($timeSlotIDs as $timeSlotID) {
-            if (!is_numeric($timeSlotID) or ((int)$timeSlotID) != $timeSlotID or $timeSlotID <= 0) {
-                throw new BadRequestHttpException(self::ERROR_MESSAGE_INVALID_TIME_SLOTS);
+        //this if solves is necessary... don't delete it ;)
+        if(Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS)){
+            $timeSlotIDs = Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS);
+            // Check whether time slot IDs are numeric and valid
+            foreach ($timeSlotIDs as $timeSlotID) {
+                if (!is_numeric($timeSlotID) or ((int)$timeSlotID) != $timeSlotID or $timeSlotID <= 0) {
+                    throw new BadRequestHttpException(self::ERROR_MESSAGE_INVALID_TIME_SLOTS);
+                }
             }
+
+            // Retrieve time slots from the database with the given IDs
+            $timeSlots = Timeslot::findAll($timeSlotIDs);
+
+            // Save time slots to the session
+            $this->saveTimeSlotsToSession($timeSlots);
         }
-
-        // Retrieve time slots from the database with the given IDs
-        $timeSlots = Timeslot::findAll($timeSlotIDs);
-
-        // Save time slots to the session
-        $this->saveTimeSlotsToSession($timeSlots);
 
         // Retrieve time slots from current sesscion
         $sessionTimeSlots = Yii::$app->session->get(self::SESSION_PARAMETER_TIME_SLOT);
