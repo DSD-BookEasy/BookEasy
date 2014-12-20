@@ -24,6 +24,7 @@ use app\models\Timeslot;
 use app\models\TimeslotModel;
 use Yii;
 use yii\base\ErrorException;
+use yii\db\Migration;
 
 class PopulatorController extends \yii\web\Controller
 {
@@ -77,9 +78,13 @@ class PopulatorController extends \yii\web\Controller
         Simulator::deleteAll();
         Staff::deleteAll();
         TimeslotModel::deleteAll();
+        Yii::$app->db->createCommand("truncate table " . Timeslot::tableName())->query();
+        Yii::$app->db->createCommand("truncate table " . Booking::tableName())->query();
+        Yii::$app->db->createCommand("truncate table " . Simulator::tableName())->query();
+        Yii::$app->db->createCommand("truncate table " . Staff::tableName())->query();
+        Yii::$app->db->createCommand("truncate table " . TimeslotModel::tableName())->query();
         return $this->render('index');
     }
-
     public function actionExecute()
     {
         //loads and creates staff objects and then saves it to the db
