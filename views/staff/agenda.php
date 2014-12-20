@@ -12,6 +12,8 @@ use app\models\Simulator;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $model app\models\DatePicker */
 /* @var $simulators array */
+/* @var $slots array */
+/* @var $bookings array */
 /* @var $currDay DateTime */
 /* @var $prevDay string */
 /* @var $nextDay string */
@@ -62,7 +64,8 @@ $this->title = Yii::t('app', "Todo: title");
      * timeslots exceeding it, we should make space for them too
      */
     $borders = $businessHours;
-
+    $bookUrl = Url::to(['booking/create', 'timeslots[]' => '']);
+    $bookUrlWeekday = Url::to(['booking/create-weekdays']);
     $events = [
         [//Show Business Hours.
             'start' => $businessHours['start'],
@@ -72,9 +75,6 @@ $this->title = Yii::t('app', "Todo: title");
             'className' => 'closed'
         ]
     ];
-//    array_pop($simulators);
-//    array_pop($simulators);
-//    array_pop($simulators);
     echo "<div id='calendar' class='col-md-10'>";
     echo "<ul id='simulatorTab' class='nav nav-tabs'>";
     $counter = 0;
@@ -88,6 +88,37 @@ $this->title = Yii::t('app', "Todo: title");
     foreach ($simulators as $simulator) {
         $id = "sim" . $counter++;
         echo "<div role='tabpanel' class='tab-pane fade' id='$id'>";
+        $events = [
+            [//Show Business Hours.
+                'start' => $businessHours['start'],
+                'end' => $businessHours['end'],
+                'dow' => [0, 1, 2, 3, 4, 5, 6],
+                'rendering' => 'inverse-background',
+                'className' => 'closed'
+            ]
+        ];
+        //Populate calendar events with timeslots
+        foreach ($slots[$simulator->id] as $s) {
+            $a = [
+                'start' => $s->start,
+                'end' => $s->end,
+                'id' => $s->id
+            ];
+            if ($s->id_booking != null) {
+                $a['title'] = \Yii::t('app', $bookings[$s->id_booking]->name);
+                $a['className'] = 'unavailable';
+            } else {
+                $a['title'] = \Yii::t('app', 'Available');
+                $a['className'] = 'available';
+            }
+
+            if($s->blocking) {
+                $a['title'] = \Yii::t('app', 'Closed');
+                $a['className'] = 'closed';
+            }
+            checkBorders($borders, $s->start, $s->end);
+            $events[] = $a;
+        }
         echo FullCalendar::widget([
             'config' => [
                 'header' => [
@@ -102,8 +133,8 @@ $this->title = Yii::t('app', "Todo: title");
                 'firstDay' => 1,
                 'allDaySlot' => false,
                 'defaultDate' => $currDay->format("c"),
-                //'events' => $events,
-                //'eventRender' => new \yii\web\JsExpression('slotBooking'),
+                'events' => $events,
+                'eventRender' => new \yii\web\JsExpression('slotSelecting'),
                 //Features for booking during weekdays
                 'selectable' => true,
                 'selectOverlap' => new \yii\web\JsExpression("function(event)
@@ -176,4 +207,38 @@ $this->title = Yii::t('app', "Todo: title");
         var year = date.getUTCFullYear();
         return "" + year + "-" + month + "-" + day;
     };
+
+    function slotSelecting(event, element) {
+        if (event.rendering != "background" && event.rendering != "inverse-background") {
+            if (element.hasClass("available")) {
+                element.attr("title", "<?=\Yii::t('app',"This timeslot is available")?>");
+                element.tooltip();
+                element.click(function (ev) {
+                    ev.preventDefault();
+                    window.location.href = "<?=$bookUrl?>" + event.id;
+                })
+            }
+            else {
+                element.attr("title", "<?=\Yii::t('app',"This timeslot can't be booked. Choose another one, please.")?>");
+                element.tooltip();
+            }
+        }
+    }
 </script>
+<?php
+function checkBorders(&$borders, $start, $end)
+{
+    //Converting hours in minutes
+    $convertStart = ((int)strftime("%H", strtotime($start))) * 60 + (int)strftime("%M", strtotime($start));
+    $convertEnd = ((int)strftime("%H", strtotime($end))) * 60 + (int)strftime("%M", strtotime($end));
+    $chunks = explode(':', $borders['start']);
+    $convertBStart = $chunks[0] * 60 + $chunks[1];
+    $chunks = explode(':', $borders['end']);
+    $convertBEnd = $chunks[0] * 60 + $chunks[1];
+    if ($convertBStart > $convertStart) {
+        $borders['start'] = strftime("%H:%M", strtotime($start));
+    }
+    if ($convertBEnd < $convertEnd) {
+        $borders['end'] = strftime("%H:%M", strtotime($end));
+    }
+}
