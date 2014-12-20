@@ -6,7 +6,7 @@ use \yii\widgets\ActiveForm;
 use \yii\helpers\Html;
 
 $this->title = Yii::t('app', Yii::t('app','Delete Role'));
-$this->params['breadcrumbs'][] = Yii::t('app','Permissions');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app','Permissions'), 'url' => ['permissions/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app','Administrative Roles'), 'url' => 'roles'];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['delete-role', 'name' => $role->name]];
 

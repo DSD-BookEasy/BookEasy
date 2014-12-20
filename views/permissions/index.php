@@ -5,16 +5,15 @@
 /* @var $assignments yii\rbac\Permission[][] */
 
 use \yii\helpers\Html;
+use \yii\helpers\Url;
 use \yii\widgets\ActiveForm;
 
-$this->title = Yii::t('app', Yii::t('app','Permissions Assignments'));
-$this->params['breadcrumbs'][] = Yii::t('app','Permissions');
-$this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
-
+$this->title = Yii::t('app', Yii::t('app','Permissions'));
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app','Permissions'), 'url' => ['']];
 ?>
-<h1><?= Yii::t('app',"Permissions");?></h1>
+<h1><?= $this->title?></h1>
 <p><?= Yii::t('app',"From here you can assign permissions to administrative roles");?></p>
-<a href="<?=Url::to('roles')?>" class="btn btn-success"><?=Yii::t('app',"Manage Administrative Roles")?></a>
+<a href="<?=Url::to('permissions/roles')?>" class="btn btn-success"><?=Yii::t('app',"Manage Administrative Roles")?></a>
 
 <?php
 if(empty($permissions) || empty($roles)){
@@ -38,7 +37,7 @@ else {
             <tbody>
             <?php
             foreach($permissions as $p){
-                $out=Html::tag('td',$p->description);
+                $out=Html::tag('td','can '.$p->description);
                 foreach($roles as $r){
                     $out .= Html::tag('td',
                         Html::checkbox('permissions[' . $r->name . '][' . $p->name . ']',
