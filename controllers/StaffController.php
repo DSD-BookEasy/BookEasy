@@ -86,6 +86,8 @@ class StaffController extends \yii\web\Controller
         // Find timeslots and the bookings in the current day
         $sim_slots = array();
         $bookings = array();
+        $staff = array();
+        //TODO to self: examine this code if the assigned instructor is moved to another table
         foreach($simulators as $sim) {
             $slots = Timeslot::find()->
             where(['id_simulator' => $sim->id])->
@@ -93,9 +95,13 @@ class StaffController extends \yii\web\Controller
             andWhere(['<=', 'end', $dayEnding->format("c")])->all();
             $sim_slots[$sim->id] = $slots;
             foreach($slots as $slot) {
-                if ($slot->id_booking != null) {
+                if ($slot->id_booking != null && !array_key_exists($slot->id_booking, $bookings)) {
                     $booking = Booking::findOne($slot->id_booking);
                     $bookings[$slot->id_booking] = $booking;
+                    if ($booking->assigned_instructor != null && !array_key_exists($booking->assigned_instructor, $staff)) {
+                        $instructor = Staff::findOne($booking->assigned_instructor);
+                        $staff[$instructor->id] = $instructor;
+                    }
                 }
             }
         }
@@ -106,7 +112,8 @@ class StaffController extends \yii\web\Controller
             'nextDay' => $nextDay->format($format),
             'prevDay' => $prevDay->format($format),
             'slots' => $sim_slots,
-            'bookings' => $bookings
+            'bookings' => $bookings,
+            'staff' => $staff
         ]);
     }
 

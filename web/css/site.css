@@ -129,6 +129,11 @@ a.desc:after {
     border-color: #ff4500;
 }
 
+.fc-event.assigned {
+    border-color: #9acfea;
+    background-color: #9999FF;
+}
+
 .fc-bgevent.closed {
     background: #C0C0C0;
 }
