@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app','Permissions'), 'url' 
 ?>
 <h1><?= $this->title?></h1>
 <p><?= Yii::t('app',"From here you can assign permissions to administrative roles");?></p>
-<a href="<?=Url::to('permissions/roles')?>" class="btn btn-success"><?=Yii::t('app',"Manage Administrative Roles")?></a>
+<a href="<?=Url::to('permission/roles')?>" class="btn btn-success"><?=Yii::t('app',"Manage Administrative Roles")?></a>
 
 <?php
 if(empty($permissions) || empty($roles)){

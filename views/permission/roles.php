@@ -6,7 +6,7 @@ use \yii\helpers\Html;
 use \yii\helpers\Url;
 
 $this->title = Yii::t('app', Yii::t('app','Administrative Roles'));
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app','Permissions'), 'url' => ['permissions/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app','Permissions'), 'url' => ['permission/index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
 ?>
 <h1><?=$this->title ?></h1>
@@ -32,8 +32,8 @@ else {
                 Html::tag('div', $r->description, ['class' => 'small']),
                 ['class' => 'role_title']
             );
-            $Ubutton = Html::a(Yii::t('app', 'Change'), Url::to(['permissions/update-role', 'name' => $r->name]),['class' => 'btn btn-primary']);
-            $Dbutton = Html::a(Yii::t('app', 'Delete'), Url::to(['permissions/delete-role', 'name' => $r->name]),['class' => 'btn btn-danger']);
+            $Ubutton = Html::a(Yii::t('app', 'Change'), Url::to(['permission/update-role', 'name' => $r->name]),['class' => 'btn btn-primary']);
+            $Dbutton = Html::a(Yii::t('app', 'Delete'), Url::to(['permission/delete-role', 'name' => $r->name]),['class' => 'btn btn-danger']);
             $op = Html::tag('td', $Ubutton . '&nbsp;' . $Dbutton);
 
             echo Html::tag('tr', $name . $op);

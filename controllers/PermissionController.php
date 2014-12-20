@@ -7,7 +7,7 @@ use \Yii;
 use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
 
-class PermissionsController extends \yii\web\Controller
+class PermissionController extends \yii\web\Controller
 {
     /**
      * Shows an index of all available roles
@@ -33,7 +33,7 @@ class PermissionsController extends \yii\web\Controller
                 $new_r->description = $post['description'];
             }
             Yii::$app->authManager->add($new_r);
-            $this->redirect(['permissions/roles']);
+            $this->redirect(['permission/roles']);
         }
 
         return $this->render('add-role', [
@@ -59,7 +59,7 @@ class PermissionsController extends \yii\web\Controller
                 $r->description = $post['description'];
             }
             Yii::$app->authManager->update($name, $r);
-            $this->redirect(['permissions/roles']);
+            $this->redirect(['permission/roles']);
         }
 
         return $this->render('add-role', [
@@ -91,7 +91,7 @@ class PermissionsController extends \yii\web\Controller
     }
 
     /**
-     * Show all permissions assigned to the roles
+     * Show all permission assigned to the roles
      * @return string
      */
     public function actionIndex()
@@ -114,8 +114,8 @@ class PermissionsController extends \yii\web\Controller
     }
 
     /**
-     * Updates the permissions associated to each role based on the POST input
-     * @param $post the permissions array coming from the POST request
+     * Updates the permission associated to each role based on the POST input
+     * @param $post the permission array coming from the POST request
      */
     private function updatePermissions($post)
     {

@@ -42,7 +42,7 @@ $this->title = 'Västerås Flygmuseum';
                         'Staff'); ?></a>
                 <a class="btn btn-default btn-lg"
                    href="<?= Url::to([
-                       'permissions/index',
+                       'permission/index',
                    ]); ?>"><?= Yii::t('app',
                         'Permissions Management'); ?></a>
             </p>
