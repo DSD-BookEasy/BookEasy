@@ -16,7 +16,6 @@ use yii\web\IdentityInterface;
  * @property string $telephone
  * @property string $email
  * @property string $address
- * @property integer $role
  * @property string $user_name
  * @property string $password
  * @property string $last_login
@@ -43,10 +42,10 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public function rules()
     {
         return [
-            [['role'], 'integer'],
             [['last_login'], 'safe'],
             [['name', 'surname', 'telephone', 'email', 'address', 'user_name', 'password', 'auth_key'], 'string', 'max' => 255],
-            [['plain_password'], 'compare', 'compareAttribute' => 'repeat_password'],
+            [['repeat_password'], 'compare', 'compareAttribute' => 'plain_password'],
+            [['plain_password'], 'safe'],
             [['user_name'], 'required']
         ];
     }
@@ -63,7 +62,6 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'telephone' => Yii::t('app', 'Telephone'),
             'email' => Yii::t('app', 'E-Mail'),
             'address' => Yii::t('app', 'Address'),
-            'role' => Yii::t('app', 'Role'),
             'user_name' => Yii::t('app', 'User Name'),
             'password' => Yii::t('app', 'Password'),
             'last_login' => Yii::t('app', 'Last Login'),
