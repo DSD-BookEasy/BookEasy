@@ -30,7 +30,7 @@ class TimeslotModelController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['manageTimeslotModels']
                     ],
                 ],
 

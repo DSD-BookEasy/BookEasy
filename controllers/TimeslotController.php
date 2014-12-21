@@ -26,6 +26,16 @@ class TimeslotController extends Controller
                     'delete' => ['post'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['manageTimeslots']
+                    ],
+                ],
+
+            ],
         ];
     }
 

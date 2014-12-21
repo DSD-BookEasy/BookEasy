@@ -23,6 +23,16 @@ class ParameterController extends Controller
                     'delete' => ['post'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['manageParams']
+                    ],
+                ],
+
+            ],
         ];
     }
 
