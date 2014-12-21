@@ -101,6 +101,13 @@ a.desc:after {
     margin: 30px 15px;
 }
 
+.cal_datepicker{
+}
+
+.cal_datepicker .datepicker{
+    padding-top:52px;
+}
+/* id's may be converted to classes?*/
 #cal_datepicker{
 }
 
@@ -114,10 +121,32 @@ a.desc:after {
     border-color: #32CD32;
     cursor: pointer;
 }
-.fc-event.available:hover{
+
+.fc-event.assigned {
+    border-color: #9acfea;
+    background-color: #9999FF;
+    cursor: pointer;
+}
+
+.fc-event.unassigned {
+    background-color: #F08080;
+    border-color: #ff4500;
+    cursor: pointer;
+}
+
+.fc-event.available:hover {
     background-color: #ffdc2e;
 }
-.fc-event.unavailable{
+
+.fc-event.assigned:hover{
+    background-color: #ffdc2e;
+}
+
+.fc-event.unassigned:hover{
+    background-color: #ffdc2e;
+}
+
+.fc-event.unavailable {
     background-color: #F08080;
     border-color: #ff4500;
 }

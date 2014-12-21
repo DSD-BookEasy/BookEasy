@@ -22,6 +22,10 @@ use yii\base\ErrorException;
  */
 class Booking extends \yii\db\ActiveRecord
 {
+
+    const CONFIRMED = 1;
+    const NOT_CONFIRMED = 0;
+    const WAITING_FOR_CONFIRMATION = 2;
     /**
      * @inheritdoc
      */
