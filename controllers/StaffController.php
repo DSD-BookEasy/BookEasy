@@ -4,7 +4,9 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Staff;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 class StaffController extends \yii\web\Controller
@@ -14,7 +16,7 @@ class StaffController extends \yii\web\Controller
         return [
             'access' => [//Allow access to logout only if user is logged-in
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'index', 'update'],
+                'only' => ['logout', 'index'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
@@ -22,7 +24,7 @@ class StaffController extends \yii\web\Controller
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['index','update'],
+                        'actions' => ['index'],
                         'allow' => true,
                         'roles' => ['manageStaff']
                     ]
@@ -52,7 +54,7 @@ class StaffController extends \yii\web\Controller
             $staff=Staff::findOne(['user_name'=>$loginData['user_name']]);
             if(!empty($staff) and $staff->isValidPassword($loginData['password'])){
                 Yii::$app->user->login($staff, 3600*24*30);
-                return $this->goBack('site/index');
+                return $this->goBack('/');
             }
             else{
                 $staff=new Staff();
@@ -95,24 +97,47 @@ class StaffController extends \yii\web\Controller
      * @param integer $id the id of the user to edit
      * @return string
      */
-    public function actionUpdate($id){
-        $s=Staff::findOne((int)$id);
-        if(empty($s)){
-            throw new NotFoundHttpException(Yii::t('app',"The specified user doesn't exist"));
-        }
+    public function actionUpdate($id)
+    {
+        $s = Staff::findOne((int)$id);
 
-        if(Yii::$app->request->getIsPost()) {
-            $s->load(Yii::$app->request->post());
-            if($s->save()){//If basic save is successfull, go on with permissions save
-                $this->updateRoles($s,Yii::$app->request->post('roles',[]));
+        $loggedInUser = Yii::$app->user;
+
+        /**
+         * Unfortunately access control must be perfomed here and not in the AccessControl Filter
+         * Because we need to pass the user param to the updateOwnProfile permission
+         */
+        if ($loggedInUser->can('manageStaff') || $loggedInUser->can('updateOwnProfile',['user' => $s])){
+
+            if (empty($s)) {
+                throw new NotFoundHttpException(Yii::t('app', "The specified user doesn't exist"));
+            }
+
+            if (Yii::$app->request->getIsPost()) {
+                $s->load(Yii::$app->request->post());
+                if ($s->save()) {//If basic save is successfull, go on with permissions save
+                    if (Yii::$app->user->can('assignRoles')) {
+                        $this->updateRoles($s, Yii::$app->request->post('roles', []));
+                    }
+                }
+            }
+
+            return $this->render('update', [
+                'user' => $s,
+                'allRoles' => Yii::$app->authManager->getRoles(),
+                'roles' => Yii::$app->authManager->getRolesByUser($s->id)
+            ]);
+        }
+        else{
+            //Not permission to access. If user is guest redirect to login, otherwise forbid
+            if($loggedInUser->isGuest){
+                $loggedInUser->setReturnUrl($this->route);
+                return $this->redirect($loggedInUser->loginUrl);
+            }
+            else{
+                throw new ForbiddenHttpException(Yii::t('app',"You are not allowed to perform this action."));
             }
         }
-
-        return $this->render('update',[
-            'user' => $s,
-            'allRoles' => Yii::$app->authManager->getRoles(),
-            'roles' => Yii::$app->authManager->getRolesByUser($s->id)
-        ]);
     }
 
     /**
