@@ -33,13 +33,13 @@ class BookingController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update'],
+                'only' => ['index','update','view','delete'],
                 'rules' => [
                     [
-                    'allow' => true,
-                    'actions' => ['update'],
-                    'roles' => ['@']
-                    ],
+                        'allow' => true,
+                        'actions' => ['index','update','view','delete'],
+                        'roles' => ['viewAllBookings']
+                    ]
                 ],
 
             ],
