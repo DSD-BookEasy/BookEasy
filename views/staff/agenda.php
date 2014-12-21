@@ -81,15 +81,16 @@ $this->title = Yii::t('app', "Todo: title");
         echo "<ul id='simulatorTab' class='nav nav-tabs'>";
         $counter = 0;
         foreach ($simulators as $simulator) {
-            $href = "#sim" . $counter++;
+            $href = "#sim" . $counter++; //the id of the targeting tab
             echo "<li role='presentation'><a href='$href' data-toggle='tab'>$simulator->name</a></li>";
         }
-        echo "</ul>";
-        echo "<div class='tab-content'>";
+        echo "</ul>";//ending tag of the <ul id='simulatorTab' ...>
+        echo "<div class='tab-content'>"; //the bootstrap div that contains all the tabs
         $counter = 0;
         foreach ($simulators as $simulator) {
-            $id = "sim" . $counter++;
-            echo "<div role='tabpanel' class='tab-pane fade' id='$id'>";
+            //foreach simulator generate a tab
+            $id = "sim" . $counter++; //the id of the tab which is going to be created
+            echo "<div role='tabpanel' class='tab-pane fade' id='$id'>"; //bootstrap div that contains a tab
             $events = [
                 [//Show Business Hours.
                     'start' => $businessHours['start'],
@@ -107,8 +108,9 @@ $this->title = Yii::t('app', "Todo: title");
                     'id' => $s->id
                 ];
                 if ($s->id_booking != null) {
-                    $a['id_booking'] = $s->id_booking;
+                    $a['id_booking'] = $s->id_booking; //to be able to view booking page we need to store the id
                     if ($bookings[$s->id_booking]->assigned_instructor != null) {
+                        //if the booking is assigned that show the name
                         $iid = $bookings[$s->id_booking]->assigned_instructor;
                         $a['title'] = \Yii::t('app', '{name} {lname} has booked this slot, which is assigned to {ins_name} {ins_lname}, on {ts} ', [
                             'name' => $bookings[$s->id_booking]->name,
@@ -119,6 +121,7 @@ $this->title = Yii::t('app', "Todo: title");
                         ]);
                         $a['className'] = 'assigned';
                     } else {
+                        //the booking is not assigned then warn the user about it
                         $a['title'] = \Yii::t('app', '{name} {lname} has booked this slot, which is NOT assigned, on {ts} ', [
                             'name' => $bookings[$s->id_booking]->name,
                             'lname' => $bookings[$s->id_booking]->surname,
@@ -170,10 +173,10 @@ $this->title = Yii::t('app', "Todo: title");
                     //'select' => new \yii\web\JsExpression("goToCreateWeekdays")
                 ]
             ]);
-            echo "</div>";
+            echo "</div>"; //end of the bootstrap div for each tab
         }
-        echo "</div>";
-        echo "</div>";
+        echo "</div>"; // end of the bootstrap div which contains all the tabs
+        echo "</div>"; // end of the <div id='calendar' ....>  which contains all the calendars
         ?>
         <div id="datepicker" class="col-md-2">
 

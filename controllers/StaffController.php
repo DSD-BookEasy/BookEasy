@@ -83,29 +83,31 @@ class StaffController extends \yii\web\Controller
         $dayStarting = DateTime::createFromFormat("Y-m-d H:i:s", $currDay->format("Y-m-d") . " " . "00:00:00");
         $dayEnding = DateTime::createFromFormat("Y-m-d H:i:s", $currDay->format("Y-m-d") . " " . "23:59:59");
 
-        // Find timeslots and the bookings in the current day
+        // Find timeslots, bookings and related staff information
         $sim_slots = array();
         $bookings = array();
         $staff = array();
         //TODO to self: examine this code if the assigned instructor is moved to another table
         foreach($simulators as $sim) {
+            //foreach simulator find time slots with the given date
             $slots = Timeslot::find()->
             where(['id_simulator' => $sim->id])->
             andWhere(['>=', 'start', $dayStarting->format("c")])->
             andWhere(['<=', 'end', $dayEnding->format("c")])->all();
             $sim_slots[$sim->id] = $slots;
             foreach($slots as $slot) {
+                //foreach timeslot is found, get the booking information
                 if ($slot->id_booking != null && !array_key_exists($slot->id_booking, $bookings)) {
                     $booking = Booking::findOne($slot->id_booking);
                     $bookings[$slot->id_booking] = $booking;
                     if ($booking->assigned_instructor != null && !array_key_exists($booking->assigned_instructor, $staff)) {
+                        //if the booking is assigned get the instructor details
                         $instructor = Staff::findOne($booking->assigned_instructor);
                         $staff[$instructor->id] = $instructor;
                     }
                 }
             }
         }
-
         return $this->render("agenda", [
             'simulators' => $simulators,
             'currDay' => $currDay,
