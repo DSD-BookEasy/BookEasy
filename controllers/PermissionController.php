@@ -4,11 +4,33 @@ namespace app\controllers;
 
 use app\models\AdminRole;
 use \Yii;
-use yii\web\BadRequestHttpException;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
 class PermissionController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['assignPermissions']
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['roles','add-role','update-role','delete-role'],
+                        'roles' => ['assignRoles']
+                    ]
+                ],
+
+            ],
+        ];
+    }
+
     /**
      * Shows an index of all available roles
      * @return string
