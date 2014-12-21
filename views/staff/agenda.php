@@ -19,7 +19,7 @@ use app\models\Simulator;
 /* @var $prevDay string */
 /* @var $nextDay string */
 
-$this->title = Yii::t('app', "Todo: title");
+$this->title = Yii::t('app', "Staff Agenda");
 ?>
 
     <div id="calendar_buttons">
