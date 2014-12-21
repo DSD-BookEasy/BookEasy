@@ -161,7 +161,6 @@ class BookingController extends Controller
         }
 
         return $this->render('view', [
-            'summarize' => false,
             'model' => $booking,
             'entry_fee' => Parameter::getValue('entryFee', 80)
         ]);
@@ -172,10 +171,9 @@ class BookingController extends Controller
      * @return string
      */
     public function actionSummarizeBooking(){
-        return $this->render('view', [
-            'summarize' => true,
+        return $this->render('summarize', [
             'model' => Yii::$app->session[self::SESSION_PARAMETER_BOOKING],
-            'timeslots' => Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT],
+            'timeSlots' => Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT],
             'entry_fee' => Parameter::getValue('entryFee', 80)
         ]);
     }
@@ -222,6 +220,8 @@ class BookingController extends Controller
         $wasPopulatedSuccessfully = $booking->load(Yii::$app->request->post());
 
         if ($wasPopulatedSuccessfully) {
+            //a booking in opening hours is automatically confirmed
+            $booking->status = Booking::CONFIRMED;
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $booking;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = false;
 
@@ -278,6 +278,8 @@ class BookingController extends Controller
         $model->scenario = 'weekdays';
 
         if ($model->load(Yii::$app->request->post())) {
+            //a booking in non opening hours has to be confirmed
+            $model->status = Booking::NOT_CONFIRMED;
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $model;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
             return $this->actionSummarizeBooking();
