@@ -86,6 +86,9 @@ $this->params['breadcrumbs'][] = $this->title;
         // Display 'edit' button to logged in users only
         if (Yii::$app->user->getId() != null) {
             echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            if($model->status == \app\models\Booking::WAITING_FOR_CONFIRMATION){
+                echo Html::a(Yii::t('app', 'Confirm'), ['accept', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            }
         }
 
         // Display 'delete' button

@@ -166,6 +166,14 @@ class BookingController extends Controller
         ]);
     }
 
+    public function actionAccept($id){
+        $booking = $this->findModel($id);
+        $booking->status = Booking::CONFIRMED;
+        if(!$booking->save()){
+            throw new ErrorException('Confirm denied');
+        }
+        return $this->actionIndex();
+    }
     /**
      * Display booking and timeslots present in session variable
      * @return string
@@ -279,7 +287,7 @@ class BookingController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             //a booking in non opening hours has to be confirmed
-            $model->status = Booking::NOT_CONFIRMED;
+            $model->status = Booking::WAITING_FOR_CONFIRMATION;
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $model;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
             return $this->actionSummarizeBooking();
