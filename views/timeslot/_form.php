@@ -54,6 +54,7 @@ use yii\helpers\Html;
                     'pluginOptions' => [
                         'prefix' => '',
                         'suffix' => ' kr',
+                        'precision' => 0,
                         'allowNegative' => false
                     ]
                 ]); ?>
