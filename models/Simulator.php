@@ -77,4 +77,34 @@ class Simulator extends ActiveRecord
             'price_simulation' => Yii::t('app', 'Price Simulation'),
         ];
     }
+
+    /**
+     * Upload an image related to the simulator
+     * @param bool $isMain set the image as tha main one
+     */
+    public function uploadImage($isMain = true) {
+
+        $this->uploadFile = UploadedFile::getInstance($this, 'uploadFile');
+
+
+        // Saving, copying and deleting is a workaround to PHP uploading tmp files without an extension and the widget being dumb about it
+        // TODO: find a cleaner way to do this and avoid useless copies
+
+        $tmpFolderPath = Yii::getAlias('@webroot') . '/uploads';
+
+        // Check whether the folder in which we will temporary save the uploaded image exists
+        if ( !file_exists($tmpFolderPath) ) {
+            Yii::info("$tmpFolderPath doesn't exist. It will be created.");
+            mkdir($tmpFolderPath);
+        }
+
+        // Save the file in the tmp folder with its name and extension
+        $this->uploadFile->saveAs($tmpFolderPath. '/' .$this->uploadFile->baseName. '.' .$this->uploadFile->extension);
+
+        // Store (it will be copied) the image using yii2images widget, setting it as the main one
+        $this->attachImage($tmpFolderPath. '/' .$this->uploadFile->baseName. '.' .$this->uploadFile->extension, $isMain);
+
+        // Delete the temporary copy of the image, since it is now useless
+        unlink($tmpFolderPath. '/' . $this->uploadFile->baseName . '.' . $this->uploadFile->extension);
+    }
 }
