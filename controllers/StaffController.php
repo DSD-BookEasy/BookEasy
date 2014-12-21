@@ -34,7 +34,7 @@ class StaffController extends \yii\web\Controller
     {
         //Already loggedin users should not access this page
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->goBack();
         }
         $loginData=Yii::$app->request->post('Staff');
         //No data sent, show the form, link the controller with the view
@@ -47,7 +47,7 @@ class StaffController extends \yii\web\Controller
             $staff=Staff::findOne(['user_name'=>$loginData['user_name']]);
             if(!empty($staff) and $staff->isValidPassword($loginData['password'])){
                 Yii::$app->user->login($staff, 3600*24*30);
-                return $this->goHome();
+                return $this->goBack('site/index');
             }
             else{
                 $staff=new Staff();
