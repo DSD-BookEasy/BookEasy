@@ -66,6 +66,7 @@ $this->title = Yii::t('app', "Todo: title");
          */
         $borders = $businessHours;
         $bookUrl = Url::to(['booking/create', 'timeslots[]' => '']);
+        $bookUrlView = Url::to(['/booking']);
         $bookUrlWeekday = Url::to(['booking/create-weekdays']);
         $events = [
             [//Show Business Hours.
@@ -106,6 +107,7 @@ $this->title = Yii::t('app', "Todo: title");
                     'id' => $s->id
                 ];
                 if ($s->id_booking != null) {
+                    $a['id_booking'] = $s->id_booking;
                     if ($bookings[$s->id_booking]->assigned_instructor != null) {
                         $iid = $bookings[$s->id_booking]->assigned_instructor;
                         $a['title'] = \Yii::t('app', '{name} {lname} has booked this slot, which is assigned to {ins_name} {ins_lname}, on {ts} ', [
@@ -122,7 +124,7 @@ $this->title = Yii::t('app', "Todo: title");
                             'lname' => $bookings[$s->id_booking]->surname,
                             'ts' => $bookings[$s->id_booking]->timestamp,
                         ]);
-                        $a['className'] = 'unavailable';
+                        $a['className'] = 'unassigned';
                     }
                 } else {
                     $a['title'] = \Yii::t('app', 'Available');
@@ -228,16 +230,28 @@ $this->registerJs("
         function slotSelecting(event, element) {
             if (event.rendering != "background" && event.rendering != "inverse-background") {
                 if (element.hasClass("available")) {
-                    element.attr("title", "<?=\Yii::t('app',"This timeslot is available")?>");
+                    element.attr("title", "<?=\Yii::t('app',"This timeslot is available click the slot to create a booking")?>");
                     element.tooltip();
                     element.click(function (ev) {
                         ev.preventDefault();
                         window.location.href = "<?=$bookUrl?>" + event.id;
                     })
                 }
-                else {
-                    element.attr("title", "<?=\Yii::t('app',"This timeslot can't be booked. Choose another one, please.")?>");
+                else if (element.hasClass("assigned")) {
+                    element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
                     element.tooltip();
+                    element.click(function (ev) {
+                        ev.preventDefault();
+                        window.location.href = "<?=$bookUrlView?>" + "/" + event.id_booking + "/view";
+                    });
+                }
+                else {
+                    element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
+                    element.tooltip();
+                    element.click(function (ev) {
+                        ev.preventDefault();
+                        window.location.href = "<?=$bookUrlView?>" + "/" + event.id_booking + "/view";
+                    });
                 }
             }
         }

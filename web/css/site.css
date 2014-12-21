@@ -121,17 +121,34 @@ a.desc:after {
     border-color: #32CD32;
     cursor: pointer;
 }
-.fc-event.available:hover{
-    background-color: #ffdc2e;
-}
-.fc-event.unavailable{
-    background-color: #F08080;
-    border-color: #ff4500;
-}
 
 .fc-event.assigned {
     border-color: #9acfea;
     background-color: #9999FF;
+    cursor: pointer;
+}
+
+.fc-event.unassigned {
+    background-color: #F08080;
+    border-color: #ff4500;
+    cursor: pointer;
+}
+
+.fc-event.available:hover {
+    background-color: #ffdc2e;
+}
+
+.fc-event.assigned:hover{
+    background-color: #ffdc2e;
+}
+
+.fc-event.unassigned:hover{
+    background-color: #ffdc2e;
+}
+
+.fc-event.unavailable {
+    background-color: #F08080;
+    border-color: #ff4500;
 }
 
 .fc-bgevent.closed {
