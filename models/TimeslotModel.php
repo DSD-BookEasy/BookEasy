@@ -58,7 +58,8 @@ class TimeslotModel extends ActiveRecord
             [['start_validity', 'end_validity'], 'safe'],
             [['generated_until'], 'safe'],
             [['frequency'], 'string'],
-            [['repeat_day', 'id_simulator'], 'integer']
+            [['repeat_day', 'id_simulator'], 'integer'],
+            [['blocking'], 'boolean']
         ];
     }
 

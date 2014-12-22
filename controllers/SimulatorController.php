@@ -10,6 +10,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 
 /**
@@ -78,8 +79,20 @@ class SimulatorController extends Controller
     {
         $model = new Simulator();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isPost) {
+
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+                $model->uploadFile = UploadedFile::getInstance($model, 'uploadFile');
+
+                // Check whether the user did upload a file and validate to be sure it is an image
+                if ($model->uploadFile && $model->validate()) {
+                    $model->uploadImage();
+                }
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -97,8 +110,30 @@ class SimulatorController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isPost) {
+
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+                if ( Yii::$app->request->post('del_image') ) {
+                    $model->removeImages();
+                }
+
+                $model->uploadFile = UploadedFile::getInstance($model, 'uploadFile');
+
+                // Check whether the user did upload a file and validate to be sure it is an image
+                if ($model->uploadFile && $model->validate()) {
+
+                    // Since we're allowing only one image for simulator, we delete the other ones to keep it clean
+                    if ( $model->getImage() ) {
+                        $model->removeImages();
+                    }
+
+                    $model->uploadImage();
+                }
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -162,6 +197,11 @@ class SimulatorController extends Controller
         where(['id_simulator' => $simId])->
         andWhere(['>=', 'start', $weekBorders['first']->format("c")])->
         andWhere(['<=', 'end', $weekBorders['last']->format("c")])->all();
+
+        // Find simulators
+        $simulators = new ActiveDataProvider([
+            'query' => \app\models\Simulator::find(),
+        ]);
        //
         return $this->render('agenda', [
             'currWeek' => $currWeek,
@@ -169,6 +209,7 @@ class SimulatorController extends Controller
             'nextWeek' => $nextWeek->format("Y\WW"),
             'slots' => $slots,
             'simulator' => $this->findModel($simId),
+            'simulators' => $simulators->getModels(),
         ]);
 
 

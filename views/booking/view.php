@@ -7,57 +7,100 @@ use yii\widgets\DetailView;
 /* @var $model app\models\Booking */
 /* @var $entry_fee integer */
 
-$this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="booking-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <?php
-    $timeslots=$model->timeslots;
+    <?=
+        //summarize is the variable that indicate whether we are display booking information in "summarize mode
+        //before save the booking in the db
+        Html::tag('h1',
+            Yii::t('app', 'Your Secret Key is (save it!!!): ') .
+                Html::tag('span', $model->token, ['class' => 'booking_view_secret_key'])
+        )
+
     ?>
 
-    <p>You booked the following simulator:</p>
-
     <?php
-    $flight_price = $timeslots[0]->cost>0?$timeslots[0]->cost:$timeslots[0]->simulator->price_simulation;
+        $flight_price = 0;
+        $timeSlots = $model->timeslots;
+
+        foreach ($timeSlots as $slot) {
+            $flight_price += $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation;
+        }
     ?>
 
-    <?= Html::ul([
-        Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->start)),
-        Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->end)),
-        Yii::t('app','Entrance: {0, number, currency}', $entry_fee),
-        Yii::t('app','Flight Simulation: {0, number, currency}', $flight_price),
-        Yii::t('app','Total Cost: {0, number, currency}', $entry_fee + $flight_price),
-    ]);
+    <?= Html::tag('div',
+
+            Html::tag('h3', 'Your booking cost: ') .
+
+            Html::ul([
+            Yii::t('app', 'Entrance: {0, number, currency}', $entry_fee),
+            Yii::t('app', 'Total Cost: {0, number, currency}', $entry_fee + $flight_price),
+            ])
+        );
+    ?>
+
+    <?php
+        $names = ['token', 'name', 'surname', 'telephone', 'email', 'address', 'comments', 'timestamp'];
+        $attributes = [];
+        foreach($names as $att){
+            if($model[$att] != null){
+                array_push($attributes, $att);
+            }
+        }
     ?>
 
     <?= DetailView::widget([
         'model' => $model,
-        'attributes' => [
-            'id',
-            'token',
-            'timestamp',
-            'name',
-            'surname',
-            'telephone',
-            'email:email',
-            'address',
-            'comments',
-        ],
+        'attributes' => $attributes,
+        'template' => function($attribute){
+            //this function set a class for each row in the table.
+            //the class is 'booking_view_tab_<attribute_name>'
+            return "<tr class = 'booking_view_tab_" .$attribute['attribute']. "'><th>" .$attribute['label']. "</th><td>" .$attribute['value'] . "</td></tr>";
+        }
     ]) ?>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
+    <?php
+
+        foreach($timeSlots as $slot){
+            echo Html::tag('div',
+
+                Html::tag('h3', $slot->simulator->name) .
+
+                Html::ul([
+                    Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($slot->start)),
+                    Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($slot->end)),
+                    Yii::t('app','Flight Simulation: {0, number, currency}', $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation)
+                ])
+            );
+        }
+
+    ?>
+
+    <div>
+        <?php
+
+        // Display 'edit' button to logged in users only
+        if (Yii::$app->user->getId() != null) {
+            echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            if($model->status == \app\models\Booking::WAITING_FOR_CONFIRMATION){
+                echo Html::a(Yii::t('app', 'Confirm'), ['accept', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            }
+        }
+
+        // Display 'delete' button
+        echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
                 'method' => 'post',
             ],
-        ]) ?>
-    </p>
+        ]);
+
+        ?>
+    </div>
 
 </div>

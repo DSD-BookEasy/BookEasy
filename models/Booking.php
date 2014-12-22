@@ -22,6 +22,10 @@ use yii\base\ErrorException;
  */
 class Booking extends \yii\db\ActiveRecord
 {
+
+    const CONFIRMED = 1;
+    const NOT_CONFIRMED = 0;
+    const WAITING_FOR_CONFIRMATION = 2;
     /**
      * @inheritdoc
      */
@@ -44,7 +48,7 @@ class Booking extends \yii\db\ActiveRecord
             ['email', 'email'],
             [['name', 'surname'], 'required'],
             ['email', 'required', 'on' => ['weekdays']],
-            [['id', 'name', 'surname', 'token'], 'required', 'on' => ['search']]
+            [['name', 'surname', 'token'], 'required', 'on' => ['search']]
 
         ];
     }
@@ -57,13 +61,14 @@ class Booking extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'status' => Yii::t('app', 'Status'),
-            'timestamp' => Yii::t('app', 'Timestamp'),
+            'timestamp' => Yii::t('app', 'Booking Created on'),
             'name' => Yii::t('app', 'Name'),
             'surname' => Yii::t('app', 'Surname'),
             'telephone' => Yii::t('app', 'Telephone'),
             'email' => Yii::t('app', 'Email'),
             'address' => Yii::t('app', 'Address'),
-            'comments' => Yii::t('app', 'Comments'),
+            'comments' => Yii::t('app', 'Your comments'),
+            'token' => Yii::t('app', 'Secret Key')
         ];
     }
 

@@ -5,6 +5,10 @@ namespace app\controllers;
 use Yii;
 use app\models\Staff;
 use yii\data\ActiveDataProvider;
+use app\models\Booking;
+use app\models\Simulator;
+use app\models\Timeslot;
+use DateTime;
 use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -43,28 +47,86 @@ class StaffController extends \yii\web\Controller
         if (!Yii::$app->user->isGuest) {
             return $this->goBack();
         }
-        $loginData=Yii::$app->request->post('Staff');
+        $loginData = Yii::$app->request->post('Staff');
+
         //No data sent, show the form, link the controller with the view
-        if(empty($loginData)){
+        if (empty($loginData)) {
             return $this->render('login', [
                 'model' => new Staff(),
             ]);
-        }
-        else{
-            $staff=Staff::findOne(['user_name'=>$loginData['user_name']]);
-            if(!empty($staff) and $staff->isValidPassword($loginData['password'])){
-                Yii::$app->user->login($staff, 3600*24*30);
+        } else {
+            $staff = Staff::findOne(['user_name' => $loginData['user_name']]);
+            if (!empty($staff) and $staff->isValidPassword($loginData['password'])) {
+                Yii::$app->user->login($staff, 3600 * 24 * 30);
                 return $this->goBack('/');
-            }
-            else{
-                $staff=new Staff();
-                $staff->user_name=$loginData['user_name'];
+            } else {
+                $staff = new Staff();
+                $staff->user_name = $loginData['user_name'];
                 return $this->render('login', [
                     'model' => $staff,
-                    'error' => Yii::t('app','Invalid Username or Password')
+                    'error' => \Yii::t('app', 'Invalid Username or Password')
                 ]);
             }
         }
+    }
+
+    public function actionAgenda()
+    {
+        //date format string:
+        $format = "Y-m-d";
+        //retrieve all simulator data
+        $simulators = Simulator::find()->all();
+
+        //set navigator values;
+        $day = \Yii::$app->request->get("day");
+        if (empty($day) || !strtotime($day)) {
+            // If the week is not set (properly), it's the today's one
+            $day = date($format);
+        }
+        // Current, next and previous days of navigation
+        $currDay = new DateTime($day);
+        $nextDay = clone $currDay;
+        $nextDay->modify("next day");
+        $prevDay = clone $currDay;
+        $prevDay->modify("previous day");
+
+        $dayStarting = DateTime::createFromFormat("Y-m-d H:i:s", $currDay->format("Y-m-d") . " " . "00:00:00");
+        $dayEnding = DateTime::createFromFormat("Y-m-d H:i:s", $currDay->format("Y-m-d") . " " . "23:59:59");
+
+        // Find timeslots, bookings and related staff information
+        $sim_slots = array();
+        $bookings = array();
+        $staff = array();
+        //TODO to self: examine this code if the assigned instructor is moved to another table
+        foreach($simulators as $sim) {
+            //foreach simulator find time slots with the given date
+            $slots = Timeslot::find()->
+            where(['id_simulator' => $sim->id])->
+            andWhere(['>=', 'start', $dayStarting->format("c")])->
+            andWhere(['<=', 'end', $dayEnding->format("c")])->all();
+            $sim_slots[$sim->id] = $slots;
+            foreach($slots as $slot) {
+                //foreach timeslot is found, get the booking information
+                if ($slot->id_booking != null && !array_key_exists($slot->id_booking, $bookings)) {
+                    $booking = Booking::findOne($slot->id_booking);
+                    $bookings[$slot->id_booking] = $booking;
+                    if ($booking->assigned_instructor != null && !array_key_exists($booking->assigned_instructor, $staff)) {
+                        //if the booking is assigned get the instructor details
+                        $instructor = Staff::findOne($booking->assigned_instructor);
+                        $staff[$instructor->id] = $instructor;
+                    }
+                }
+            }
+        }
+        return $this->render("agenda", [
+            'simulators' => $simulators,
+            'currDay' => $currDay,
+            'nextDay' => $nextDay->format($format),
+            'prevDay' => $prevDay->format($format),
+            'slots' => $sim_slots,
+            'bookings' => $bookings,
+            'staff' => $staff
+        ]);
     }
 
     /**

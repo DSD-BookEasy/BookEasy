@@ -2,6 +2,7 @@
 /* @var $this yii\web\View */
 /* @var $simulators app\models\Simulator[]*/
 
+use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\helpers\Html;
 
@@ -61,6 +62,29 @@ $this->title = 'Västerås Flygmuseum';
                 ?>
             </p>
 
+        </div>
+
+        <div class="row text-center">
+
+            <?php foreach ($simulators as $simulator) { ?>
+                <div class="col-md-3">
+                    <h2><?= $simulator->name ?></h2>
+                    <p>
+                        <?php
+                        if ($simulator->getImage()) {
+                            echo Html::img('@web/' . $simulator->getImage()->getPath('225x'),
+                                ['alt' => Yii::t('app', 'Simulator image')]);
+                        } else {
+                            echo Html::img('http://placehold.it/225',
+                                ['alt' => Yii::t('app', 'Simulator image')]);
+                        }
+                        ?>
+                    </p>
+                    <p><a class="btn btn-default"
+                          href="<?= Url::to(['simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
+                                'Book &raquo;'); ?></a></p>
+                </div>
+            <?php } ?>
         </div>
 
     </div>

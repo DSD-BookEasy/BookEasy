@@ -5,7 +5,6 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TimeslotModel */
-/* @var $weekDays string[] */
 /* @var $simulators app\models\Simulator[]*/
 
 
@@ -21,7 +20,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
-        'weekDays' => $weekDays,
         'simulators' => $simulators
     ]) ?>
 

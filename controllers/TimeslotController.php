@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-use app\models\TimeslotModel;
+use app\models\Simulator;
 use Yii;
 use app\models\Timeslot;
 use yii\data\ActiveDataProvider;
@@ -78,8 +78,14 @@ class TimeslotController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
+
+            $simulators = new ActiveDataProvider([
+                'query' => Simulator::find(),
+            ]);
+
             return $this->render('create', [
                 'model' => $model,
+                'simulators' => $simulators->getModels(),
             ]);
         }
     }

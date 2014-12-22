@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'end_validity',
             'repeat_day',
             'id_simulator',
+            'blocking'
         ],
     ]) ?>
 

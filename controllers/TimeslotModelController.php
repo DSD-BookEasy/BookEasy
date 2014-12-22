@@ -88,19 +88,12 @@ class TimeslotModelController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
 
-            $weekDays = [];
-
-            for ($i = 0; $i <= 6; $i++) {
-                $weekDays[$i+1] = date('l', strtotime("this week + $i days"));
-            }
-
             $simulators = new ActiveDataProvider([
                 'query' => Simulator::find(),
             ]);
 
             return $this->render('create', [
                 'model' => $model,
-                'weekDays' => $weekDays,
                 'simulators' => $simulators->getModels()
             ]);
         }
@@ -121,19 +114,12 @@ class TimeslotModelController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
 
-            $weekDays = [];
-
-            for ($i = 0; $i <= 6; $i++) {
-                $weekDays[$i+1] = date('l', strtotime("this week + $i days"));
-            }
-
             $simulators = new ActiveDataProvider([
                 'query' => Simulator::find(),
             ]);
 
             return $this->render('update', [
                 'model' => $model,
-                'weekDays' => $weekDays,
                 'simulators' => $simulators->getModels()
             ]);
         }
@@ -151,6 +137,20 @@ class TimeslotModelController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public static function weekdays()
+    {
+        return [
+            '1' => Yii::t('app', 'Monday'),
+            '2' => Yii::t('app', 'Tuesday'),
+            '3' => Yii::t('app', 'Wednesday'),
+            '4' => Yii::t('app', 'Thursday'),
+            '5' => Yii::t('app', 'Friday'),
+            '6' => Yii::t('app', 'Saturday'),
+            '7' => Yii::t('app', 'Sunday')
+        ];
+    }
+
 
     /**
      * Finds the TimeslotModel model based on its primary key value.
