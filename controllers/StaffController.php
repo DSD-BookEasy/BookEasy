@@ -31,7 +31,12 @@ class StaffController extends \yii\web\Controller
                         'actions' => ['index'],
                         'allow' => true,
                         'roles' => ['manageStaff']
-                    ]
+                    ],
+                    [
+                        'actions' => ['agenda'],
+                        'allow' => true,
+                        'roles' => ['manageBookings','assignedToBooking']
+                    ],
                 ],
             ],
         ];
