@@ -3,6 +3,7 @@
 /* @var $simulators app\models\Simulator[]*/
 
 use yii\helpers\Url;
+use yii\helpers\Html;
 
 $this->title = 'Västerås Flygmuseum';
 ?>
@@ -15,36 +16,49 @@ $this->title = 'Västerås Flygmuseum';
             <p class="lead"><?= Yii::t('app', 'Choose what you wish to manage'); ?></p>
             <br>
             <p>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'simulator/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Simulators'); ?></a>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'booking/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Bookings'); ?></a>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'timeslot/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Timeslots'); ?></a>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'timeslot-model/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Timeslot Models'); ?></a>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'staff/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Staff'); ?></a>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'permission/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Permissions Management'); ?></a>
+                <?php
+                    $managements=[
+                        [
+                            'url' => 'simulator/index',
+                            'title' => 'Simulators',
+                            'permission' => 'manageSimulator'
+                        ],
+                        [
+                            'url' => 'booking/index',
+                            'title' => 'Bookings',
+                            'permission' => 'manageBookings'
+                        ],
+                        [
+                            'url' => 'timeslot/index',
+                            'title' => 'Timeslots',
+                            'permission' => 'manageTimeslots'
+                        ],
+                        [
+                            'url' => 'timeslot-model/index',
+                            'title' => 'Timeslot Models',
+                            'permission' => 'manageTimeslotModels'
+                        ],
+                        [
+                            'url' => 'staff/index',
+                            'title' => 'Staff',
+                            'permission' => 'manageStaff'
+                        ],
+                        [
+                            'url' => 'permission/index',
+                            'title' => 'Permissions Management',
+                            'permission' => 'assignPermissions'
+                        ],
+                        [
+                            'url' => 'permission/roles',
+                            'title' => 'Administrative Roles Management',
+                            'permission' => 'manageRoles'
+                        ],
+                    ];
+
+                    foreach($managements as $m){
+                        echo Html::a(Yii::t('app',$m['title']),$m['url'],['class'=> 'btn btn-default btn-lg']);
+                    }
+                ?>
             </p>
 
         </div>

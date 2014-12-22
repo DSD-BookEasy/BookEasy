@@ -31,15 +31,22 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($user, 'address')->textInput(['maxlength' => 255]) ?>
 
-    <fieldset>
-        <legend><?= Yii::t('app',"Administrative Roles");?></legend>
-        <?php
-            foreach($allRoles as $r){
-                echo Html::checkbox("roles[".$r->name."]", array_key_exists($r->name,$roles))."&nbsp;";
-                echo Html::label($r->name,"roles[".$r->name."]",['title' => $r->description])."<br />";
-            }
+    <?php
+    $identity=Yii::$app->user;
+    if($identity->can('assignRoles')) {
         ?>
-    </fieldset>
+        <fieldset>
+            <legend><?= Yii::t('app', "Administrative Roles"); ?></legend>
+            <?php
+            foreach ($allRoles as $r) {
+                echo Html::checkbox("roles[" . $r->name . "]", array_key_exists($r->name, $roles)) . "&nbsp;";
+                echo Html::label($r->name, "roles[" . $r->name . "]", ['title' => $r->description]) . "<br />";
+            }
+            ?>
+        </fieldset>
+    <?php
+    }
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton($user->isNewRecord ? Yii::t('app', 'Add') : Yii::t('app', 'Update'), ['class' => $user->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
