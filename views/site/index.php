@@ -20,7 +20,7 @@ $this->title = 'Västerås Flygmuseum';
 
 
         <div class="row text-center">
-
+            <!-- Shows a selection of all available simulators. -->
             <?php
 
             foreach ($simulators as $simulator) {

@@ -186,6 +186,11 @@ class SimulatorController extends Controller
         where(['id_simulator' => $simId])->
         andWhere(['>=', 'start', $weekBorders['first']->format("c")])->
         andWhere(['<=', 'end', $weekBorders['last']->format("c")])->all();
+
+        // Find simulators
+        $simulators = new ActiveDataProvider([
+            'query' => \app\models\Simulator::find(),
+        ]);
        //
         return $this->render('agenda', [
             'currWeek' => $currWeek,
@@ -193,6 +198,7 @@ class SimulatorController extends Controller
             'nextWeek' => $nextWeek->format("Y\WW"),
             'slots' => $slots,
             'simulator' => $this->findModel($simId),
+            'simulators' => $simulators->getModels(),
         ]);
 
 
