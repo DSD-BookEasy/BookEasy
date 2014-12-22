@@ -23,7 +23,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-md-12">
                     <?php
                     if ($model->getImage()) {
-                        echo Html::img('@web/' . $model->getImage()->getPath('250x'),
+                        $path = '@web/' . $model->getImage()->getPath('250x');
+                        $path = str_replace("\\", "/", $path);
+                        echo Html::img($path,
                             ['alt' => Yii::t('app', 'Simulator image')]);
                     } else {
                         echo Html::img('http://placehold.it/250',
