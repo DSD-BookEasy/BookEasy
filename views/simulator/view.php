@@ -18,15 +18,46 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
 
-        <?php
-        if ($model->getImage()) {
-            echo Html::img('@web/' . $model->getImage()->getPath('300x'),
-                ['class' => 'col-md-3', 'alt' => Yii::t('app', 'Simulator image')]);
-        } else {
-            echo Html::img('http://placehold.it/300',
-                ['class' => 'col-md-3', 'alt' => Yii::t('app', 'Simulator image')]);
-        }
-        ?>
+        <div class="col-md-3">
+            <p class="row">
+                <div class="col-md-12">
+                    <?php
+                    if ($model->getImage()) {
+                        echo Html::img('@web/' . $model->getImage()->getPath('250x'),
+                            ['alt' => Yii::t('app', 'Simulator image')]);
+                    } else {
+                        echo Html::img('http://placehold.it/250',
+                            ['class' => 'col-md-12', 'alt' => Yii::t('app', 'Simulator image')]);
+                    }
+                    ?>
+                </div>
+            </p>
+            <p class="row">
+                <div class="col-md-6">
+                    <?php
+                    if ($model->getImage()) {
+                        echo Html::img('@web/' . $model->getImage()->getPath('125x'),
+                            ['alt' => Yii::t('app', 'Simulator image')]);
+                    } else {
+                        echo Html::img('http://placehold.it/125',
+                            ['alt' => Yii::t('app', 'Simulator image')]);
+                    }
+                    ?>
+                </div>
+                <div class="col-md-6">
+
+                    <?php
+                    if ($model->getImage()) {
+                        echo Html::img('@web/' . $model->getImage()->getPath('70x'),
+                            ['alt' => Yii::t('app', 'Simulator image')]);
+                    } else {
+                        echo Html::img('http://placehold.it/70',
+                            ['class' => 'col-md-6', 'alt' => Yii::t('app', 'Simulator image')]);
+                    }
+                    ?>
+                </div>
+            </p>
+        </div>
 
         <div class="col-md-9">
 

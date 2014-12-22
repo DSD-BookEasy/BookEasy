@@ -48,7 +48,7 @@ class Simulator extends ActiveRecord
             [['description'], 'string'],
             [['flight_duration', 'price_simulation'], 'integer'],
             [['name'], 'string', 'max' => 255],
-            [['uploadFile'], 'image']
+            [['uploadFile'], 'image', 'maxSize' => 3*1024*1024]
         ];
     }
 

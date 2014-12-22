@@ -48,10 +48,10 @@ $this->title = 'Västerås Flygmuseum';
                     <p>
                         <?php
                         if ($simulator->getImage()) {
-                            echo Html::img('@web/' . $simulator->getImage()->getPath('225x'),
+                            echo Html::img('@web/' . $simulator->getImage()->getPath('250x'),
                                 ['alt' => Yii::t('app', 'Simulator image')]);
                         } else {
-                            echo Html::img('http://placehold.it/225',
+                            echo Html::img('http://placehold.it/250',
                                 ['alt' => Yii::t('app', 'Simulator image')]);
                         }
                         ?>
