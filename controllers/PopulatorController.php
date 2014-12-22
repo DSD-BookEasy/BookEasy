@@ -76,6 +76,11 @@ class PopulatorController extends \yii\web\Controller
     {
         Timeslot::deleteAll();
         Booking::deleteAll();
+        $simulators = Simulator::find()->all();
+        foreach($simulators as $simulator) {
+            $simulator->clearImagesCache();
+            $simulator->removeImages();
+        }
         Simulator::deleteAll();
         Staff::deleteAll();
         TimeslotModel::deleteAll();
@@ -84,6 +89,7 @@ class PopulatorController extends \yii\web\Controller
         Yii::$app->db->createCommand("truncate table " . Simulator::tableName())->query();
         Yii::$app->db->createCommand("truncate table " . Staff::tableName())->query();
         Yii::$app->db->createCommand("truncate table " . TimeslotModel::tableName())->query();
+        Yii::$app->db->createCommand("truncate table image;")->query();
         return $this->render('index');
     }
 
