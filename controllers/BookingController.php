@@ -14,6 +14,7 @@ use yii\db\Transaction;
 use yii\web\BadRequestHttpException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\ServerErrorHttpException;
@@ -46,13 +47,18 @@ class BookingController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index','update','view','delete'],
+                'only' => ['index','update'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index','update','view','delete'],
+                        'actions' => ['index','update'],
                         'roles' => ['viewAllBookings']
-                    ]
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['accept'],
+                        'roles' => ['confirmBooking']
+                    ],
                 ],
 
             ],
@@ -149,15 +155,14 @@ class BookingController extends Controller
     public function actionView($id)
     {
         $booking = $this->findModel($id);
-        if (Yii::$app->user->getId() != null) {
+        if (Yii::$app->user->can('viewAllBookings')) {
             $token = $booking->token;
-        }else{
+        } else{
             $token = Yii::$app->request->get('token');
         }
 
-        if(strcmp($booking->token, $token) != 0){
-            //error page
-            throw new \ErrorException();
+        if($booking->token==$token){
+            throw new ForbiddenHttpException(Yii::t('app',"You don't have permission to see this booking"));
         }
 
         return $this->render('view', [
