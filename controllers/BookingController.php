@@ -102,13 +102,20 @@ class BookingController extends Controller
 
     /**
      * Deletes an existing Booking model.
+     * The token of the booking is required to delete the booking
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $token=null)
     {
         $model = $this->findModel($id);
+        if (Yii::$app->user->can('manageBookings')) {
+            $token = $model->token;
+        }
+        if($model->token != $token){
+            throw new ForbiddenHttpException(Yii::t('app',"You don't have permission to see this booking"));
+        }
         Timeslot::handleDeleteBooking($model);
         $model->delete();
         return $this->redirect(['index']);
