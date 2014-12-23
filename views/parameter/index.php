@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
+use kartik\datetime\DateTimePicker;
+use kartik\time\TimePicker;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -64,6 +66,8 @@ function renderFormColumn($model,$natures){
                 return renderFormTextarea($model);
             case 'time':
                 return renderFormTime($model);
+            case 'datetime':
+                return renderFormDateTime($model);
             default:
                 return renderFormTextarea($model);
         }
@@ -116,7 +120,7 @@ function renderFormText($model){
     return $out;
 }
 
-function renderFormTime($model){
+function renderFormDateTime($model){
     ob_start();
     $form = ActiveForm::begin([
         'action' => ['parameter/update','id'=>$model->id]
@@ -128,6 +132,31 @@ function renderFormTime($model){
         'removeButton' => false,
         'pluginOptions' => [
             'autoclose' => true,
+        ]
+    ]);
+    $out .= Html::submitButton();
+
+    ob_start();
+    $form->end();
+    $out .= ob_get_contents();
+    ob_end_clean();
+
+    return $out;
+}
+
+
+function renderFormTime($model){
+    ob_start();
+    $form = ActiveForm::begin([
+        'action' => ['parameter/update','id'=>$model->id]
+    ]);
+    $out = ob_get_contents();
+    ob_end_clean();
+
+    $out .= $form->field($model, 'value')->widget(TimePicker::className(), [
+        'pluginOptions' => [
+            'autoclose' => true,
+            'showMeridian' => false,
         ]
     ]);
     $out .= Html::submitButton();
