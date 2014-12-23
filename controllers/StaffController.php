@@ -29,6 +29,7 @@ class StaffController extends \yii\web\Controller
                     ],
                     [
                         'actions' => ['index'],
+                        'actions' => ['index', 'view'],
                         'allow' => true,
                         'roles' => ['manageStaff']
                     ],
@@ -160,6 +161,19 @@ class StaffController extends \yii\web\Controller
     }
 
     /**
+     * Displays a single Staff.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionView($id)
+    {
+        $model = Staff::findOne($id);
+
+        return $this->render('view', [
+            'model' => $model,
+            'roles' => Yii::$app->authManager->getRolesByUser($model->id)
+        ]);
+    }
      * Shows a form to edit the informations of a user
      * @param integer $id the id of the user to edit
      * @return string
