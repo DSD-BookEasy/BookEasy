@@ -72,9 +72,7 @@ $this->title = 'Västerås Flygmuseum';
                     <p>
                         <?php
                         if ($simulator->getImage()) {
-                            $path = '@web/' . $simulator->getImage()->getPath('250x');
-                            $path = str_replace("\\", "/", $path);
-                            echo Html::img($path,
+                            echo Html::img('@web/' . $simulator->getImage()->getPath('250x'),
                                 ['alt' => Yii::t('app', 'Simulator image')]);
                         } else {
                             echo Html::img('http://placehold.it/250',
