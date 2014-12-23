@@ -182,6 +182,7 @@ class BookingController extends Controller
         return $this->render('summarize', [
             'model' => Yii::$app->session[self::SESSION_PARAMETER_BOOKING],
             'timeSlots' => Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT],
+            'simulator_fee' => $this->calculateSimulatorPrice(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]),
             'entry_fee' => Parameter::getValue('entryFee', 80)
         ]);
     }
@@ -295,6 +296,7 @@ class BookingController extends Controller
             return $this->render('createWeekdays', [
                 'model' => $model,
                 'timeslots' => $sessionTimeSlots,
+                'simulator_fee' => $this->calculateSimulatorPrice($sessionTimeSlots),
                 'entry_fee' => Parameter::getValue('entryFee', 80)
             ]);
         }
@@ -408,6 +410,39 @@ class BookingController extends Controller
         }
 
         return $isValid;
+    }
+
+    /**
+     * @param $timeSlots
+     * @return int
+     */
+    private function calculateSimulatorPrice ($timeSlots) {
+        $simulatorFee = 0;
+
+        if (empty($timeSlots) == false) {
+            $timeSlot = $timeSlots[0];
+
+            $startDateInSeconds = strtotime($timeSlot->start);
+            $endDateInSeconds = strtotime($timeSlot->end);
+
+            // Booked time span in milliseconds
+            $timeSpanInMillis = $endDateInSeconds - $startDateInSeconds;
+
+            // Booked simulator
+            $bookedSimulator = $timeSlot->simulator;
+
+            // Price for a single time slot of a simulator
+            // NOTE: Simulator stores time slot length in minutes
+            $initialPricingTimeSpanInSeconds = $bookedSimulator->flight_duration * 60;
+
+            // Total number of booked time slots
+            $numberOfBookedTimeSlots = ceil($timeSpanInMillis / $initialPricingTimeSpanInSeconds);
+
+            // Final simulator price
+            $simulatorFee = $numberOfBookedTimeSlots * $bookedSimulator->price_simulation;
+        }
+
+        return $simulatorFee;
     }
 
 

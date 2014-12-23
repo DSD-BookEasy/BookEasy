@@ -6,27 +6,21 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
 /* @var $entry_fee integer */
+/* @var simulator_fee integer */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="booking-view">
 
-    <?php
-    $flight_price = 0;
-    //timeSlots is passed by the controller
-    foreach ($timeSlots as $slot) {
-        $flight_price += $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation;
-    }
-    ?>
-
     <?= Html::tag('div',
 
         Html::tag('h3', 'Your booking cost: ') .
 
         Html::ul([
-            Yii::t('app', 'Entrance: {0, number, currency}', $entry_fee),
-            Yii::t('app', 'Total Cost: {0, number, currency}', $entry_fee + $flight_price),
+            Yii::t('app', 'Entrance Fee: {0, number, currency}', $entry_fee),
+            Yii::t('app', 'Simulator Fee: {0, number, currency}', $simulator_fee),
+            Yii::t('app', 'Total Fee: {0, number, currency}', $entry_fee + $simulator_fee),
         ])
     );
     ?>
@@ -61,8 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             Html::ul([
                 Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($slot->start)),
-                Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($slot->end)),
-                Yii::t('app','Flight Simulation: {0, number, currency}', $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation)
+                Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($slot->end))
             ])
         );
     }
