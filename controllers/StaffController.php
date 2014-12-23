@@ -28,7 +28,6 @@ class StaffController extends \yii\web\Controller
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['index'],
                         'actions' => ['index', 'view'],
                         'allow' => true,
                         'roles' => ['manageStaff']
@@ -174,6 +173,34 @@ class StaffController extends \yii\web\Controller
             'roles' => Yii::$app->authManager->getRolesByUser($model->id)
         ]);
     }
+
+    /**
+     * Creates a new Staff model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreate()
+    {
+        $model = new Staff();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+            if (Yii::$app->user->can('assignRoles')) {
+                $this->updateRoles($model, Yii::$app->request->post('roles', []));
+            }
+
+            return $this->redirect(['view', 'id' => $model->id]);
+
+        } else {
+            return $this->render('create', [
+                'model' => $model,
+                'allRoles' => Yii::$app->authManager->getRoles()
+            ]);
+        }
+    }
+
+
+    /**
      * Shows a form to edit the informations of a user
      * @param integer $id the id of the user to edit
      * @return string
