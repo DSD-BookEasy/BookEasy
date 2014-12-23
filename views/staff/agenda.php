@@ -4,7 +4,7 @@ use kartik\date\DatePicker;
 use yii\helpers\Html;
 use talma\widgets\FullCalendar;
 use yii\helpers\Url;
-use app\models\Simulator;
+use app\models\Parameter;
 
 
 /* @var $form yii\bootstrap\ActiveForm */
@@ -54,9 +54,9 @@ $this->title = Yii::t('app', "Staff Agenda");
             Tabs usage reference: http://getbootstrap.com/javascript/#tabs-usage
         -->
         <?php
-        $businessHours = [//TODO Make these dynamic
-            'start' => '8:00',
-            'end' => '19:00'
+        $businessHours = [
+            'start' => Parameter::getValue('businessTimeStart'),
+            'end' => Parameter::getValue('businessTimeEnd')
         ];
 
         /**

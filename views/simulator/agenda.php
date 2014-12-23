@@ -5,6 +5,7 @@ use kartik\date\DatePicker;
 use yii\helpers\Html;
 use talma\widgets\FullCalendar;
 use yii\helpers\Url;
+use app\models\Parameter;
 
 
 /* @var $form yii\bootstrap\ActiveForm */
@@ -90,9 +91,9 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
     <div id="cal_datepicker" class="row">
         <div id="calendar" class="col-md-10">
             <?php
-            $businessHours = [//TODO Make these dynamic
-                'start' => '8:00',
-                'end' => '19:00'
+            $businessHours = [
+                'start' => Parameter::getValue('businessTimeStart'),
+                'end' => Parameter::getValue('businessTimeEnd')
             ];
 
             /**
