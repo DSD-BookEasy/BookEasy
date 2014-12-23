@@ -19,42 +19,42 @@ $this->title = 'Västerås Flygmuseum';
                 <?php
                     $managements=[
                         [
-                            'url' => 'simulator/index',
+                            'url' => '/simulator/index',
                             'title' => 'Simulators',
                             'permission' => 'manageSimulator'
                         ],
                         [
-                            'url' => 'booking/index',
+                            'url' => '/booking/index',
                             'title' => 'Bookings',
                             'permission' => 'manageBookings'
                         ],
                         [
-                            'url' => 'timeslot/index',
+                            'url' => '/timeslot/index',
                             'title' => 'Timeslots',
                             'permission' => 'manageTimeslots'
                         ],
                         [
-                            'url' => 'timeslot-model/index',
+                            'url' => '/timeslot-model/index',
                             'title' => 'Timeslot Models',
                             'permission' => 'manageTimeslotModels'
                         ],
                         [
-                            'url' => 'staff/index',
+                            'url' => '/staff/index',
                             'title' => 'Staff',
                             'permission' => 'manageStaff'
                         ],
                         [
-                            'url' => 'permission/index',
+                            'url' => '/permission/index',
                             'title' => 'Permissions Management',
                             'permission' => 'assignPermissions'
                         ],
                         [
-                            'url' => 'permission/roles',
+                            'url' => '/permission/roles',
                             'title' => 'Administrative Roles Management',
                             'permission' => 'manageRoles'
                         ],
                         [
-                            'url' => 'parameter/index',
+                            'url' => '/parameter/index',
                             'title' => 'System Parameters Management',
                             'permission' => 'manageParams'
                         ],
@@ -85,7 +85,7 @@ $this->title = 'Västerås Flygmuseum';
                         ?>
                     </p>
                     <p><a class="btn btn-default"
-                          href="<?= Url::to(['simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
+                          href="<?= Url::to(['/simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
                                 'Book &raquo;'); ?></a></p>
                 </div>
             <?php } ?>

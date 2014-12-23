@@ -12,7 +12,7 @@ use kartik\time\TimePicker;
 /* @var $paramsNatures array */
 
 $this->title = Yii::t('app', 'Parameters');
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
 ?>
 <div class="parameter-index">
 
@@ -85,7 +85,7 @@ function renderFormColumn($model,$natures){
 function renderFormTextarea($model){
     ob_start();
     $form = ActiveForm::begin([
-      'action' => ['parameter/update','id'=>$model->id]
+      'action' => ['update','id'=>$model->id]
     ]);
     $out = ob_get_contents();
     ob_end_clean();
@@ -104,7 +104,7 @@ function renderFormTextarea($model){
 function renderFormText($model){
     ob_start();
     $form = ActiveForm::begin([
-        'action' => ['parameter/update','id'=>$model->id]
+        'action' => ['update','id'=>$model->id]
     ]);
     $out = ob_get_contents();
     ob_end_clean();
@@ -123,7 +123,7 @@ function renderFormText($model){
 function renderFormDateTime($model){
     ob_start();
     $form = ActiveForm::begin([
-        'action' => ['parameter/update','id'=>$model->id]
+        'action' => ['update','id'=>$model->id]
     ]);
     $out = ob_get_contents();
     ob_end_clean();
@@ -148,7 +148,7 @@ function renderFormDateTime($model){
 function renderFormTime($model){
     ob_start();
     $form = ActiveForm::begin([
-        'action' => ['parameter/update','id'=>$model->id]
+        'action' => ['update','id'=>$model->id]
     ]);
     $out = ob_get_contents();
     ob_end_clean();

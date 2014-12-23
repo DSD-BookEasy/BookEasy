@@ -11,7 +11,7 @@ use yii\helpers\Html;
 $this->title = Yii::t('app', 'Create {modelClass}', [
     'modelClass' => 'Time Slot Model',
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slot Models'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slot Models'), 'url' => 'index'];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="time-slot-model-create">

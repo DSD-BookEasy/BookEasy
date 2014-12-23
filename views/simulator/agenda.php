@@ -62,7 +62,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
 
     <div id="calendar_buttons">
         <a href="<?= Url::to([
-                'simulator/agenda',
+                'agenda',
                 'id' => $simulator->id,
                 'week' => $prevWeek
             ]) ?>"  class="btn btn-default">
@@ -71,14 +71,14 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             </a>
 
         <a href="<?= Url::to([
-                'simulator/agenda',
+                'agenda',
                 'id' => $simulator->id,
             ]) ?>" class="btn btn-default">
                 <?= \Yii::t('app', "Today"); ?>
             </a>
 
         <a href="<?= Url::to([
-                'simulator/agenda',
+                'agenda',
                 'id' => $simulator->id,
                 'week' => $nextWeek
             ]) ?>" class="btn btn-default">
@@ -135,8 +135,8 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 $events[] = $a;
             }
 
-            $bookUrl = Url::to(['booking/create', 'timeslots[]' => '']);
-            $bookUrlWeekday = Url::to(['booking/create-weekdays']);
+            $bookUrl = Url::to(['/booking/create', 'timeslots[]' => '']);
+            $bookUrlWeekday = Url::to(['/booking/create-weekdays']);
 
             echo FullCalendar::widget([
                 'config' => [
@@ -176,7 +176,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             <label><?= \Yii::t('app', "Pick a date"); ?></label>
             <?php
             $agenda_url = Url::to([
-                'simulator/agenda',
+                'agenda',
                 'id' => $simulator->id,
             ]);
             echo DatePicker::widget([

@@ -24,7 +24,7 @@ $this->title = Yii::t('app', "Staff Agenda");
 
     <div id="calendar_buttons">
         <a href="<?= Url::to([
-            'staff/agenda',
+            '/staff/agenda',
             'day' => $prevDay
         ]) ?>" class="btn btn-default">
             <span class="glyphicon glyphicon-chevron-left"></span>
@@ -32,13 +32,13 @@ $this->title = Yii::t('app', "Staff Agenda");
         </a>
 
         <a href="<?= Url::to([
-            'staff/agenda',
+            '/staff/agenda',
         ]) ?>" class="btn btn-default">
             <?= \Yii::t('app', "Today"); ?>
         </a>
 
         <a href="<?= Url::to([
-            'staff/agenda',
+            '/staff/agenda',
             'day' => $nextDay
         ]) ?>" class="btn btn-default">
             <?= \Yii::t('app', "Next day"); ?>
@@ -65,9 +65,9 @@ $this->title = Yii::t('app', "Staff Agenda");
          * timeslots exceeding it, we should make space for them too
          */
         $borders = $businessHours;
-        $bookUrl = Url::to(['booking/create', 'timeslots[]' => '']);
+        $bookUrl = Url::to(['/booking/create', 'timeslots[]' => '']);
         $bookUrlView = Url::to(['/booking']);
-        $bookUrlWeekday = Url::to(['booking/create-weekdays']);
+        $bookUrlWeekday = Url::to(['/booking/create-weekdays']);
         $events = [
             [//Show Business Hours.
                 'start' => $businessHours['start'],
@@ -183,7 +183,7 @@ $this->title = Yii::t('app', "Staff Agenda");
             <label><?= \Yii::t('app', "Pick a date"); ?></label>
             <?php
             $agenda_url = Url::to([
-                'staff/agenda'
+                '/staff/agenda'
             ]);
             echo DatePicker::widget([
                 'name' => 'dp_1',

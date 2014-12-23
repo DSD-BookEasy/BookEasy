@@ -42,7 +42,7 @@ $this->title = 'Västerås Flygmuseum';
                 </p>
 
                 <p><a class="btn btn-default"
-                      href="<?= Url::to(['simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
+                      href="<?= Url::to(['/simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
                             'Book &raquo;'); ?></a></p>
             </div>
             <?php
