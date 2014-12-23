@@ -15,8 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <?=
-        //summarize is the variable that indicate whether we are display booking information in "summarize mode
-        //before save the booking in the db
         Html::tag('h1',
             Yii::t('app', 'Your Secret Key is (save it!!!): ') .
                 Html::tag('span', $model->token, ['class' => 'booking_view_secret_key'])
