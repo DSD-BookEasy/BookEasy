@@ -156,15 +156,19 @@ class BookingController extends Controller
     {
         $booking = $this->findModel($id);
         if (Yii::$app->user->can('viewAllBookings')) {
-            $token = $booking->token;
+            return $this->render('viewForStaff', [
+                'model' => $booking,
+                'entry_fee' => Parameter::getValue('entryFee', 80)
+            ]);
         } else{
             $token = Yii::$app->request->get('token');
         }
 
-        if($booking->token==$token){
+        if($booking->token!=$token){
             throw new ForbiddenHttpException(Yii::t('app',"You don't have permission to see this booking"));
         }
 
+        //render the view page for anonymous user
         return $this->render('view', [
             'model' => $booking,
             'entry_fee' => Parameter::getValue('entryFee', 80)

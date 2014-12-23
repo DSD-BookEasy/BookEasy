@@ -83,15 +83,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div>
         <?php
-
-        // Display 'edit' button to logged in users only
-        if (Yii::$app->user->can('viewAllBookings')) {
-            echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
-        }
-        if (Yii::$app->user->can('confirmBooking') && $model->status == Booking::WAITING_FOR_CONFIRMATION){
-            echo Html::a(Yii::t('app', 'Confirm'), ['accept', 'id' => $model->id], ['class' => 'btn btn-primary']);
-        }
-
         // Display 'delete' button
         echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
