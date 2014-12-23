@@ -52,7 +52,7 @@ class BookingController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['index','update'],
-                        'roles' => ['viewAllBookings']
+                        'roles' => ['manageBookings']
                     ],
                     [
                         'allow' => true,
@@ -155,7 +155,7 @@ class BookingController extends Controller
     public function actionView($id)
     {
         $booking = $this->findModel($id);
-        if (Yii::$app->user->can('viewAllBookings')) {
+        if (Yii::$app->user->can('manageBookings')) {
             return $this->render('viewForStaff', [
                 'model' => $booking,
                 'entry_fee' => Parameter::getValue('entryFee', 80)
