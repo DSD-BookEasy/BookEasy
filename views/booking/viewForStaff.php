@@ -15,37 +15,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <?=
-    //summarize is the variable that indicate whether we are display booking information in "summarize mode
-    //before save the booking in the db
     Html::tag('h1',
-        Yii::t('app', 'Your Secret Key is (save it!!!): ') .
-        Html::tag('span', $model->token, ['class' => 'booking_view_secret_key'])
+        Yii::t('app', 'Booking of {0} {1}', $model->surname, $model->name)
     )
-
     ?>
 
     <?php
-    $flight_price = 0;
-    $timeSlots = $model->timeslots;
-
-    foreach ($timeSlots as $slot) {
-        $flight_price += $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation;
-    }
-    ?>
-
-    <?= Html::tag('div',
-
-        Html::tag('h3', 'Your booking cost: ') .
-
-        Html::ul([
-            Yii::t('app', 'Entrance: {0, number, currency}', $entry_fee),
-            Yii::t('app', 'Total Cost: {0, number, currency}', $entry_fee + $flight_price),
-        ])
-    );
-    ?>
-
-    <?php
-    $names = ['token', 'name', 'surname', 'telephone', 'email', 'address', 'comments', 'timestamp'];
+    $names = ['name', 'surname', 'telephone', 'email', 'address', 'comments', 'timestamp'];
     $attributes = [];
     foreach($names as $att){
         if($model[$att] != null){
@@ -65,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
     <?php
-
+    $timeSlots = $model->timeslots;
     foreach($timeSlots as $slot){
         echo Html::tag('div',
 
@@ -75,7 +51,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($slot->start)),
                 Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($slot->end)),
                 Yii::t('app','Flight Simulation: {0, number, currency}', $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation)
-            ])
+            ]).
+
+            Html::a(Yii::t('app', 'Edit Time Slot'), ['timeslot/update', 'id' => $slot->id], ['class' => 'btn btn-primary']).
+
+            "<br></br>"
         );
     }
 
@@ -83,8 +63,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div>
         <?php
+
         //this page is for staff, so we can always show the update button
-        echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+        echo Html::a(Yii::t('app', 'Update Booking'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
         //check if the user have also the permission for confirm booking
         if (Yii::$app->user->can('confirmBooking') && $model->status == Booking::WAITING_FOR_CONFIRMATION){
             echo Html::a(Yii::t('app', 'Confirm'), ['accept', 'id' => $model->id], ['class' => 'btn btn-primary']);
