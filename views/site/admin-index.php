@@ -4,7 +4,6 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\helpers\Html;
 
 $this->title = 'Västerås Flygmuseum';
 ?>
@@ -53,6 +52,11 @@ $this->title = 'Västerås Flygmuseum';
                             'url' => 'permission/roles',
                             'title' => 'Administrative Roles Management',
                             'permission' => 'manageRoles'
+                        ],
+                        [
+                            'url' => 'parameter/index',
+                            'title' => 'System Parameters Management',
+                            'permission' => 'manageParams'
                         ],
                     ];
 
