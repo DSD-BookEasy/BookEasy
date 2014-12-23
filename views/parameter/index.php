@@ -63,13 +63,13 @@ function renderFormColumn($model,$natures){
             case 'textarea':
                 return renderFormTextarea($model);
             case 'time':
-            case 'date':
+                return renderFormTime($model);
             default:
-                return 'def'.renderFormTextarea($model);
+                return renderFormTextarea($model);
         }
     }
     else{
-        return 'out'.renderFormTextarea($model);
+        return renderFormTextarea($model);
     }
 }
 
@@ -106,6 +106,30 @@ function renderFormText($model){
     ob_end_clean();
 
     $out .= $form->field($model, 'value')->textInput()->label(false);
+    $out .= Html::submitButton();
+
+    ob_start();
+    $form->end();
+    $out .= ob_get_contents();
+    ob_end_clean();
+
+    return $out;
+}
+
+function renderFormTime($model){
+    ob_start();
+    $form = ActiveForm::begin([
+        'action' => ['parameter/update','id'=>$model->id]
+    ]);
+    $out = ob_get_contents();
+    ob_end_clean();
+
+    $out .= $form->field($model, 'value')->widget(DateTimePicker::className(), [
+        'removeButton' => false,
+        'pluginOptions' => [
+            'autoclose' => true,
+        ]
+    ]);
     $out .= Html::submitButton();
 
     ob_start();

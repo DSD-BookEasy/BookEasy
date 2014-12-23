@@ -50,8 +50,8 @@ class ParameterController extends Controller
             'paramsNatures'=> [
                 'entryFee' => 'text',
                 'coordinatorEmail' => 'text',
-                //'businessTimeStart' => 'time',
-                //'businessTimeEnd' => 'time',
+                'businessTimeStart' => 'time',
+                'businessTimeEnd' => 'time',
             ]
         ]);
     }
