@@ -7,6 +7,7 @@ use DateTime;
 use Yii;
 use app\models\Simulator;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

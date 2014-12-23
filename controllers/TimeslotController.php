@@ -6,6 +6,7 @@ use app\models\Simulator;
 use Yii;
 use app\models\Timeslot;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
