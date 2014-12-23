@@ -82,7 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div>
         <?php
         // Display 'delete' button
-        echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
+        echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id, 'token' => $model->token], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
