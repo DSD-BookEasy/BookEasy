@@ -27,6 +27,17 @@ class SimulatorController extends Controller
                     'delete' => ['post'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index','view','create','update','delete'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['manageSimulator']
+                    ],
+                ],
+
+            ],
         ];
     }
 
