@@ -1,6 +1,7 @@
 <?php
 
 namespace app\controllers;
+
 /**
  * define working hours and generated data range here
  * REMEMBER!: timeslot endings must coincide with midday!
@@ -75,6 +76,11 @@ class PopulatorController extends \yii\web\Controller
     {
         Timeslot::deleteAll();
         Booking::deleteAll();
+        $simulators = Simulator::find()->all();
+        foreach($simulators as $simulator) {
+            $simulator->clearImagesCache();
+            $simulator->removeImages();
+        }
         Simulator::deleteAll();
         Staff::deleteAll();
         TimeslotModel::deleteAll();
@@ -83,8 +89,10 @@ class PopulatorController extends \yii\web\Controller
         Yii::$app->db->createCommand("truncate table " . Simulator::tableName())->query();
         Yii::$app->db->createCommand("truncate table " . Staff::tableName())->query();
         Yii::$app->db->createCommand("truncate table " . TimeslotModel::tableName())->query();
+        Yii::$app->db->createCommand("truncate table image;")->query();
         return $this->render('index');
     }
+
     public function actionExecute()
     {
         //loads and creates staff objects and then saves it to the db
@@ -116,11 +124,17 @@ class PopulatorController extends \yii\web\Controller
         shuffle($unassigned_bookings_ids);
 
         //loads and creates simulator objects and then saves it to the db
+        $tmpFolderPath = Yii::getAlias('@webroot') . '/uploads';
         $simulators = require(__DIR__ . '/../tests/codeception/fixtures/simulator.php');
         $simulators_ids = array();
         foreach ($simulators as $ele) {
             $object = $this->map('app\models\Simulator', $ele);
+            $result = \Faker\Provider\Image::image($dir = $tmpFolderPath,
+                $width=250, $height=250, $category="abstract", $fullPath=true);
             $object->save();
+            $object->clearImagesCache();
+            $object->attachImage($result, true);
+            unlink($result);
             array_push($simulators_ids, $object->id);
         }
         //This section can be changed to generate time slots in different dates
@@ -237,13 +251,13 @@ class PopulatorController extends \yii\web\Controller
                 $timeslotmodel->start_time = $currentSlotTime->format($format_string_time);
                 $timeslotmodel->end_time = $currentSlotTime->add($interval)->format($format_string_time);
                 if (!$timeslotmodel->save()) {
-                    throw new ErrorException("Couldn't save: sim id: ". $id. " start validity: ". $tempDateStart
-                        ." end validity: " . $tempDateEnd . " start_time: ". $timeslotmodel->start_time . " end_time: " .$timeslotmodel->end_time );
+                    throw new ErrorException("Couldn't save: sim id: " . $id . " start validity: " . $tempDateStart
+                        . " end validity: " . $tempDateEnd . " start_time: " . $timeslotmodel->start_time . " end_time: " . $timeslotmodel->end_time);
                 };
             }
             $sunday->add($interval);
         }
-        TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d","2014-12-31"));
+        TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d", "2014-12-31"));
         return $this->render('index');
     }
 

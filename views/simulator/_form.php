@@ -48,6 +48,7 @@ use kartik\form\ActiveForm;
                 'options' => ['accept' => 'image/*'],
                 'pluginOptions' => [
                     'showUpload' => false,
+                    'maxFileSize' => 1.5*1024
                 ],
             ]) ?>
         </div>

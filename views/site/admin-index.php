@@ -4,6 +4,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\helpers\Html;
 
 $this->title = 'Västerås Flygmuseum';
 ?>
@@ -16,26 +17,49 @@ $this->title = 'Västerås Flygmuseum';
             <p class="lead"><?= Yii::t('app', 'Choose what you wish to manage'); ?></p>
             <br>
             <p>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'simulator/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Simulators'); ?></a>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'booking/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Bookings'); ?></a>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'timeslot/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Timeslots'); ?></a>
-                <a class="btn btn-default btn-lg"
-                   href="<?= Url::to([
-                       'timeslot-model/index',
-                   ]); ?>"><?= Yii::t('app',
-                        'Timeslot Models'); ?></a>
+                <?php
+                    $managements=[
+                        [
+                            'url' => 'simulator/index',
+                            'title' => 'Simulators',
+                            'permission' => 'manageSimulator'
+                        ],
+                        [
+                            'url' => 'booking/index',
+                            'title' => 'Bookings',
+                            'permission' => 'manageBookings'
+                        ],
+                        [
+                            'url' => 'timeslot/index',
+                            'title' => 'Timeslots',
+                            'permission' => 'manageTimeslots'
+                        ],
+                        [
+                            'url' => 'timeslot-model/index',
+                            'title' => 'Timeslot Models',
+                            'permission' => 'manageTimeslotModels'
+                        ],
+                        [
+                            'url' => 'staff/index',
+                            'title' => 'Staff',
+                            'permission' => 'manageStaff'
+                        ],
+                        [
+                            'url' => 'permission/index',
+                            'title' => 'Permissions Management',
+                            'permission' => 'assignPermissions'
+                        ],
+                        [
+                            'url' => 'permission/roles',
+                            'title' => 'Administrative Roles Management',
+                            'permission' => 'manageRoles'
+                        ],
+                    ];
+
+                    foreach($managements as $m){
+                        echo Html::a(Yii::t('app',$m['title']),$m['url'],['class'=> 'btn btn-default btn-lg']);
+                    }
+                ?>
             </p>
 
         </div>
@@ -48,10 +72,10 @@ $this->title = 'Västerås Flygmuseum';
                     <p>
                         <?php
                         if ($simulator->getImage()) {
-                            echo Html::img('@web/' . $simulator->getImage()->getPath('225x'),
+                            echo Html::img('@web/' . $simulator->getImage()->getPath('250x'),
                                 ['alt' => Yii::t('app', 'Simulator image')]);
                         } else {
-                            echo Html::img('http://placehold.it/225',
+                            echo Html::img('http://placehold.it/250',
                                 ['alt' => Yii::t('app', 'Simulator image')]);
                         }
                         ?>

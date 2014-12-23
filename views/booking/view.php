@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use app\models\Booking;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
@@ -84,11 +85,11 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
 
         // Display 'edit' button to logged in users only
-        if (Yii::$app->user->getId() != null) {
+        if (Yii::$app->user->can('viewAllBookings')) {
             echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
-            if($model->status == \app\models\Booking::WAITING_FOR_CONFIRMATION){
-                echo Html::a(Yii::t('app', 'Confirm'), ['accept', 'id' => $model->id], ['class' => 'btn btn-primary']);
-            }
+        }
+        if (Yii::$app->user->can('confirmBooking') && $model->status == Booking::WAITING_FOR_CONFIRMATION){
+            echo Html::a(Yii::t('app', 'Confirm'), ['accept', 'id' => $model->id], ['class' => 'btn btn-primary']);
         }
 
         // Display 'delete' button
