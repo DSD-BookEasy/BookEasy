@@ -4,7 +4,6 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\helpers\Html;
 
 $this->title = 'Västerås Flygmuseum';
 ?>
