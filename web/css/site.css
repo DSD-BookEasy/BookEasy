@@ -146,6 +146,10 @@ a.desc:after {
     background-color: #ffdc2e;
 }
 
+.fc-event.closed_dayview:hover{
+    background-color: #ffdc2e;
+}
+
 .fc-event.unavailable {
     background-color: #F08080;
     border-color: #ff4500;
@@ -153,6 +157,9 @@ a.desc:after {
 
 .fc-bgevent.closed {
     background: #C0C0C0;
+}
+.fc-event.closed_dayview {
+    cursor: pointer;
 }
 
 .new_timeslot{

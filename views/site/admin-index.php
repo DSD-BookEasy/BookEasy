@@ -44,11 +44,6 @@ $this->title = 'Västerås Flygmuseum';
                             'permission' => 'manageStaff'
                         ],
                         [
-                            'url' => \yii\helpers\Url::to(['/staff/agenda']),
-                            'title' => 'Staff Agenda',
-                            'permission' => 'manageStaff'
-                        ],
-                        [
                             'url' => \yii\helpers\Url::to(['/permission/index']),
                             'title' => 'Permissions Management',
                             'permission' => 'assignPermissions'

@@ -68,6 +68,7 @@ $this->title = Yii::t('app', "Staff Agenda");
         $bookUrl = Url::to(['/booking/create', 'timeslots[]' => '']);
         $bookUrlView = Url::to(['/booking']);
         $bookUrlWeekday = Url::to(['/booking/create-weekdays']);
+        $timeSlotUrl = Url::to(['/timeslot']);
         $events = [
             [//Show Business Hours.
                 'start' => $businessHours['start'],
@@ -136,7 +137,7 @@ $this->title = Yii::t('app', "Staff Agenda");
 
                 if ($s->blocking) {
                     $a['title'] = \Yii::t('app', 'Closed');
-                    $a['className'] = 'closed';
+                    $a['className'] = 'closed closed_dayview';
                 }
                 checkBorders($borders, $s->start, $s->end);
                 $events[] = $a;
@@ -238,7 +239,7 @@ $this->registerJs("
                     element.click(function (ev) {
                         ev.preventDefault();
                         window.location.href = "<?=$bookUrl?>" + event.id;
-                    })
+                    });
                 }
                 else if (element.hasClass("assigned")) {
                     element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
@@ -248,12 +249,19 @@ $this->registerJs("
                         window.location.href = "<?=$bookUrlView?>" + "/" + event.id_booking + "/view";
                     });
                 }
-                else {
+                else if (element.hasClass("unassigned")) {
                     element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
                     element.tooltip();
                     element.click(function (ev) {
                         ev.preventDefault();
                         window.location.href = "<?=$bookUrlView?>" + "/" + event.id_booking + "/view";
+                    });
+                } else if (element.hasClass("closed")){
+                    element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
+                    element.tooltip();
+                    element.click(function (ev) {
+                        ev.preventDefault();
+                        window.location.href = "<?=$timeSlotUrl?>" + "/" + event.id + "/view";
                     });
                 }
             }
