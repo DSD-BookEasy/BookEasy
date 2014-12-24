@@ -20,7 +20,7 @@ class StaffController extends \yii\web\Controller
         return [
             'access' => [//Allow access to logout only if user is logged-in
                 'class' => AccessControl::className(),
-                'except' => ['login'],
+                'except' => ['login', 'update'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
@@ -28,7 +28,7 @@ class StaffController extends \yii\web\Controller
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['index', 'view', 'create', 'update'],
+                        'actions' => ['index', 'view', 'create'],
                         'allow' => true,
                         'roles' => ['manageStaff']
                     ],
