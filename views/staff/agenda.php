@@ -23,7 +23,7 @@ $this->title = Yii::t('app', "Staff Agenda");
 ?>
 
     <div id="calendar_buttons">
-        <a href="<?= Url::to([
+        <a id="prevButton" href="<?= Url::to([
             '/staff/agenda',
             'day' => $prevDay
         ]) ?>" class="btn btn-default">
@@ -31,13 +31,13 @@ $this->title = Yii::t('app', "Staff Agenda");
             <?= \Yii::t('app', "Previous day"); ?>
         </a>
 
-        <a href="<?= Url::to([
+        <a id="todayButton" href="<?= Url::to([
             '/staff/agenda',
         ]) ?>" class="btn btn-default">
             <?= \Yii::t('app', "Today"); ?>
         </a>
 
-        <a href="<?= Url::to([
+        <a id="nextButton" href="<?= Url::to([
             '/staff/agenda',
             'day' => $nextDay
         ]) ?>" class="btn btn-default">
@@ -204,21 +204,44 @@ $this->title = Yii::t('app', "Staff Agenda");
 
 <?php
 $this->registerJs("
+        var selectedSim = 'sim0';
+        function setHref(element, id) {
+            val = element.attr('href');
+            indexSharp = val.indexOf('#');
+            if (indexSharp > 0) {
+                val = val.substring(0,indexSharp);
+            }
+            element.attr('href',val + id);
+        }
         $(function () {
             $('#simulatorTab a').click(function (e) {
-              e.preventDefault();
-              $(this).tab('show');
+                e.preventDefault();
+                selectedSim = $(this).attr('href');
+                setHref($('#prevButton'), selectedSim);
+                setHref($('#todayButton'), selectedSim);
+                setHref($('#nextButton'), selectedSim);
+                $(this).tab('show');
             });
             $('a[data-toggle=\'tab\']').on('shown.bs.tab', function (e) {
                 id = e.currentTarget.href[e.currentTarget.href.length - 1];
                 str = '#w' + id;
                 $(str).fullCalendar('render');
             });
-            $('#simulatorTab a:first').tab('show');
-        });
-
-
-    ");
+            indexSharp = window.location.href.indexOf('#');
+            sim_id = '';
+            if (indexSharp > -1) {
+                sim_id = window.location.href.substring(indexSharp);
+            }
+            if (sim_id.length > 0) {
+                setHref($('#prevButton'), sim_id);
+                setHref($('#todayButton'), sim_id);
+                setHref($('#nextButton'), sim_id);
+                $('#simulatorTab a[href=' + sim_id + ']').tab('show');
+            }
+            else {
+                $('#simulatorTab a:first').tab('show');
+            }
+        });");
 ?>
 
     <script type="text/javascript">
