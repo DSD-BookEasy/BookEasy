@@ -186,3 +186,11 @@ a.desc:after {
     font-size: 20px;
     color: #CC3300;
 }
+
+.fc-title {
+    font-size: 1.25em !important;
+}
+
+.fc-time-grid-event .fc-time {
+    font-size: 1.25em !important;
+}
