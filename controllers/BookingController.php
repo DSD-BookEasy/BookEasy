@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Parameter;
+use app\models\Simulator;
 use app\models\Timeslot;
 use Faker\Provider\DateTime;
 use Yii;
@@ -190,6 +191,7 @@ class BookingController extends Controller
         }
         return $this->actionIndex();
     }
+
     /**
      * Display booking and timeslots present in session variable
      * @return string
@@ -273,6 +275,7 @@ class BookingController extends Controller
      */
     public function actionCreateWeekdays()
     {
+        /*
         // Check time slot values in the GET-Request
         $tmpTimeSlots = Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS);
 
@@ -298,7 +301,7 @@ class BookingController extends Controller
         if (empty($sessionTimeSlots)) {
             throw new BadRequestHttpException(self::ERROR_MESSAGE_NO_TIME_SLOTS);
         }
-
+        */
         $model = new Booking();
         $model->scenario = 'weekdays';
 
@@ -309,11 +312,23 @@ class BookingController extends Controller
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
             return $this->actionSummarizeBooking();
         } else {
-            return $this->render('createWeekdays', [
+            $simId=Yii::$app->request->get('simulator');
+            if(empty($simId) or !is_numeric($simId)){
+                throw new BadRequestHttpException(Yii::t('app','You must specify a valid simulator'));
+            }
+            $s=Simulator::findOne($simId);
+            if(empty($s)){
+                throw new NotFoundHttpException(Yii::t('app','The specifies simulator doesn\'t exist'));
+            }
+
+            return $this->render('create-weekdays', [
                 'model' => $model,
-                'timeslots' => $sessionTimeSlots,
-                'simulator_fee' => $this->calculateSimulatorPrice($sessionTimeSlots),
-                'entry_fee' => Parameter::getValue('entryFee', 80)
+                'simulator' => $s,
+                'entry_fee' => Parameter::getValue('entryFee', 80),
+                'businessHours' => [
+                    'start' => Parameter::getValue('businessTimeStart'),
+                    'end' => Parameter::getValue('businessTimeEnd')
+                ]
             ]);
         }
     }
