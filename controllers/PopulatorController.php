@@ -25,6 +25,7 @@ use app\models\Timeslot;
 use app\models\TimeslotModel;
 use Yii;
 use yii\base\ErrorException;
+use yii\base\Exception;
 use yii\db\Migration;
 
 class PopulatorController extends \yii\web\Controller
@@ -69,7 +70,7 @@ class PopulatorController extends \yii\web\Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->render('index', ['user' => new Staff()]);
     }
 
     public function actionClear()
@@ -90,7 +91,7 @@ class PopulatorController extends \yii\web\Controller
         Yii::$app->db->createCommand("truncate table " . Staff::tableName())->query();
         Yii::$app->db->createCommand("truncate table " . TimeslotModel::tableName())->query();
         Yii::$app->db->createCommand("truncate table image;")->query();
-        return $this->render('index');
+        return $this->render('index', ['user' => new Staff()]);
     }
 
     public function actionExecute()
@@ -98,17 +99,31 @@ class PopulatorController extends \yii\web\Controller
         //loads and creates staff objects and then saves it to the db
         $staff = require(__DIR__ . '/../tests/codeception/fixtures/staff.php');
         $staff_ids = array();
-        foreach ($staff as $ele) {
-            $object = $this->map('app\models\Staff', $ele);
-            $object->save();
-            //$r = Yii::$app->authManager->getRole("Instructor");
-            //Yii::$app->authManager->assign($r,$object->id);
-            array_push($staff_ids, $object->id);
+        if(Yii::$app->request->getIsPost()) {
+            $r = Yii::$app->authManager->getRole("Instructor");
+            foreach ($staff as $ele) {
+                $object = $this->map('app\models\Staff', $ele);
+                $object->save();
+                try {
+                    Yii::$app->authManager->assign($r, $object->id);
+                } catch(Exception $e) {
+
+                }
+                array_push($staff_ids, $object->id);
+            }
+
+
+            $user = new Staff();
+            $user->load(Yii::$app->request->post());
+            $user->save();
+            $roles = Yii::$app->authManager->getRolesByUser($user->id);
+            if (count($roles) == 0) {
+                $r = Yii::$app->authManager->getRole("Admin");
+                Yii::$app->authManager->assign($r,$user->id);
+            }
+        } else {
+            return $this->actionIndex();
         }
-        $tempUser = new Staff();
-        $tempUser->user_name ="admin";
-        $tempUser->password = \Yii::$app->getSecurity()->generatePasswordHash('123456789');
-        $tempUser->save();
 
         //loads and creates bookings objects and then saves it to the db
         $bookings = require(__DIR__ . '/../tests/codeception/fixtures/booking.php');
@@ -264,7 +279,7 @@ class PopulatorController extends \yii\web\Controller
             $sunday->add($interval);
         }
         TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d", "2014-12-31"));
-        return $this->render('index');
+        return $this->goHome();
     }
 
 }
