@@ -101,6 +101,8 @@ class PopulatorController extends \yii\web\Controller
         foreach ($staff as $ele) {
             $object = $this->map('app\models\Staff', $ele);
             $object->save();
+            $r = Yii::$app->authManager->getRole("Instructor");
+            Yii::$app->authManager->assign($r,$object->id);
             array_push($staff_ids, $object->id);
         }
 
