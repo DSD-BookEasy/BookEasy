@@ -7,6 +7,7 @@ use Yii;
 use app\models\Timeslot;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -64,6 +65,41 @@ class TimeslotController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Ajax action for fullcalendar AJAX source returning anonymous data
+     * @param $simulator the id of the simulator to show the timeslots of
+     * @param string $start the starting date of timeslots to show. Must be encoded in ISO8601
+     * @param string $end the ending date of timeslots to show. Must be encoded in ISO8601
+     * @param bool $background whether the timeslot should be rendered as background ones
+     * @return string
+     */
+    public function actionAnonCalendar($simulator, $start = null, $end = null, $background = false){
+        $t=[];
+        if(!empty($simulator) and is_numeric($simulator)){
+            try {
+                $s = new \DateTime($start);
+                $e = new \DateTime($end);
+
+                $t = Timeslot::find()->
+                where(['id_simulator' => $simulator])->
+                andWhere(['>=', 'start', $s->format("c")])->
+                andWhere(['<=', 'end', $e->format("c")])->all();
+            }
+            catch(\Exception $e){
+                //Invalid dates. Return empty timeslots
+            }
+        }
+
+        /**
+         * Using renderPartial and NOT renderAjax because I don't want styles or script to interfere with
+         * the json output
+         */
+        return $this->renderPartial('anon-calendar',[
+            'timeslots' => $t,
+            'background' => $background
         ]);
     }
 
