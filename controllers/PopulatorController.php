@@ -105,6 +105,10 @@ class PopulatorController extends \yii\web\Controller
             Yii::$app->authManager->assign($r,$object->id);
             array_push($staff_ids, $object->id);
         }
+        $tempUser = new Staff();
+        $tempUser->user_name ="admin";
+        $tempUser->password = \Yii::$app->getSecurity()->generatePasswordHash('123456789');
+        $tempUser->save();
 
         //loads and creates bookings objects and then saves it to the db
         $bookings = require(__DIR__ . '/../tests/codeception/fixtures/booking.php');
