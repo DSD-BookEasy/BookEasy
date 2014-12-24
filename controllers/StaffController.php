@@ -239,8 +239,7 @@ class StaffController extends \yii\web\Controller
         else{
             //Not permission to access. If user is guest redirect to login, otherwise forbid
             if($loggedInUser->isGuest){
-                $loggedInUser->setReturnUrl($this->route);
-                return $this->redirect($loggedInUser->loginUrl);
+                return Yii::$app->user->loginRequired();
             }
             else{
                 throw new ForbiddenHttpException(Yii::t('app',"You are not allowed to perform this action."));
