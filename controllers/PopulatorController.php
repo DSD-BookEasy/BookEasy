@@ -146,6 +146,11 @@ class PopulatorController extends \yii\web\Controller
 
         //loads and creates simulator objects and then saves it to the db
         $tmpFolderPath = Yii::getAlias('@webroot') . '/uploads';
+        // Check whether the folder in which we will temporary save the uploaded image exists
+        if ( !file_exists($tmpFolderPath) ) {
+            Yii::info("$tmpFolderPath doesn't exist. It will be created.");
+            mkdir($tmpFolderPath);
+        }
         $simulators = require(__DIR__ . '/../tests/codeception/fixtures/simulator.php');
         $simulators_ids = array();
         foreach ($simulators as $ele) {
