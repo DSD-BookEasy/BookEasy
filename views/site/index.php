@@ -5,7 +5,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-$this->title = 'Västerås Flygmuseum';
+$this->title = Yii::t('app', 'Västerås Flygmuseum');
 ?>
 <div class="site-index">
 
