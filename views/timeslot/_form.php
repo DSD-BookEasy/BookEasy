@@ -2,7 +2,6 @@
 
 use kartik\datetime\DateTimePicker;
 use kartik\form\ActiveForm;
-use kartik\money\MaskMoney;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
@@ -49,15 +48,7 @@ use yii\helpers\Html;
     <div class="row">
         <div class="col-md-3">
             <?= $form->field($model, 'cost',
-                ['addon' => ['prepend' => ['content' => '<i class="glyphicon glyphicon-tag"></i>']]])->widget(MaskMoney::classname(),
-                [
-                    'pluginOptions' => [
-                        'prefix' => '',
-                        'suffix' => ' kr',
-                        'precision' => 0,
-                        'allowNegative' => false
-                    ]
-                ]); ?>
+                ['addon' => ['prepend' => ['content' => '<i class="glyphicon glyphicon-tag"></i>']]])->textInput(['class' => 'col-md-6']); ?>
         </div>
     </div>
 

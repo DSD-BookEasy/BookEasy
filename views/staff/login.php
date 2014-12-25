@@ -16,16 +16,11 @@ if (!empty($error)) {
 }
 ?>
 
-
-
-
-
 <div class="login-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'user_name')->textInput(['maxlength' => 255]) ?>
-
 
     <?= $form->field($model, 'password')->passwordInput() ?>
 

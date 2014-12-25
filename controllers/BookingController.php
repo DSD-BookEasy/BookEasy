@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Parameter;
+use app\models\Simulator;
 use app\models\Timeslot;
 use Faker\Provider\DateTime;
 use Yii;
@@ -52,7 +53,7 @@ class BookingController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['index','update'],
-                        'roles' => ['viewAllBookings']
+                        'roles' => ['manageBookings']
                     ],
                     [
                         'allow' => true,
@@ -102,13 +103,20 @@ class BookingController extends Controller
 
     /**
      * Deletes an existing Booking model.
+     * The token of the booking is required to delete the booking
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $token=null)
     {
         $model = $this->findModel($id);
+        if (Yii::$app->user->can('manageBookings')) {
+            $token = $model->token;
+        }
+        if($model->token != $token){
+            throw new ForbiddenHttpException(Yii::t('app',"You don't have permission to see this booking"));
+        }
         Timeslot::handleDeleteBooking($model);
         $model->delete();
         return $this->redirect(['index']);
@@ -155,16 +163,20 @@ class BookingController extends Controller
     public function actionView($id)
     {
         $booking = $this->findModel($id);
-        if (Yii::$app->user->can('viewAllBookings')) {
-            $token = $booking->token;
+        if (Yii::$app->user->can('manageBookings')) {
+            return $this->render('viewForStaff', [
+                'model' => $booking,
+                'entry_fee' => Parameter::getValue('entryFee', 80)
+            ]);
         } else{
             $token = Yii::$app->request->get('token');
         }
 
-        if($booking->token==$token){
+        if($booking->token!=$token){
             throw new ForbiddenHttpException(Yii::t('app',"You don't have permission to see this booking"));
         }
 
+        //render the view page for anonymous user
         return $this->render('view', [
             'model' => $booking,
             'entry_fee' => Parameter::getValue('entryFee', 80)
@@ -179,6 +191,7 @@ class BookingController extends Controller
         }
         return $this->actionIndex();
     }
+
     /**
      * Display booking and timeslots present in session variable
      * @return string
@@ -262,6 +275,7 @@ class BookingController extends Controller
      */
     public function actionCreateWeekdays()
     {
+        /*
         // Check time slot values in the GET-Request
         $tmpTimeSlots = Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS);
 
@@ -287,7 +301,7 @@ class BookingController extends Controller
         if (empty($sessionTimeSlots)) {
             throw new BadRequestHttpException(self::ERROR_MESSAGE_NO_TIME_SLOTS);
         }
-
+        */
         $model = new Booking();
         $model->scenario = 'weekdays';
 
@@ -298,11 +312,23 @@ class BookingController extends Controller
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
             return $this->actionSummarizeBooking();
         } else {
-            return $this->render('createWeekdays', [
+            $simId=Yii::$app->request->get('simulator');
+            if(empty($simId) or !is_numeric($simId)){
+                throw new BadRequestHttpException(Yii::t('app','You must specify a valid simulator'));
+            }
+            $s=Simulator::findOne($simId);
+            if(empty($s)){
+                throw new NotFoundHttpException(Yii::t('app','The specifies simulator doesn\'t exist'));
+            }
+
+            return $this->render('create-weekdays', [
                 'model' => $model,
-                'timeslots' => $sessionTimeSlots,
-                'simulator_fee' => $this->calculateSimulatorPrice($sessionTimeSlots),
-                'entry_fee' => Parameter::getValue('entryFee', 80)
+                'simulator' => $s,
+                'entry_fee' => Parameter::getValue('entryFee', 80),
+                'businessHours' => [
+                    'start' => Parameter::getValue('businessTimeStart'),
+                    'end' => Parameter::getValue('businessTimeEnd')
+                ]
             ]);
         }
     }

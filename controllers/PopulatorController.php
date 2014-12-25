@@ -25,6 +25,7 @@ use app\models\Timeslot;
 use app\models\TimeslotModel;
 use Yii;
 use yii\base\ErrorException;
+use yii\base\Exception;
 use yii\db\Migration;
 
 class PopulatorController extends \yii\web\Controller
@@ -69,7 +70,7 @@ class PopulatorController extends \yii\web\Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->render('index', ['user' => new Staff()]);
     }
 
     public function actionClear()
@@ -90,7 +91,7 @@ class PopulatorController extends \yii\web\Controller
         Yii::$app->db->createCommand("truncate table " . Staff::tableName())->query();
         Yii::$app->db->createCommand("truncate table " . TimeslotModel::tableName())->query();
         Yii::$app->db->createCommand("truncate table image;")->query();
-        return $this->render('index');
+        return $this->render('index', ['user' => new Staff()]);
     }
 
     public function actionExecute()
@@ -98,10 +99,30 @@ class PopulatorController extends \yii\web\Controller
         //loads and creates staff objects and then saves it to the db
         $staff = require(__DIR__ . '/../tests/codeception/fixtures/staff.php');
         $staff_ids = array();
-        foreach ($staff as $ele) {
-            $object = $this->map('app\models\Staff', $ele);
-            $object->save();
-            array_push($staff_ids, $object->id);
+        if(Yii::$app->request->getIsPost()) {
+            $r = Yii::$app->authManager->getRole("Instructor");
+            foreach ($staff as $ele) {
+                $object = $this->map('app\models\Staff', $ele);
+                $object->save();
+                try {
+                    Yii::$app->authManager->assign($r, $object->id);
+                } catch(Exception $e) {
+
+                }
+                array_push($staff_ids, $object->id);
+            }
+
+
+            $user = new Staff();
+            $user->load(Yii::$app->request->post());
+            $user->save();
+            $roles = Yii::$app->authManager->getRolesByUser($user->id);
+            if (count($roles) == 0) {
+                $r = Yii::$app->authManager->getRole("Admin");
+                Yii::$app->authManager->assign($r,$user->id);
+            }
+        } else {
+            return $this->actionIndex();
         }
 
         //loads and creates bookings objects and then saves it to the db
@@ -125,6 +146,11 @@ class PopulatorController extends \yii\web\Controller
 
         //loads and creates simulator objects and then saves it to the db
         $tmpFolderPath = Yii::getAlias('@webroot') . '/uploads';
+        // Check whether the folder in which we will temporary save the uploaded image exists
+        if ( !file_exists($tmpFolderPath) ) {
+            Yii::info("$tmpFolderPath doesn't exist. It will be created.");
+            mkdir($tmpFolderPath);
+        }
         $simulators = require(__DIR__ . '/../tests/codeception/fixtures/simulator.php');
         $simulators_ids = array();
         foreach ($simulators as $ele) {
@@ -258,7 +284,7 @@ class PopulatorController extends \yii\web\Controller
             $sunday->add($interval);
         }
         TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d", "2014-12-31"));
-        return $this->render('index');
+        return $this->goHome();
     }
 
 }

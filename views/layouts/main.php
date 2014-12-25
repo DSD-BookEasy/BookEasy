@@ -35,7 +35,7 @@ AppAsset::register($this);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
-                    ['label' => \Yii::t('app','Home'), 'url' => ['index']],
+                    ['label' => \Yii::t('app','Home'), 'url' => ['/']],
                     //['label' => 'About', 'url' => ['/site/about']],
                     ['label' => \Yii::t('app','Look for a Booking'), 'url' => ['/booking/search']],
                     Yii::$app->user->isGuest ?

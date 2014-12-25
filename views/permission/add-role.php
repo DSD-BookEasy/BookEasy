@@ -3,7 +3,7 @@
 /* @var $role app\models\AdminRole */
 
 $this->title = Yii::t('app', Yii::t('app','New Role'));
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app','Permissions'), 'url' => ['permission/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app','Permissions'), 'url' => 'index'];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app','Administrative Roles'), 'url' => 'roles'];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['add-role', 'name' => $role->name]];
 

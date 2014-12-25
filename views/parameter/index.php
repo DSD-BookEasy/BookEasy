@@ -4,13 +4,15 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
+use kartik\datetime\DateTimePicker;
+use kartik\time\TimePicker;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $paramsNatures array */
 
 $this->title = Yii::t('app', 'Parameters');
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
 ?>
 <div class="parameter-index">
 
@@ -63,13 +65,15 @@ function renderFormColumn($model,$natures){
             case 'textarea':
                 return renderFormTextarea($model);
             case 'time':
-            case 'date':
+                return renderFormTime($model);
+            case 'datetime':
+                return renderFormDateTime($model);
             default:
-                return 'def'.renderFormTextarea($model);
+                return renderFormTextarea($model);
         }
     }
     else{
-        return 'out'.renderFormTextarea($model);
+        return renderFormTextarea($model);
     }
 }
 
@@ -81,7 +85,7 @@ function renderFormColumn($model,$natures){
 function renderFormTextarea($model){
     ob_start();
     $form = ActiveForm::begin([
-      'action' => ['parameter/update','id'=>$model->id]
+      'action' => ['update','id'=>$model->id]
     ]);
     $out = ob_get_contents();
     ob_end_clean();
@@ -100,12 +104,61 @@ function renderFormTextarea($model){
 function renderFormText($model){
     ob_start();
     $form = ActiveForm::begin([
-        'action' => ['parameter/update','id'=>$model->id]
+        'action' => ['update','id'=>$model->id]
     ]);
     $out = ob_get_contents();
     ob_end_clean();
 
     $out .= $form->field($model, 'value')->textInput()->label(false);
+    $out .= Html::submitButton();
+
+    ob_start();
+    $form->end();
+    $out .= ob_get_contents();
+    ob_end_clean();
+
+    return $out;
+}
+
+function renderFormDateTime($model){
+    ob_start();
+    $form = ActiveForm::begin([
+        'action' => ['update','id'=>$model->id]
+    ]);
+    $out = ob_get_contents();
+    ob_end_clean();
+
+    $out .= $form->field($model, 'value')->widget(DateTimePicker::className(), [
+        'removeButton' => false,
+        'pluginOptions' => [
+            'autoclose' => true,
+        ]
+    ]);
+    $out .= Html::submitButton();
+
+    ob_start();
+    $form->end();
+    $out .= ob_get_contents();
+    ob_end_clean();
+
+    return $out;
+}
+
+
+function renderFormTime($model){
+    ob_start();
+    $form = ActiveForm::begin([
+        'action' => ['update','id'=>$model->id]
+    ]);
+    $out = ob_get_contents();
+    ob_end_clean();
+
+    $out .= $form->field($model, 'value')->widget(TimePicker::className(), [
+        'pluginOptions' => [
+            'autoclose' => true,
+            'showMeridian' => false,
+        ]
+    ]);
     $out .= Html::submitButton();
 
     ob_start();

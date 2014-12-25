@@ -20,7 +20,7 @@ class StaffController extends \yii\web\Controller
         return [
             'access' => [//Allow access to logout only if user is logged-in
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'index'],
+                'except' => ['login', 'update'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
@@ -28,7 +28,7 @@ class StaffController extends \yii\web\Controller
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'view', 'create'],
                         'allow' => true,
                         'roles' => ['manageStaff']
                     ],
@@ -63,7 +63,7 @@ class StaffController extends \yii\web\Controller
             $staff = Staff::findOne(['user_name' => $loginData['user_name']]);
             if (!empty($staff) and $staff->isValidPassword($loginData['password'])) {
                 Yii::$app->user->login($staff, 3600 * 24 * 30);
-                return $this->goBack('/');
+                return $this->goBack();
             } else {
                 $staff = new Staff();
                 $staff->user_name = $loginData['user_name'];
@@ -160,6 +160,47 @@ class StaffController extends \yii\web\Controller
     }
 
     /**
+     * Displays a single Staff.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionView($id)
+    {
+        $model = Staff::findOne($id);
+
+        return $this->render('view', [
+            'model' => $model,
+            'roles' => Yii::$app->authManager->getRolesByUser($model->id)
+        ]);
+    }
+
+    /**
+     * Creates a new Staff model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreate()
+    {
+        $model = new Staff();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+            if (Yii::$app->user->can('assignRoles')) {
+                $this->updateRoles($model, Yii::$app->request->post('roles', []));
+            }
+
+            return $this->redirect(['view', 'id' => $model->id]);
+
+        } else {
+            return $this->render('create', [
+                'model' => $model,
+                'allRoles' => Yii::$app->authManager->getRoles()
+            ]);
+        }
+    }
+
+
+    /**
      * Shows a form to edit the informations of a user
      * @param integer $id the id of the user to edit
      * @return string
@@ -198,8 +239,7 @@ class StaffController extends \yii\web\Controller
         else{
             //Not permission to access. If user is guest redirect to login, otherwise forbid
             if($loggedInUser->isGuest){
-                $loggedInUser->setReturnUrl($this->route);
-                return $this->redirect($loggedInUser->loginUrl);
+                return Yii::$app->user->loginRequired();
             }
             else{
                 throw new ForbiddenHttpException(Yii::t('app',"You are not allowed to perform this action."));

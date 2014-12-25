@@ -4,7 +4,7 @@ use kartik\date\DatePicker;
 use yii\helpers\Html;
 use talma\widgets\FullCalendar;
 use yii\helpers\Url;
-use app\models\Simulator;
+use app\models\Parameter;
 
 
 /* @var $form yii\bootstrap\ActiveForm */
@@ -23,22 +23,22 @@ $this->title = Yii::t('app', "Staff Agenda");
 ?>
 
     <div id="calendar_buttons">
-        <a href="<?= Url::to([
-            'staff/agenda',
+        <a id="prevButton" href="<?= Url::to([
+            '/staff/agenda',
             'day' => $prevDay
         ]) ?>" class="btn btn-default">
             <span class="glyphicon glyphicon-chevron-left"></span>
             <?= \Yii::t('app', "Previous day"); ?>
         </a>
 
-        <a href="<?= Url::to([
-            'staff/agenda',
+        <a id="todayButton" href="<?= Url::to([
+            '/staff/agenda',
         ]) ?>" class="btn btn-default">
             <?= \Yii::t('app', "Today"); ?>
         </a>
 
-        <a href="<?= Url::to([
-            'staff/agenda',
+        <a id="nextButton" href="<?= Url::to([
+            '/staff/agenda',
             'day' => $nextDay
         ]) ?>" class="btn btn-default">
             <?= \Yii::t('app', "Next day"); ?>
@@ -54,9 +54,9 @@ $this->title = Yii::t('app', "Staff Agenda");
             Tabs usage reference: http://getbootstrap.com/javascript/#tabs-usage
         -->
         <?php
-        $businessHours = [//TODO Make these dynamic
-            'start' => '8:00',
-            'end' => '19:00'
+        $businessHours = [
+            'start' => Parameter::getValue('businessTimeStart'),
+            'end' => Parameter::getValue('businessTimeEnd')
         ];
 
         /**
@@ -65,9 +65,10 @@ $this->title = Yii::t('app', "Staff Agenda");
          * timeslots exceeding it, we should make space for them too
          */
         $borders = $businessHours;
-        $bookUrl = Url::to(['booking/create', 'timeslots[]' => '']);
+        $bookUrl = Url::to(['/booking/create', 'timeslots[]' => '']);
         $bookUrlView = Url::to(['/booking']);
-        $bookUrlWeekday = Url::to(['booking/create-weekdays']);
+        $bookUrlWeekday = Url::to(['/booking/create-weekdays']);
+        $timeSlotUrl = Url::to(['/timeslot']);
         $events = [
             [//Show Business Hours.
                 'start' => $businessHours['start'],
@@ -136,7 +137,7 @@ $this->title = Yii::t('app', "Staff Agenda");
 
                 if ($s->blocking) {
                     $a['title'] = \Yii::t('app', 'Closed');
-                    $a['className'] = 'closed';
+                    $a['className'] = 'closed closed_dayview';
                 }
                 checkBorders($borders, $s->start, $s->end);
                 $events[] = $a;
@@ -183,7 +184,7 @@ $this->title = Yii::t('app', "Staff Agenda");
             <label><?= \Yii::t('app', "Pick a date"); ?></label>
             <?php
             $agenda_url = Url::to([
-                'staff/agenda'
+                '/staff/agenda'
             ]);
             echo DatePicker::widget([
                 'name' => 'dp_1',
@@ -203,21 +204,44 @@ $this->title = Yii::t('app', "Staff Agenda");
 
 <?php
 $this->registerJs("
+        var selectedSim = 'sim0';
+        function setHref(element, id) {
+            val = element.attr('href');
+            indexSharp = val.indexOf('#');
+            if (indexSharp > 0) {
+                val = val.substring(0,indexSharp);
+            }
+            element.attr('href',val + id);
+        }
         $(function () {
             $('#simulatorTab a').click(function (e) {
-              e.preventDefault();
-              $(this).tab('show');
+                e.preventDefault();
+                selectedSim = $(this).attr('href');
+                setHref($('#prevButton'), selectedSim);
+                setHref($('#todayButton'), selectedSim);
+                setHref($('#nextButton'), selectedSim);
+                $(this).tab('show');
             });
             $('a[data-toggle=\'tab\']').on('shown.bs.tab', function (e) {
                 id = e.currentTarget.href[e.currentTarget.href.length - 1];
                 str = '#w' + id;
                 $(str).fullCalendar('render');
             });
-            $('#simulatorTab a:first').tab('show');
-        });
-
-
-    ");
+            indexSharp = window.location.href.indexOf('#');
+            sim_id = '';
+            if (indexSharp > -1) {
+                sim_id = window.location.href.substring(indexSharp);
+            }
+            if (sim_id.length > 0) {
+                setHref($('#prevButton'), sim_id);
+                setHref($('#todayButton'), sim_id);
+                setHref($('#nextButton'), sim_id);
+                $('#simulatorTab a[href=' + sim_id + ']').tab('show');
+            }
+            else {
+                $('#simulatorTab a:first').tab('show');
+            }
+        });");
 ?>
 
     <script type="text/javascript">
@@ -238,7 +262,7 @@ $this->registerJs("
                     element.click(function (ev) {
                         ev.preventDefault();
                         window.location.href = "<?=$bookUrl?>" + event.id;
-                    })
+                    });
                 }
                 else if (element.hasClass("assigned")) {
                     element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
@@ -248,12 +272,19 @@ $this->registerJs("
                         window.location.href = "<?=$bookUrlView?>" + "/" + event.id_booking + "/view";
                     });
                 }
-                else {
+                else if (element.hasClass("unassigned")) {
                     element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
                     element.tooltip();
                     element.click(function (ev) {
                         ev.preventDefault();
                         window.location.href = "<?=$bookUrlView?>" + "/" + event.id_booking + "/view";
+                    });
+                } else if (element.hasClass("closed")){
+                    element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
+                    element.tooltip();
+                    element.click(function (ev) {
+                        ev.preventDefault();
+                        window.location.href = "<?=$timeSlotUrl?>" + "/" + event.id + "/view";
                     });
                 }
             }

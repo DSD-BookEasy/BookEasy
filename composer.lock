@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "50dab7dbb1294ead0ac68adca1fcfcd6",
+    "hash": "39b2bc5c86e0ffdc6fe5e235b43729e6",
     "packages": [
         {
             "name": "abeautifulsite/simpleimage",
@@ -1512,16 +1512,16 @@
         },
         {
             "name": "mertergun/yii2-images",
-            "version": "1.0.4",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mertergun/yii2-images.git",
-                "reference": "fd60134769a92a95926bf8f424258baaa42e5cbe"
+                "reference": "aff87c1f3f53d2aa332a6bb68ffc5c40826c8c4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mertergun/yii2-images/zipball/fd60134769a92a95926bf8f424258baaa42e5cbe",
-                "reference": "fd60134769a92a95926bf8f424258baaa42e5cbe",
+                "url": "https://api.github.com/repos/mertergun/yii2-images/zipball/aff87c1f3f53d2aa332a6bb68ffc5c40826c8c4b",
+                "reference": "aff87c1f3f53d2aa332a6bb68ffc5c40826c8c4b",
                 "shasum": ""
             },
             "require": {
@@ -1551,18 +1551,21 @@
                 {
                     "name": "Costa Rico",
                     "email": "zetogo@gmail.com"
+                },
+                {
+                    "name": "Mert Ergun",
+                    "email": "mert.rgun@gmail.com"
                 }
             ],
             "description": "yii2 images module for storing images",
             "keywords": [
-                "Costa Rico",
                 "images",
                 "images store",
                 "store",
                 "yii2",
                 "yii2-images"
             ],
-            "time": "2014-10-27 15:14:55"
+            "time": "2014-12-23 00:15:05"
         },
         {
             "name": "paolomanca/yii2-fullcalendar",
@@ -2246,7 +2249,6 @@
     "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
-    "prefer-lowest": false,
     "platform": {
         "php": ">=5.4.0"
     },

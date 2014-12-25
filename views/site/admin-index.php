@@ -4,7 +4,6 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\helpers\Html;
 
 $this->title = 'Västerås Flygmuseum';
 ?>
@@ -20,39 +19,44 @@ $this->title = 'Västerås Flygmuseum';
                 <?php
                     $managements=[
                         [
-                            'url' => 'simulator/index',
+                            'url' => \yii\helpers\Url::to(['/simulator/index']),
                             'title' => 'Simulators',
                             'permission' => 'manageSimulator'
                         ],
                         [
-                            'url' => 'booking/index',
+                            'url' => \yii\helpers\Url::to(['/booking/index']),
                             'title' => 'Bookings',
                             'permission' => 'manageBookings'
                         ],
                         [
-                            'url' => 'timeslot/index',
+                            'url' => \yii\helpers\Url::to(['/timeslot/index']),
                             'title' => 'Timeslots',
                             'permission' => 'manageTimeslots'
                         ],
                         [
-                            'url' => 'timeslot-model/index',
+                            'url' => \yii\helpers\Url::to(['/timeslot-model/index']),
                             'title' => 'Timeslot Models',
                             'permission' => 'manageTimeslotModels'
                         ],
                         [
-                            'url' => 'staff/index',
+                            'url' => \yii\helpers\Url::to(['/staff/index']),
                             'title' => 'Staff',
                             'permission' => 'manageStaff'
                         ],
                         [
-                            'url' => 'permission/index',
+                            'url' => \yii\helpers\Url::to(['/permission/index']),
                             'title' => 'Permissions Management',
                             'permission' => 'assignPermissions'
                         ],
                         [
-                            'url' => 'permission/roles',
+                            'url' => \yii\helpers\Url::to(['/permission/roles']),
                             'title' => 'Administrative Roles Management',
                             'permission' => 'manageRoles'
+                        ],
+                        [
+                            'url' => \yii\helpers\Url::to(['/parameter/index']),
+                            'title' => 'System Parameters Management',
+                            'permission' => 'manageParams'
                         ],
                     ];
 
@@ -81,7 +85,7 @@ $this->title = 'Västerås Flygmuseum';
                         ?>
                     </p>
                     <p><a class="btn btn-default"
-                          href="<?= Url::to(['simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
+                          href="<?= Url::to(['/simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
                                 'Book &raquo;'); ?></a></p>
                 </div>
             <?php } ?>

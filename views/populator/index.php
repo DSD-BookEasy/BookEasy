@@ -4,7 +4,7 @@ use yii\widgets\ActiveForm;
 
 
 /* @var $this yii\web\View */
-
+/* @var $user app\models\Staff */
 ?>
 
 <div class="alert alert-warning" role="alert">
@@ -36,20 +36,34 @@ use yii\widgets\ActiveForm;
     </p>
 
     <p>
-        This controller generates only 10 staff members, 4 simulators, 20 bookings(randomly assigned to a staff or
-        unassigned, random status(we don't have approval yet)), 22 Timeslots, 0 Timeslotmodels(we don't have it
-        yet).
+        This controller generates only 10 staff members(which have the role Instructor), 4 simulators, 20 bookings(randomly assigned to a staff or
+        unassigned, random status(we don't have approval yet)), 22 Timeslots, 4x14=56 Timeslotmodels.
         If you want to generate more data or change a little bit, explore this controller and try generating more
         data with faker and fixtures.
-        This controller generates only serial timeslots within the time between 1 December and 7 December(especially
+        This controller generates only serial timeslots within the time between 8 December and 14 December(especially
         on Sunday).
         Take a look at the controller code to change these dates.
     </p>
 </div>
 <div>
-    <form style="float:left" method="get" action="<?= \yii\helpers\Url::to(['execute']) ?>">
-        <input id="execute" type="submit" class="btn btn-warning btn-lg" value="Click me once">
-    </form>
+    <div class="alert alert-warning" role="alert">
+        <p>
+            Enter your admin credentials(you may change the previous one here):
+        </p>
+    </div>
+    <?php
+    $form = ActiveForm::begin([
+        'action' => ['populator/execute']]);
+    echo $form->field($user, 'user_name')->textInput();
+    echo $form->field($user, 'plain_password')->passwordInput();
+    echo $form->field($user, 'repeat_password')->passwordInput();
+    ?>
+    <div style="float:left" class="form-group">
+        <?= Html::submitButton(Yii::t('app', 'Click me once'), ['class' => 'btn btn-warning btn-lg']) ?>
+    </div>
+    <?php
+    $form->end();
+    ?>
     <form method="get" action="<?= \yii\helpers\Url::to(['clear']) ?>"
           onsubmit="return confirm('This action will completely remove every row in your database. Are you sure?');">
         <input id="clear" style="margin-left: 50px" type="submit" class="btn btn-danger btn-lg" value="Clear database">
