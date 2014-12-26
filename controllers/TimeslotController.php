@@ -11,6 +11,7 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * TimeslotController implements the CRUD actions for Timeslot model.
@@ -77,13 +78,13 @@ class TimeslotController extends Controller
      * @return string
      */
     public function actionAnonCalendar($simulator, $start = null, $end = null, $background = false){
-        $t=[];
+        $timeslots=[];
         if(!empty($simulator) and is_numeric($simulator)){
             try {
                 $s = new \DateTime($start);
                 $e = new \DateTime($end);
 
-                $t = Timeslot::find()->
+                $timeslots = Timeslot::find()->
                 where(['id_simulator' => $simulator])->
                 andWhere(['>=', 'start', $s->format("c")])->
                 andWhere(['<=', 'end', $e->format("c")])->all();
@@ -91,16 +92,25 @@ class TimeslotController extends Controller
             catch(\Exception $e){
                 //Invalid dates. Return empty timeslots
             }
-        }
 
-        /**
-         * Using renderPartial and NOT renderAjax because I don't want styles or script to interfere with
-         * the json output
-         */
-        return $this->renderPartial('anon-calendar',[
-            'timeslots' => $t,
-            'background' => $background
-        ]);
+            $out=[];
+
+            foreach($timeslots as $t){
+                $out[]=[
+                    'id' => $t->id,
+                    'title' => $t->id_simulator? Yii::t('app','Unavailable') : Yii::t('app','Available'),
+                    'allDay' => false,
+                    'start' => $t->start,
+                    'end' => $t->end,
+                    'className' => $t->id_simulator? 'unavailable' : 'available',
+                    'rendering' => $background? 'background' : null
+                ];
+            }
+
+            $resp = Yii::$app->response;
+            $resp->data = $out;
+            $resp->format = Response::FORMAT_JSON;
+        }
     }
 
     /**
