@@ -175,7 +175,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
     </div>
     <div class="alert alert-info">
         <?= Html::tag('p',Yii::t('app',"It is also possible to make bookings out of the proposed timeslots above for special occasions. If you want to request a special booking please {click}",[
-            'click' => Html::a(Yii::t('app','click here'),['booking/create-weekdays'])
+            'click' => Html::a(Yii::t('app','click here'),['booking/create-weekdays','simulator' => $simulator->id])
         ]))?>
     </div>
 </div>
