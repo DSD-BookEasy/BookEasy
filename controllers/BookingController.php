@@ -324,6 +324,7 @@ class BookingController extends Controller
             return $this->render('create-weekdays', [
                 'model' => $model,
                 'simulator' => $s,
+                'timeslots' => [new Timeslot()],//TODO add this model handling for error detection
                 'entry_fee' => Parameter::getValue('entryFee', 80),
                 'businessHours' => [
                     'start' => Parameter::getValue('businessTimeStart'),
