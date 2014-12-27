@@ -48,7 +48,7 @@ AppAsset::register($this);
             NavBar::end();
         ?>
 
-        <div class="container">
+        <div class="container controller-<?= Yii::$app->controller->id?> action-<?= Yii::$app->controller->action->id ?>">
             <?= Breadcrumbs::widget([
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
