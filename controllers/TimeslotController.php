@@ -7,6 +7,7 @@ use Yii;
 use app\models\Timeslot;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -143,14 +144,20 @@ class TimeslotController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $goTo = null)
     {
         $model = $this->findModel($id);
+
+        if($goTo != null){
+            Yii::$app->user->setReturnUrl($goTo);
+        }else{
+            Yii::$app->user->setReturnUrl(Url::to(['view', 'id' => $model->id]));
+        }
 
         if ($model->load(Yii::$app->request->post())){
             $model->id_timeSlotModel = NULL;
             if($model->save()){
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->goBack();
             }
         } else {
             return $this->render('update', [

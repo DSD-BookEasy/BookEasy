@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 use app\models\Booking;
 
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?=
     Html::tag('h1',
-        Yii::t('app', 'Booking of {0} {1}', $model->surname, $model->name)
+        Yii::t('app', 'Booking of {0} {1}', [$model->surname, $model->name])
     )
     ?>
 
@@ -53,7 +54,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 Yii::t('app','Flight Simulation: {0, number, currency}', $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation)
             ]).
 
-            Html::a(Yii::t('app', 'Edit Time Slot'), ['timeslot/update', 'id' => $slot->id], ['class' => 'btn btn-primary']).
+            Html::a(Yii::t('app', 'Edit Time Slot'), ['timeslot/update', 'id' => $slot->id, 'goTo' =>
+                    Url::to(['booking/view', 'id' => $model->id, 'token' => $model->token], true)],
+                    ['class' => 'btn btn-primary']).
 
             "<br></br>"
         );
