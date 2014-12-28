@@ -518,7 +518,7 @@ class BookingController extends Controller
     private function notifyCoordinators($booking)
     {
         Yii::$app->mailer->compose(['html' => 'booking/new_booking_html', 'text' => 'booking/new_booking_text'], [
-            'id' => $booking->id
+            'id' => $booking->id, 'mailText' => Parameter::getValue('emailTextToCoordinator')
         ])
             ->setFrom(\Yii::$app->params['adminEmail'])
             ->setTo(\Yii::$app->params['coordinatorEmail'])
