@@ -521,7 +521,7 @@ class BookingController extends Controller
             'id' => $booking->id, 'mailText' => Parameter::getValue('emailTextToCoordinator')
         ])
             ->setFrom(\Yii::$app->params['adminEmail'])
-            ->setTo(\Yii::$app->params['coordinatorEmail'])
+            ->setTo(Parameter::getValue('coordinatorEmail'))
             ->setSubject(\Yii::t('app', 'New Booking'))
             ->send();
     }
