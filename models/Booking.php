@@ -89,5 +89,22 @@ class Booking extends \yii\db\ActiveRecord
         return false;
     }
 
+    /**
+     * Modify the status with the semantic value of its status.
+     */
+    public function statusToString(){
+        switch($this->status){
+            case Booking::CONFIRMED:
+                $this->status = 'Confirmed';
+                break;
+            case Booking::NOT_CONFIRMED:
+                $this->status = 'Not Confirmed';
+                break;
+            case Booking::WAITING_FOR_CONFIRMATION:
+                $this->status = 'Waiting for Confirmation';
+                break;
+        }
+    }
+
 
 }

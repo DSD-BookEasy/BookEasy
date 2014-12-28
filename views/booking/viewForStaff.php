@@ -22,13 +22,18 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <?php
-    $names = ['name', 'surname', 'telephone', 'email', 'address', 'comments', 'timestamp'];
+    $names = ['name', 'status', 'surname', 'telephone', 'email', 'address', 'comments', 'timestamp'];
     $attributes = [];
     foreach($names as $att){
         if($model[$att] != null){
             array_push($attributes, $att);
         }
     }
+    ?>
+
+    <?php
+    //prepare the status to be shown
+    $model->statusToString();
     ?>
 
     <?= DetailView::widget([
