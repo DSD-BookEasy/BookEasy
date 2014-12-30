@@ -42,10 +42,8 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
             foreach ($simulators as $simulator_model) {
 
                 ?>
-                <!-- The simulators will be aligned in a column with width 2 of 12. -->
+                <!-- The simulators will be aligned in a column with width 2 of 12. Alignment seems to work fine this way. -->
                 <div class="col-md-2">
-                    <!-- Display the simulators name -->
-                    <h3><?= $simulator_model->getAttribute("name") ?></h3>
                     <!-- Create a click able picture linked to the corresponding simulators agenda. -->
                     <p><a href="<?= Url::to(['/simulator/agenda', 'id' => $simulator_model->id]);?>">
                         <?php
@@ -63,6 +61,8 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                           href="<?/*= Url::to(['/simulator/agenda', 'id' => $simulator_model->id]); */?>"><?/*= Yii::t('app',
                                 'Book &raquo;'); */?></a>
                     </p>-->
+                    <!-- Display the simulators name -->
+                    <h4><?= $simulator_model->getAttribute("name") ?></h4>
                 </div>
             <?php
 

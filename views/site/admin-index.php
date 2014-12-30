@@ -75,6 +75,7 @@ $this->title = 'Västerås Flygmuseum';
             foreach ($simulators as $simulator) {
 
                 ?>
+                <!-- There may occur alignment problems with md-3 if the simulator names are too long. -->
                 <div class="col-md-3">
                     <h2><?= $simulator->name ?></h2>
                     <!-- Create a click able picture linked to the corresponding simulators agenda. -->
