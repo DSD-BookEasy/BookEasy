@@ -36,7 +36,7 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
     <p><?= \Yii::t('app', 'Click on an empty spot in the calendar to send a request for a special booking or hold and drag to request a longer time span.'); ?></p>
 
         <div class="row text-center">
-
+            <!-- Shows a selection of all available simulators. -->
             <?php
 
             foreach ($simulators as $simulator_model) {
@@ -44,14 +44,25 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
                 ?>
                 <!-- The simulators will be aligned in a column with width 2 of 12. -->
                 <div class="col-md-2">
+                    <!-- Display the simulators name -->
                     <h3><?= $simulator_model->getAttribute("name") ?></h3>
-                    <!-- This line inserts a clickable picture for each simulator. -->
-                    <p><a href="<?= Url::to(['simulator/agenda', 'id' => $simulator_model->getAttribute("id")]); ?>"> <img src="http://placehold.it/100"> </a></p>
-
-                    <!-- Button under the picture, to change the simulator is deprecated due to embedded links in the pictures. -->
-              <!--      <p><a class="btn btn-default"
-                          href="<?/*= Url::to(['simulator/agenda', 'id' => $simulator_model->getAttribute("id")]); */?>"><?/*= Yii::t('app',
-                                'Book &raquo;'); */?></a></p>-->
+                    <!-- Create a click able picture linked to the corresponding simulators agenda. -->
+                    <p><a href="<?= Url::to(['/simulator/agenda', 'id' => $simulator_model->id]);?>">
+                        <?php
+                        if ($simulator_model->getImage()) {
+                            echo Html::img('@web/' . $simulator_model->getImage()->getPath('125x'),
+                                ['alt' => Yii::t('app', 'Simulator image')]);
+                        } else {
+                            echo Html::img('http://placehold.it/125',
+                                ['alt' => Yii::t('app', 'Simulator image')]);
+                        }
+                        ?>
+                    </a></p>
+                    <!-- Following paragraph would create a button. This is not needed, because the pictures are click able. -->
+                   <!-- <p><a class="btn btn-default"
+                          href="<?/*= Url::to(['/simulator/agenda', 'id' => $simulator_model->id]); */?>"><?/*= Yii::t('app',
+                                'Book &raquo;'); */?></a>
+                    </p>-->
                 </div>
             <?php
 

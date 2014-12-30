@@ -28,8 +28,8 @@ $this->title = Yii::t('app', 'Västerås Flygmuseum');
             ?>
             <div class="col-md-3">
                 <h2><?= $simulator->name ?></h2>
-
-                <p>
+                <!-- Create a click able picture linked to the corresponding simulators agenda. -->
+                <p><a href="<?= Url::to(['/simulator/agenda', 'id' => $simulator->id]);?>">
                     <?php
                     if ($simulator->getImage()) {
                         echo Html::img('@web/' . $simulator->getImage()->getPath('250x'),
@@ -39,16 +39,15 @@ $this->title = Yii::t('app', 'Västerås Flygmuseum');
                             ['alt' => Yii::t('app', 'Simulator image')]);
                     }
                     ?>
-                </p>
-
+                </a></p>
+                <!-- Following paragraph creates a button, as additional option to the click able pictures above. -->
                 <p><a class="btn btn-default"
                       href="<?= Url::to(['/simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
-                            'Book &raquo;'); ?></a></p>
+                            'Book &raquo;'); ?></a>
+                </p>
             </div>
             <?php
-
             }
-
             ?>
         </div>
 

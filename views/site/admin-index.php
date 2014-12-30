@@ -69,26 +69,35 @@ $this->title = 'Västerås Flygmuseum';
         </div>
 
         <div class="row text-center">
+            <!-- Shows a selection of all available simulators. -->
+            <?php
 
-            <?php foreach ($simulators as $simulator) { ?>
+            foreach ($simulators as $simulator) {
+
+                ?>
                 <div class="col-md-3">
                     <h2><?= $simulator->name ?></h2>
-                    <p>
-                        <?php
-                        if ($simulator->getImage()) {
-                            echo Html::img('@web/' . $simulator->getImage()->getPath('250x'),
-                                ['alt' => Yii::t('app', 'Simulator image')]);
-                        } else {
-                            echo Html::img('http://placehold.it/250',
-                                ['alt' => Yii::t('app', 'Simulator image')]);
-                        }
-                        ?>
-                    </p>
+                    <!-- Create a click able picture linked to the corresponding simulators agenda. -->
+                    <p><a href="<?= Url::to(['/simulator/agenda', 'id' => $simulator->id]);?>">
+                            <?php
+                            if ($simulator->getImage()) {
+                                echo Html::img('@web/' . $simulator->getImage()->getPath('250x'),
+                                    ['alt' => Yii::t('app', 'Simulator image')]);
+                            } else {
+                                echo Html::img('http://placehold.it/250',
+                                    ['alt' => Yii::t('app', 'Simulator image')]);
+                            }
+                            ?>
+                        </a></p>
+                    <!-- Following paragraph creates a button, as additional option to the click able pictures above. -->
                     <p><a class="btn btn-default"
                           href="<?= Url::to(['/simulator/agenda', 'id' => $simulator->id]); ?>"><?= Yii::t('app',
-                                'Book &raquo;'); ?></a></p>
+                                'Book &raquo;'); ?></a>
+                    </p>
                 </div>
-            <?php } ?>
+            <?php
+            }
+            ?>
         </div>
 
     </div>
