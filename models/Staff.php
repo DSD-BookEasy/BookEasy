@@ -47,7 +47,8 @@ class Staff extends \yii\db\ActiveRecord implements IdentityInterface
             [['repeat_password'], 'compare', 'compareAttribute' => 'plain_password'],
             [['plain_password'], 'safe'],
             [['user_name'], 'required'],
-            [['email'], 'email', 'required']
+            ['email', 'email'],
+            ['email', 'required'],
         ];
     }
 
