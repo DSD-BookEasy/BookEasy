@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-md-12">
                     <?php
                     if ($model->getImage()) {
-                        echo Html::img('@web/' . $simulator->getImage()->getPath('250x'),
+                        echo Html::img('@web/' . $model->getImage()->getPath('250x'),
                             ['alt' => Yii::t('app', 'Simulator image')]);
                     } else {
                         echo Html::img('http://placehold.it/250',
@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-md-6">
                     <?php
                     if ($model->getImage()) {
-                        echo Html::img('@web/' . $simulator->getImage()->getPath('125x'),
+                        echo Html::img('@web/' . $model->getImage()->getPath('125x'),
                             ['alt' => Yii::t('app', 'Simulator image')]);
                     } else {
                         echo Html::img('http://placehold.it/125',
@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?php
                     if ($model->getImage()) {
-                        echo Html::img('@web/' . $simulator->getImage()->getPath('70x'),
+                        echo Html::img('@web/' . $model->getImage()->getPath('70x'),
                             ['alt' => Yii::t('app', 'Simulator image')]);
                     } else {
                         echo Html::img('http://placehold.it/70',
