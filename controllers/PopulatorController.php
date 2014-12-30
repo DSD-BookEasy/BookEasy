@@ -115,7 +115,10 @@ class PopulatorController extends \yii\web\Controller
 
             $user = new Staff();
             $user->load(Yii::$app->request->post());
-            $user->save();
+            $user->email = 'mail@mail.com';
+            if (!$user->save()) {
+                throw new ErrorException('Admin user could not be created. There is a problem with the populator code, consult Mert');
+            }
             $roles = Yii::$app->authManager->getRolesByUser($user->id);
             if (count($roles) == 0) {
                 $r = Yii::$app->authManager->getRole("Admin");
@@ -283,7 +286,7 @@ class PopulatorController extends \yii\web\Controller
             }
             $sunday->add($interval);
         }
-        TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d", "2014-12-31"));
+        TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d", "2015-01-31"));
         return $this->goHome();
     }
 
