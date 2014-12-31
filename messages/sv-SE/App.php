@@ -1,5 +1,8 @@
 <?php
 
 return [
-    'Welcome'   => 'Hej',
+    'Welcome'           => 'Välkommen',
+    'Lost password?'    => '',
+    'Password recovery' => '',
+    'Send'              => '',
 ];

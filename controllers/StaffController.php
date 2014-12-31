@@ -20,7 +20,7 @@ class StaffController extends \yii\web\Controller
         return [
             'access' => [//Allow access to logout only if user is logged-in
                 'class' => AccessControl::className(),
-                'except' => ['login', 'update'],
+                'except' => ['login', 'update', 'recover'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
@@ -48,7 +48,7 @@ class StaffController extends \yii\web\Controller
      */
     public function actionLogin()
     {
-        //Already loggedin users should not access this page
+        //Already logged in users should not access this page
         if (!Yii::$app->user->isGuest) {
             return $this->goBack();
         }
@@ -73,6 +73,19 @@ class StaffController extends \yii\web\Controller
                 ]);
             }
         }
+    }
+
+    /**
+     * Recover
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
+     */
+    public function actionRecover()
+    {
+        // renders a view named "recover"
+        return $this->render('recover', [
+            'model' => new Staff(),
+        ]);
     }
 
     public function actionAgenda()

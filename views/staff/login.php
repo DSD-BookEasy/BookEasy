@@ -28,4 +28,11 @@ if (!empty($error)) {
 
     <?php ActiveForm::end(); ?>
 
+    <div>
+        <br>
+        <?= Html::tag('p',Yii::t('app',"{click}",[
+            'click' => Html::a(Yii::t('app','Lost password?'),['staff/recover'])
+        ]))?>
+    </div>
+
 </div>
