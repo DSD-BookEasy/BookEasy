@@ -3,6 +3,6 @@
 return [
     'Welcome'           => 'Välkommen',
     'Lost password?'    => '',
-    'Password recovery' => '',
+    'Password Recovery' => '',
     'Send'              => '',
 ];

@@ -5,7 +5,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 ?>
-<h1><?= Yii::t('app', 'Password recovery') ?></h1>
+<h1><?= Yii::t('app', 'Password Recovery') ?></h1>
 <?php
 if (!empty($error)) {
     ?>
