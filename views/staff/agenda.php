@@ -101,46 +101,51 @@ $this->title = Yii::t('app', "Staff Agenda");
                     'className' => 'closed'
                 ]
             ];
+            $nowDate = new DateTime('now');
             //Populate calendar events with timeslots
-            foreach ($slots[$simulator->id] as $s) {
-                $a = [
-                    'start' => $s->start,
-                    'end' => $s->end,
-                    'id' => $s->id
+            foreach ($slots[$simulator->id] as $slot) {
+                $event = [
+                    'start' => $slot->start,
+                    'end' => $slot->end,
+                    'id' => $slot->id
                 ];
-                if ($s->id_booking != null) {
-                    $a['id_booking'] = $s->id_booking; //to be able to view booking page we need to store the id
-                    if ($bookings[$s->id_booking]->assigned_instructor != null) {
+                if ($slot->id_booking != null) {
+                    $event['id_booking'] = $slot->id_booking; //to be able to view booking page we need to store the id
+                    if ($bookings[$slot->id_booking]->assigned_instructor != null) {
                         //if the booking is assigned that show the name
-                        $iid = $bookings[$s->id_booking]->assigned_instructor;
-                        $a['title'] = \Yii::t('app', '{name} {lname} has booked this slot, which is assigned to {ins_name} {ins_lname}, on {ts} ', [
-                            'name' => $bookings[$s->id_booking]->name,
-                            'lname' => $bookings[$s->id_booking]->surname,
-                            'ts' => $bookings[$s->id_booking]->timestamp,
+                        $iid = $bookings[$slot->id_booking]->assigned_instructor;
+                        $event['title'] = \Yii::t('app', '{name} {lname} has booked this slot, which is assigned to {ins_name} {ins_lname}, on {ts} ', [
+                            'name' => $bookings[$slot->id_booking]->name,
+                            'lname' => $bookings[$slot->id_booking]->surname,
+                            'ts' => $bookings[$slot->id_booking]->timestamp,
                             'ins_name' => $staff[$iid]->name,
                             'ins_lname' => $staff[$iid]->surname,
                         ]);
-                        $a['className'] = 'assigned';
+                        $event['className'] = 'assigned';
                     } else {
                         //the booking is not assigned then warn the user about it
-                        $a['title'] = \Yii::t('app', '{name} {lname} has booked this slot, which is NOT assigned, on {ts} ', [
-                            'name' => $bookings[$s->id_booking]->name,
-                            'lname' => $bookings[$s->id_booking]->surname,
-                            'ts' => $bookings[$s->id_booking]->timestamp,
+                        $event['title'] = \Yii::t('app', '{name} {lname} has booked this slot, which is NOT assigned, on {ts} ', [
+                            'name' => $bookings[$slot->id_booking]->name,
+                            'lname' => $bookings[$slot->id_booking]->surname,
+                            'ts' => $bookings[$slot->id_booking]->timestamp,
                         ]);
-                        $a['className'] = 'unassigned';
+                        $event['className'] = 'unassigned';
                     }
                 } else {
-                    $a['title'] = \Yii::t('app', 'Available');
-                    $a['className'] = 'available';
+                    $event['title'] = \Yii::t('app', 'Available');
+                    $event['className'] = 'available';
                 }
 
-                if ($s->blocking) {
-                    $a['title'] = \Yii::t('app', 'Closed');
-                    $a['className'] = 'closed closed_dayview';
+                if ($slot->blocking) {
+                    $event['title'] = \Yii::t('app', 'Closed');
+                    $event['className'] = 'closed closed_dayview';
                 }
-                checkBorders($borders, $s->start, $s->end);
-                $events[] = $a;
+                $startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $slot->start);
+                if ($startDate < $nowDate) {
+                    $event['className'] = "passedSlot";
+                }
+                checkBorders($borders, $slot->start, $slot->end);
+                $events[] = $event;
             }
             echo FullCalendar::widget([
                 'config' => [
@@ -256,7 +261,11 @@ $this->registerJs("
 
         function slotSelecting(event, element) {
             if (event.rendering != "background" && event.rendering != "inverse-background") {
-                if (element.hasClass("available")) {
+                if (element.hasClass("passedSlot")) {
+                    element.attr("title", "<?=\Yii::t('app',"This timeslot is expired")?>");
+                    element.tooltip();
+                }
+                else if (element.hasClass("available")) {
                     element.attr("title", "<?=\Yii::t('app',"This timeslot is available click the slot to create a booking")?>");
                     element.tooltip();
                     element.click(function (ev) {
