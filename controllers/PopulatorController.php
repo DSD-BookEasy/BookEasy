@@ -78,7 +78,7 @@ class PopulatorController extends \yii\web\Controller
         Timeslot::deleteAll();
         Booking::deleteAll();
         $simulators = Simulator::find()->all();
-        foreach($simulators as $simulator) {
+        foreach ($simulators as $simulator) {
             $simulator->clearImagesCache();
             $simulator->removeImages();
         }
@@ -99,14 +99,14 @@ class PopulatorController extends \yii\web\Controller
         //loads and creates staff objects and then saves it to the db
         $staff = require(__DIR__ . '/../tests/codeception/fixtures/staff.php');
         $staff_ids = array();
-        if(Yii::$app->request->getIsPost()) {
+        if (Yii::$app->request->getIsPost()) {
             $r = Yii::$app->authManager->getRole("Instructor");
             foreach ($staff as $ele) {
                 $object = $this->map('app\models\Staff', $ele);
                 $object->save();
                 try {
                     Yii::$app->authManager->assign($r, $object->id);
-                } catch(Exception $e) {
+                } catch (Exception $e) {
 
                 }
                 array_push($staff_ids, $object->id);
@@ -115,11 +115,14 @@ class PopulatorController extends \yii\web\Controller
 
             $user = new Staff();
             $user->load(Yii::$app->request->post());
-            $user->save();
+            $user->email = 'mail@mail.com';
+            if (!$user->save()) {
+                throw new ErrorException('Admin user could not be created. There is a problem with the populator code, consult Mert');
+            }
             $roles = Yii::$app->authManager->getRolesByUser($user->id);
             if (count($roles) == 0) {
                 $r = Yii::$app->authManager->getRole("Admin");
-                Yii::$app->authManager->assign($r,$user->id);
+                Yii::$app->authManager->assign($r, $user->id);
             }
         } else {
             return $this->actionIndex();
@@ -147,7 +150,7 @@ class PopulatorController extends \yii\web\Controller
         //loads and creates simulator objects and then saves it to the db
         $tmpFolderPath = Yii::getAlias('@webroot') . '/uploads';
         // Check whether the folder in which we will temporary save the uploaded image exists
-        if ( !file_exists($tmpFolderPath) ) {
+        if (!file_exists($tmpFolderPath)) {
             Yii::info("$tmpFolderPath doesn't exist. It will be created.");
             mkdir($tmpFolderPath);
         }
@@ -156,7 +159,7 @@ class PopulatorController extends \yii\web\Controller
         foreach ($simulators as $ele) {
             $object = $this->map('app\models\Simulator', $ele);
             $result = \Faker\Provider\Image::image($dir = $tmpFolderPath,
-                $width=250, $height=250, $category="abstract", $fullPath=true);
+                $width = 250, $height = 250, $category = "abstract", $fullPath = true);
             $object->save();
             $object->clearImagesCache();
             $object->attachImage($result, true);
@@ -255,14 +258,15 @@ class PopulatorController extends \yii\web\Controller
 
         //TimeslotModel for sundays:
         $tempDateEnd = \DateTime::createFromFormat("Y-m-d", _sunday);
-        $tempDateEnd->add(\DateInterval::createFromDateString("+6 weeks"));
+        $tempDateEnd->add(\DateInterval::createFromDateString("+6 months"));
         $tempDateEnd = $tempDateEnd->format("Y-m-d");
         $tempDateStart = _sunday;
         $sunday = \DateTime::createFromFormat($format_string,
             _sunday . ' ' . _beginDay_H . ':' . _beginDay_M . ':00');
         while ($sunday < $endDay) {
+            $isBlocking = false;
             if ($sunday == $midday) {
-                $sunday->add($lunchBreak);
+                $isBlocking = true;
             }
             foreach ($simulators_ids as $id) {
                 $currentSlotTime = clone $sunday;
@@ -275,15 +279,25 @@ class PopulatorController extends \yii\web\Controller
                 $timeslotmodel->repeat_day = 7;
                 $timeslotmodel->frequency = "P1W";
                 $timeslotmodel->start_time = $currentSlotTime->format($format_string_time);
-                $timeslotmodel->end_time = $currentSlotTime->add($interval)->format($format_string_time);
+                if ($isBlocking) {
+                    $timeslotmodel->end_time = $currentSlotTime->add($lunchBreak)->format($format_string_time);
+                }
+                else {
+                    $timeslotmodel->end_time = $currentSlotTime->add($interval)->format($format_string_time);
+                }
+                $timeslotmodel->blocking = $isBlocking;
                 if (!$timeslotmodel->save()) {
                     throw new ErrorException("Couldn't save: sim id: " . $id . " start validity: " . $tempDateStart
                         . " end validity: " . $tempDateEnd . " start_time: " . $timeslotmodel->start_time . " end_time: " . $timeslotmodel->end_time);
                 };
             }
-            $sunday->add($interval);
+            if ($isBlocking) {
+                $sunday->add($lunchBreak);
+            } else {
+                $sunday->add($interval);
+            }
         }
-        TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d", "2014-12-31"));
+        TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d", "2015-04-01"));
         return $this->goHome();
     }
 
