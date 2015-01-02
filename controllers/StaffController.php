@@ -77,15 +77,36 @@ class StaffController extends \yii\web\Controller
 
     /**
      * Recover
+     * This function controls the recovery process
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException
      */
     public function actionRecover()
     {
-        // renders a view named "recover"
-        return $this->render('recover', [
-            'model' => new Staff(),
-        ]);
+        $loginData = Yii::$app->request->post('Staff');
+        if (empty($loginData)) {
+            // renders a view named "recover"
+            return $this->render('recover', [
+                'model' => new Staff(),
+            ]);
+        }
+        else {
+            $staff = Staff::findOne(['email' => $loginData['email']]);
+            if (empty($staff)){
+              //  email has not been found, echo error message
+                return $this->render('recover', [
+                    'model' => new Staff(),
+                    'error' => \Yii::t('app', 'E-Mail not found')
+                ]);
+            }
+            else {
+                // email has been found, send recovery email
+                return $this->render('recover', [
+                    'model' => $staff,
+                    'error' => \Yii::t('app', 'Recovery E-Mail has been send')
+                ]);
+            }
+        }
     }
 
     public function actionAgenda()

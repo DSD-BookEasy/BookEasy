@@ -10,7 +10,9 @@ use yii\widgets\ActiveForm;
 if (!empty($error)) {
     ?>
     <div class="error">
-        <?= HTML::encode($error); ?>
+        <br>
+        <h3><?= HTML::encode($error); ?></h3>
+        <br>
     </div>
 <?php
 }
@@ -29,6 +31,7 @@ if (!empty($error)) {
     <?php ActiveForm::end(); ?>
 
     <div>
+        <!-- This part creates a simple HTML link to the password recovery site -->
         <br>
         <?= Html::tag('p',Yii::t('app',"{click}",[
             'click' => Html::a(Yii::t('app','Lost password?'),['staff/recover'])
