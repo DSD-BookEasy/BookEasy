@@ -78,6 +78,12 @@ class PopulatorController extends \yii\web\Controller
         Timeslot::deleteAll();
         Booking::deleteAll();
         $simulators = Simulator::find()->all();
+        $tmpFolderPath = Yii::getAlias('@webroot') . '/uploads';
+        // Check whether the folder in which we will temporary save the uploaded image exists
+        if (!file_exists($tmpFolderPath)) {
+            Yii::info("$tmpFolderPath doesn't exist. It will be created.");
+            mkdir($tmpFolderPath);
+        }
         foreach ($simulators as $simulator) {
             $simulator->clearImagesCache();
             $simulator->removeImages();
