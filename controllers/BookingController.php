@@ -371,7 +371,7 @@ class BookingController extends Controller
 
             $transaction->commit();
 
-            //is require also for the opening hours?
+            //is require also for the opening hours? --> no it's not
             $this->notifyCoordinators($booking);
 
             unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);

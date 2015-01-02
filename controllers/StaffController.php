@@ -35,7 +35,7 @@ class StaffController extends \yii\web\Controller
                     [
                         'actions' => ['agenda'],
                         'allow' => true,
-                        'roles' => ['manageBookings','assignedToBooking']
+                        'roles' => ['manageBookings', 'assignedToBooking']
                     ],
                 ],
             ],
@@ -89,18 +89,19 @@ class StaffController extends \yii\web\Controller
             return $this->render('recover', [
                 'model' => new Staff(),
             ]);
-        }
-        else {
+        } else {
             $staff = Staff::findOne(['email' => $loginData['email']]);
-            if (empty($staff)){
-              //  email has not been found, echo error message
+            if (empty($staff)) {
+                //  email has not been found, echo error message
                 return $this->render('recover', [
                     'model' => new Staff(),
                     'error' => \Yii::t('app', 'E-Mail not found')
                 ]);
-            }
-            else {
+            } else {
                 // email has been found, send recovery email
+
+                $this->sendRecovery($staff);
+
                 return $this->render('recover', [
                     'model' => $staff,
                     'error' => \Yii::t('app', 'Recovery E-Mail has been send')
@@ -137,19 +138,21 @@ class StaffController extends \yii\web\Controller
         $bookings = array();
         $staff = array();
         //TODO to self: examine this code if the assigned instructor is moved to another table
-        foreach($simulators as $sim) {
+        foreach ($simulators as $sim) {
             //foreach simulator find time slots with the given date
             $slots = Timeslot::find()->
             where(['id_simulator' => $sim->id])->
             andWhere(['>=', 'start', $dayStarting->format("c")])->
             andWhere(['<=', 'end', $dayEnding->format("c")])->all();
             $sim_slots[$sim->id] = $slots;
-            foreach($slots as $slot) {
+            foreach ($slots as $slot) {
                 //foreach timeslot is found, get the booking information
                 if ($slot->id_booking != null && !array_key_exists($slot->id_booking, $bookings)) {
                     $booking = Booking::findOne($slot->id_booking);
                     $bookings[$slot->id_booking] = $booking;
-                    if ($booking->assigned_instructor != null && !array_key_exists($booking->assigned_instructor, $staff)) {
+                    if ($booking->assigned_instructor != null && !array_key_exists($booking->assigned_instructor,
+                            $staff)
+                    ) {
                         //if the booking is assigned get the instructor details
                         $instructor = Staff::findOne($booking->assigned_instructor);
                         $staff[$instructor->id] = $instructor;
@@ -249,7 +252,7 @@ class StaffController extends \yii\web\Controller
          * Unfortunately access control must be perfomed here and not in the AccessControl Filter
          * Because we need to pass the user param to the updateOwnProfile permission
          */
-        if ($loggedInUser->can('manageStaff') || $loggedInUser->can('updateOwnProfile',['user' => $s])){
+        if ($loggedInUser->can('manageStaff') || $loggedInUser->can('updateOwnProfile', ['user' => $s])) {
 
             if (empty($s)) {
                 throw new NotFoundHttpException(Yii::t('app', "The specified user doesn't exist"));
@@ -269,14 +272,12 @@ class StaffController extends \yii\web\Controller
                 'allRoles' => Yii::$app->authManager->getRoles(),
                 'roles' => Yii::$app->authManager->getRolesByUser($s->id)
             ]);
-        }
-        else{
+        } else {
             //Not permission to access. If user is guest redirect to login, otherwise forbid
-            if($loggedInUser->isGuest){
+            if ($loggedInUser->isGuest) {
                 return Yii::$app->user->loginRequired();
-            }
-            else{
-                throw new ForbiddenHttpException(Yii::t('app',"You are not allowed to perform this action."));
+            } else {
+                throw new ForbiddenHttpException(Yii::t('app', "You are not allowed to perform this action."));
             }
         }
     }
@@ -286,20 +287,50 @@ class StaffController extends \yii\web\Controller
      * @param Staff $user the user to update
      * @param array $roles an array of roles to add. It should be indexed with the names of the roles
      */
-    private function updateRoles($user,$roles)
+    private function updateRoles($user, $roles)
     {
         $oldRoles = Yii::$app->authManager->getRolesByUser($user->id);
 
-        $toDelete = array_diff_key($oldRoles,$roles);
+        $toDelete = array_diff_key($oldRoles, $roles);
         $toAdd = array_diff_key($roles, $oldRoles);
 
-        foreach($toDelete as $roleName => $rObj){
-            Yii::$app->authManager->revoke($rObj,$user->id);
+        foreach ($toDelete as $roleName => $rObj) {
+            Yii::$app->authManager->revoke($rObj, $user->id);
         }
 
-        foreach($toAdd as $roleName => $value){
+        foreach ($toAdd as $roleName => $value) {
             $r = Yii::$app->authManager->getRole($roleName);
-            Yii::$app->authManager->assign($r,$user->id);
+            Yii::$app->authManager->assign($r, $user->id);
         }
+    }
+
+
+    private function sendRecovery($staff)
+    {
+        Yii::$app->mailer->compose(['html' => 'booking/new_booking_html', 'text' => 'booking/new_booking_text'], [
+            'id' => 1,
+            'mailText' => Yii::t('app', 'Email content.')
+        ])
+            ->setFrom(\Yii::$app->params['adminEmail'])
+            ->setTo($staff['email'])
+            ->setSubject(\Yii::t('app', 'Booking system password recovery'))
+            ->send();
+
+/*        $getToken=rand(0, 99999);
+        $getTime=date("H:i:s");
+        $token=md5($getToken.$getTime);
+
+        $emailAdmin= Yii::t('app', 'bokning@flygmuseum.com');
+        $setText="To reset your password click the link below:<br/>
+                    <a href='http://localhost.com/index.php?r=staff/vertoken/view&token=".$token."'>Click Here to Reset Password</a><br><br>
+                    This email has been generated automaticaly. Please do not answer to it.";
+
+        $name='=?UTF-8?B?'.base64_encode(Yii::t('app', 'Flygmuseum Booking System')).'?=';
+        $subject='=?UTF-8?B?'.base64_encode(Yii::t('app', 'Booking system password recovery')).'?=';
+        $headers="From: $name <{$emailAdmin}>\r\n".
+            "Reply-To: {$emailAdmin}\r\n".
+            "MIME-Version: 1.0\r\n".
+            "Content-type: text/html; charset=UTF-8";
+        mail($staff['email'],$subject,$setText,$headers);*/
     }
 }
