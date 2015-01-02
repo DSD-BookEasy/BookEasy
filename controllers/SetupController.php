@@ -32,7 +32,7 @@ class SetupController extends \yii\web\Controller
         if(Yii::$app->request->getIsPost()){
             $user=new Staff();
             $user->load(Yii::$app->request->post());
-
+            $user->email = 'tmp@mail.com';
             if($user->save()) {
                 //Add roles in the system
                 $firstRole=null;
