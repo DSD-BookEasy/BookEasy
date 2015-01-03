@@ -22,18 +22,17 @@ use app\models\Parameter;
 
 $price = $simulator->price_simulation;
 $duration = $simulator->flight_duration;
-$this->title = Yii::t('app', "{simulator}'s agenda", [
+$this->title = Yii::t('app', "{simulator}", [
     'simulator' => $simulator->name
 ]);
 
 ?>
-
-
     <div class="simulator-availability">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p><?= \Yii::t('app', 'Click on an available timeslot to make a booking.'); ?></p>
-    <p><?= \Yii::t('app', 'Click on an empty spot in the calendar to send a request for a special booking or hold and drag to request a longer time span.'); ?></p>
+    <p class="lead"><?= \Yii::t('app', 'Click on an available time slot to book this simulator inside the regular opening hours of the museum.'); ?><br>
+    <?= \Yii::t('app', 'Click on an empty spot in the calendar to make a request for a booking outside the opening hours or hold and drag to request a longer time span.'); ?>
+        <?= \Yii::t('app', 'Keep in mind, that bookings outside of the regular opening hours have to be confirmed by the museum.'); ?></p>
 
         <div class="row text-center">
             <!-- Shows a selection of all available simulators. -->
@@ -185,8 +184,8 @@ $this->title = Yii::t('app', "{simulator}'s agenda", [
         </div>
     </div>
     <div class="alert alert-info">
-        <?= Html::tag('p',Yii::t('app',"It is also possible to make bookings out of the proposed timeslots above for special occasions. If you want to request a special booking please {click}",[
-            'click' => Html::a(Yii::t('app','click here'),['booking/create-weekdays','simulator' => $simulator->id])
+        <?= Html::tag('p',Yii::t('app',"An alternative way to create a booking is by {click}. (Recommended for mobile devices)",[
+            'click' => Html::a(Yii::t('app','clicking here'),['booking/create-weekdays','simulator' => $simulator->id])
         ]))?>
     </div>
 </div>

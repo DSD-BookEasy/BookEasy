@@ -12,9 +12,11 @@ $this->title = Yii::t('app', 'Västerås Flygmuseum');
     <div class="body-content">
 
         <div class="jumbotron">
-            <h1><?= Yii::t('app', 'Welcome') ?></h1>
+            <h3><?= Yii::t('app', 'Welcome to the Västerås Flygmuseum booking system!') ?></h3>
 
-            <p class="lead"><?= Yii::t('app', 'Choose the simulator you wish to book'); ?></p>
+            <p><?= Yii::t('app', 'Please choose the simulator you wish to book or {click}.',[
+                    'click' => Html::a(Yii::t('app','return to our website'),('http://www.flygmuseum.com/'))]); ?>
+            </p>
 
         </div>
 
