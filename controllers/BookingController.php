@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Parameter;
 use app\models\Simulator;
+use app\models\Staff;
 use app\models\Timeslot;
 use Faker\Provider\DateTime;
 use Yii;
@@ -95,8 +96,18 @@ class BookingController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
+            $me = Staff::findOne(\Yii::$app->user->id);
+            $instructors = array();
+            $staff = Staff::find()->all();
+            foreach($staff as $s) {
+                if (\Yii::$app->authManager->checkAccess($s->id, 'assignedToBooking')) {
+                    array_push($instructors, $s);
+                }
+            }
             return $this->render('update', [
                 'model' => $model,
+                'me' => $me,
+                'instructors' => $instructors
             ]);
         }
     }
@@ -164,6 +175,13 @@ class BookingController extends Controller
     {
         $booking = $this->findModel($id);
         if (Yii::$app->user->can('manageBookings')) {
+            if ($booking->assigned_instructor != null) {
+                $instructor = Staff::findOne($booking->assigned_instructor);
+                $booking->assigned_instructor_name = $instructor->name . ' ' . $instructor->surname;
+            }
+            else {
+                $booking->assigned_instructor_name = Yii::t('app', 'Not assigned');
+            }
             return $this->render('viewForStaff', [
                 'model' => $booking,
                 'entry_fee' => Parameter::getValue('entryFee', 80)

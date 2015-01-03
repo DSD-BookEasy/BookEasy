@@ -26,6 +26,8 @@ class Booking extends \yii\db\ActiveRecord
     const CONFIRMED = 1;
     const NOT_CONFIRMED = 0;
     const WAITING_FOR_CONFIRMATION = 2;
+
+    public $assigned_instructor_name;
     /**
      * @inheritdoc
      */
@@ -68,7 +70,8 @@ class Booking extends \yii\db\ActiveRecord
             'email' => Yii::t('app', 'Email'),
             'address' => Yii::t('app', 'Address'),
             'comments' => Yii::t('app', 'Your comments'),
-            'token' => Yii::t('app', 'Secret Key')
+            'token' => Yii::t('app', 'Secret Key'),
+            'assigned_instructor_name' => Yii::t('app', 'Assigned Instructor')
         ];
     }
 
