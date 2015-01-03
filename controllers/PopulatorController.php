@@ -27,6 +27,7 @@ use Yii;
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\db\Migration;
+use yii\db\IntegrityException;
 
 class PopulatorController extends \yii\web\Controller
 {
@@ -132,11 +133,15 @@ class PopulatorController extends \yii\web\Controller
                 $r = Yii::$app->authManager->getRole("Admin");
                 Yii::$app->authManager->assign($r, $user->id);
             }
-            $r = Yii::$app->authManager->getRole('Instructor');
-            $permission = Yii::$app->authManager->getPermission('assignedToBooking');
-            Yii::$app->authManager->addChild($r, $permission);
-            $permission = Yii::$app->authManager->getPermission('assignInstructors');
-            Yii::$app->authManager->addChild($r, $permission);
+            try {
+                $r = Yii::$app->authManager->getRole('Instructor');
+                $permission = Yii::$app->authManager->getPermission('assignedToBooking');
+                Yii::$app->authManager->addChild($r, $permission);
+                $permission = Yii::$app->authManager->getPermission('assignInstructors');
+                Yii::$app->authManager->addChild($r, $permission);
+            } catch (IntegrityException $exp) {
+                //roles are already assigned
+            }
         } else {
             return $this->actionIndex();
         }
@@ -294,8 +299,7 @@ class PopulatorController extends \yii\web\Controller
                 $timeslotmodel->start_time = $currentSlotTime->format($format_string_time);
                 if ($isBlocking) {
                     $timeslotmodel->end_time = $currentSlotTime->add($lunchBreak)->format($format_string_time);
-                }
-                else {
+                } else {
                     $timeslotmodel->end_time = $currentSlotTime->add($interval)->format($format_string_time);
                 }
                 $timeslotmodel->blocking = $isBlocking;
