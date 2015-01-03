@@ -35,16 +35,6 @@ AppAsset::register($this);
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav navbar-right'],
             'items' => [
-                Yii::$app->user->isGuest ?  // if user is guest, show empty label, otherwise show Bookings dropdown
-                    ['label' => \Yii::t('app', '')] :
-                    ['label' => \Yii::t('app', 'Bookings'),
-                        'items' => [
-                            ['label' => \Yii::t('app', 'Todays Bookings'), 'url' => ['staff/agenda']],
-                            ['label' => \Yii::t('app', 'New Booking'), 'url' => ['site/index']],
-                            ['label' => \Yii::t('app', 'Booking List'), 'url' => ['booking/index']],
-                            ['label' => \Yii::t('app', 'Search Booking'), 'url' => ['booking/search']]
-                        ]
-                    ],
                 Yii::$app->user->isGuest ?  // if user is guest, show empty label, otherwise show System dropdown
                     ['label' => \Yii::t('app', '')] :
                     ['label' => \Yii::t('app', 'System'),
@@ -57,7 +47,17 @@ AppAsset::register($this);
                             ['label' => \Yii::t('app', 'Staff Accounts'), 'url' => ['staff/index']]
                         ]
                     ],
-
+                
+                Yii::$app->user->isGuest ?  // if user is guest, show empty label, otherwise show Bookings dropdown
+                    ['label' => \Yii::t('app', '')] :
+                    ['label' => \Yii::t('app', 'Bookings'),
+                        'items' => [
+                            ['label' => \Yii::t('app', 'Todays Bookings'), 'url' => ['staff/agenda']],
+                            ['label' => \Yii::t('app', 'New Booking'), 'url' => ['site/index']],
+                            ['label' => \Yii::t('app', 'Booking List'), 'url' => ['booking/index']],
+                            ['label' => \Yii::t('app', 'Search Booking'), 'url' => ['booking/search']]
+                        ]
+                    ],
 
                 ['label' => \Yii::t('app','Search Booking'), 'url' => ['/booking/search']],
                 Yii::$app->user->isGuest ?

@@ -6,7 +6,7 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Time Slot Models');
+$this->title = Yii::t('app', 'Recurring Time Slots');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="time-slot-model-index">
@@ -14,9 +14,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Time Slot Model',
-]), ['create'], ['class' => 'btn btn-success']) ?>
+        <!-- Create new recurring time slot button -->
+        <?= Html::a(Yii::t('app', 'Create new'), ['create'], ['class' => 'btn btn-success']) ?>
+
+        <!-- Switch to single time slot management -->
+        <?= Html::a(Yii::t('app', 'Manage single time slots'), ['/timeslot/index'], ['class' => 'btn btn-primary']) ?>
     </p>
 
     <?= GridView::widget([
