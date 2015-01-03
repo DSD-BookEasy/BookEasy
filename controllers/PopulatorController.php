@@ -97,6 +97,8 @@ class PopulatorController extends \yii\web\Controller
         Yii::$app->db->createCommand("truncate table " . Staff::tableName())->query();
         Yii::$app->db->createCommand("truncate table " . TimeslotModel::tableName())->query();
         Yii::$app->db->createCommand("truncate table image;")->query();
+        Yii::$app->authManager->removeAllAssignments();
+        //Yii::$app->authManager->removeAll();
         return $this->render('index', ['user' => new Staff()]);
     }
 
@@ -130,6 +132,11 @@ class PopulatorController extends \yii\web\Controller
                 $r = Yii::$app->authManager->getRole("Admin");
                 Yii::$app->authManager->assign($r, $user->id);
             }
+            $r = Yii::$app->authManager->getRole('Instructor');
+            $permission = Yii::$app->authManager->getPermission('assignedToBooking');
+            Yii::$app->authManager->addChild($r, $permission);
+            $permission = Yii::$app->authManager->getPermission('assignInstructors');
+            Yii::$app->authManager->addChild($r, $permission);
         } else {
             return $this->actionIndex();
         }
