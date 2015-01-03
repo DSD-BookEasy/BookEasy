@@ -63,7 +63,7 @@ class StaffController extends \yii\web\Controller
             $staff = Staff::findOne(['user_name' => $loginData['user_name']]);
             if (!empty($staff) and $staff->isValidPassword($loginData['password'])) {
                 Yii::$app->user->login($staff, 3600 * 24 * 30);
-                return $this->goBack();
+                return $this->redirect('agenda');
             } else {
                 $staff = new Staff();
                 $staff->user_name = $loginData['user_name'];

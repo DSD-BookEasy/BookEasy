@@ -35,9 +35,9 @@ AppAsset::register($this);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
-                    ['label' => \Yii::t('app','So I can change this and it will take effect?'), 'url' => ['simulator/3/agenda']],
+                    //['label' => \Yii::t('app','Home'), 'url' => ['index']],
                     //['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => \Yii::t('app','Look for a Booking'), 'url' => ['/booking/search']],
+                    ['label' => \Yii::t('app','Search Booking'), 'url' => ['/booking/search']],
                     Yii::$app->user->isGuest ?
                         ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
                         ['label' => \Yii::t('app','Logout ({username})',
