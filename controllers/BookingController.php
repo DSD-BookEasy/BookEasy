@@ -101,7 +101,7 @@ class BookingController extends Controller
             $staff = Staff::find()->all();
             foreach($staff as $s) {
                 if (\Yii::$app->authManager->checkAccess($s->id, 'assignedToBooking')) {
-                    array_push($instructors, $s);
+                    $instructors[$s->id] = $s->name . ' ' . $s->surname;
                 }
             }
             return $this->render('update', [

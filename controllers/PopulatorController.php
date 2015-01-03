@@ -125,6 +125,8 @@ class PopulatorController extends \yii\web\Controller
             $user = new Staff();
             $user->load(Yii::$app->request->post());
             $user->email = 'mail@mail.com';
+            $user->name = 'admin_name';
+            $user->surname = 'admin_surname';
             if (!$user->save()) {
                 throw new ErrorException('Admin user could not be created. There is a problem with the populator code, consult Mert');
             }
@@ -135,6 +137,8 @@ class PopulatorController extends \yii\web\Controller
             }
             try {
                 $r = Yii::$app->authManager->getRole('Instructor');
+                $permission = Yii::$app->authManager->getPermission('manageBookings');
+                Yii::$app->authManager->addChild($r, $permission);
                 $permission = Yii::$app->authManager->getPermission('assignedToBooking');
                 Yii::$app->authManager->addChild($r, $permission);
                 $permission = Yii::$app->authManager->getPermission('assignInstructors');
