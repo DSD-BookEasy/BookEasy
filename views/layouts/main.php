@@ -32,19 +32,29 @@ AppAsset::register($this);
                     'class' => 'navbar-inverse navbar-fixed-top',
                 ],
             ]);
-            echo Nav::widget([
-                'options' => ['class' => 'navbar-nav navbar-right'],
-                'items' => [
-                    //['label' => \Yii::t('app','Home'), 'url' => ['index']],
-                    //['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => \Yii::t('app','Search Booking'), 'url' => ['/booking/search']],
-                    Yii::$app->user->isGuest ?
-                        ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
-                        ['label' => \Yii::t('app','Logout ({username})',
-                            ['username'=>Yii::$app->user->identity->user_name]),
-                            'url' => ['/staff/logout']],
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav navbar-right'],
+            'items' => [
+                //['label' => \Yii::t('app','Home'), 'url' => ['index']],
+                //['label' => 'About', 'url' => ['/site/about']],
+                ['label' => \Yii::t('app','Administration'), 'items' => [
+                    ['label' => \Yii::t('app','Staff')],
+                    ['label' => \Yii::t('app','Other')] ]
                 ],
-            ]);
+                ['label' => \Yii::t('app','Management'), 'items' => [
+                    ['label' => \Yii::t('app','Staff')],
+                    ['label' => \Yii::t('app','Other')] ]
+                ],
+
+                ['label' => \Yii::t('app','Search Booking'), 'url' => ['/booking/search']],
+                Yii::$app->user->isGuest ?
+                    ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
+                    ['label' => \Yii::t('app','Logout ({username})',
+                        ['username'=>Yii::$app->user->identity->user_name]),
+                        'url' => ['/staff/logout']],
+
+            ],
+        ]);
             NavBar::end();
         ?>
 
