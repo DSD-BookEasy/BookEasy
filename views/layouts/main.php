@@ -35,27 +35,38 @@ AppAsset::register($this);
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav navbar-right'],
             'items' => [
-                ['label' => \Yii::t('app','Bookings'), 'items' => [
-                    ['label' => \Yii::t('app','Todays Bookings'), 'url' => ['staff/agenda']],
-                    ['label' => \Yii::t('app','New Booking'), 'url' => ['site/index']],
-                    ['label' => \Yii::t('app','Booking List'), 'url' => ['booking/index']],
-                    ['label' => \Yii::t('app','Search Booking'), 'url' => ['booking/search']]
-                ]],
-                ['label' => \Yii::t('app','System'), 'items' => [
-                    ['label' => \Yii::t('app','Time Slots'), 'url' => ['timeslot-model/index']],
-                    ['label' => \Yii::t('app','Simulators'), 'url' => ['simulator/index']],
-                    ['label' => \Yii::t('app','Permissions'), 'url' => ['permission/index']],
-                    ['label' => \Yii::t('app','Roles'), 'url' => ['permission/roles']],
-                    ['label' => \Yii::t('app','System Parameters'), 'url' => ['parameter/index']],
-                    ['label' => \Yii::t('app','Staff Accounts'), 'url' => ['staff/index']]
-                ]],
+                Yii::$app->user->isGuest ?  // if user is guest, show empty label, otherwise show Bookings dropdown
+                    ['label' => \Yii::t('app', '')] :
+                    ['label' => \Yii::t('app', 'Bookings'),
+                        'items' => [
+                            ['label' => \Yii::t('app', 'Todays Bookings'), 'url' => ['staff/agenda']],
+                            ['label' => \Yii::t('app', 'New Booking'), 'url' => ['site/index']],
+                            ['label' => \Yii::t('app', 'Booking List'), 'url' => ['booking/index']],
+                            ['label' => \Yii::t('app', 'Search Booking'), 'url' => ['booking/search']]
+                        ]
+                    ],
+                Yii::$app->user->isGuest ?  // if user is guest, show empty label, otherwise show System dropdown
+                    ['label' => \Yii::t('app', '')] :
+                    ['label' => \Yii::t('app', 'System'),
+                        'items' => [
+                            ['label' => \Yii::t('app', 'Time Slots'), 'url' => ['timeslot-model/index']],
+                            ['label' => \Yii::t('app', 'Simulators'), 'url' => ['simulator/index']],
+                            ['label' => \Yii::t('app', 'Permissions'), 'url' => ['permission/index']],
+                            ['label' => \Yii::t('app', 'Roles'), 'url' => ['permission/roles']],
+                            ['label' => \Yii::t('app', 'System Parameters'), 'url' => ['parameter/index']],
+                            ['label' => \Yii::t('app', 'Staff Accounts'), 'url' => ['staff/index']]
+                        ]
+                    ],
+
 
                 ['label' => \Yii::t('app','Search Booking'), 'url' => ['/booking/search']],
                 Yii::$app->user->isGuest ?
                     ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
-                    ['label' => \Yii::t('app','Logout ({username})',
+                    [
+                        'label' => \Yii::t('app','Logout ({username})',
                         ['username'=>Yii::$app->user->identity->user_name]),
-                        'url' => ['/staff/logout']],
+                        'url' => ['/staff/logout']
+                    ],
 
             ],
         ]);
