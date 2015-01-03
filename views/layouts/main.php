@@ -35,16 +35,20 @@ AppAsset::register($this);
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav navbar-right'],
             'items' => [
-                //['label' => \Yii::t('app','Home'), 'url' => ['index']],
-                //['label' => 'About', 'url' => ['/site/about']],
-                ['label' => \Yii::t('app','Administration'), 'items' => [
-                    ['label' => \Yii::t('app','Staff')],
-                    ['label' => \Yii::t('app','Other')] ]
-                ],
-                ['label' => \Yii::t('app','Management'), 'items' => [
-                    ['label' => \Yii::t('app','Staff')],
-                    ['label' => \Yii::t('app','Other')] ]
-                ],
+                ['label' => \Yii::t('app','Bookings'), 'items' => [
+                    ['label' => \Yii::t('app','Todays Bookings'), 'url' => ['staff/agenda']],
+                    ['label' => \Yii::t('app','New Booking'), 'url' => ['site/index']],
+                    ['label' => \Yii::t('app','Booking List'), 'url' => ['booking/index']],
+                    ['label' => \Yii::t('app','Search Booking'), 'url' => ['booking/search']]
+                ]],
+                ['label' => \Yii::t('app','System'), 'items' => [
+                    ['label' => \Yii::t('app','Time Slots'), 'url' => ['timeslot-model/index']],
+                    ['label' => \Yii::t('app','Simulators'), 'url' => ['simulator/index']],
+                    ['label' => \Yii::t('app','Permissions'), 'url' => ['permission/index']],
+                    ['label' => \Yii::t('app','Roles'), 'url' => ['permission/roles']],
+                    ['label' => \Yii::t('app','System Parameters'), 'url' => ['parameter/index']],
+                    ['label' => \Yii::t('app','Staff Accounts'), 'url' => ['staff/index']]
+                ]],
 
                 ['label' => \Yii::t('app','Search Booking'), 'url' => ['/booking/search']],
                 Yii::$app->user->isGuest ?

@@ -29,16 +29,9 @@ class SiteController extends Controller
         $simulators = new ActiveDataProvider([
             'query' => Simulator::find(),
         ]);
-
-        if ( Yii::$app->user->isGuest ) {
             return $this->render('index', [
                 'simulators' => $simulators->getModels(),
             ]);
-        } else {
-            return $this->render('admin-index', [
-                'simulators' => $simulators->getModels(),
-            ]);
-        }
     }
 
     public function actionAbout()
