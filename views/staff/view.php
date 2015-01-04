@@ -8,7 +8,7 @@ use yii\widgets\DetailView;
 /* @var $roles yii\rbac\Role[] */
 
 
-$this->title = $model->id;
+$this->title = $model->user_name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Staff'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

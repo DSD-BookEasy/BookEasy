@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
 <div class="parameter-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <h3><?= Yii::t('app',"From here you can change the global parameters of the system")?></h3>
+    <p><?= Yii::t('app',"From here you can change the global parameters of the system")?></p>
 
     <p>
         <?php

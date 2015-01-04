@@ -5,7 +5,7 @@
 use yii\grid\GridView;
 use yii\helpers\Html;
 
-$this->title = Yii::t('app', 'Staff');
+$this->title = Yii::t('app', 'Staff Accounts');
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
 ?>
 

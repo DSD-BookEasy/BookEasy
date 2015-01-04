@@ -263,15 +263,17 @@ class StaffController extends \yii\web\Controller
                 if ($s->save()) {//If basic save is successfull, go on with permissions save
                     if (Yii::$app->user->can('assignRoles')) {
                         $this->updateRoles($s, Yii::$app->request->post('roles', []));
+                        return $this->redirect(['view', 'id' => $s->id]);
                     }
                 }
             }
-
-            return $this->render('update', [
-                'user' => $s,
-                'allRoles' => Yii::$app->authManager->getRoles(),
-                'roles' => Yii::$app->authManager->getRolesByUser($s->id)
-            ]);
+            else {
+                return $this->render('update', [
+                    'user' => $s,
+                    'allRoles' => Yii::$app->authManager->getRoles(),
+                    'roles' => Yii::$app->authManager->getRolesByUser($s->id)
+                ]);
+            }
         } else {
             //Not permission to access. If user is guest redirect to login, otherwise forbid
             if ($loggedInUser->isGuest) {
