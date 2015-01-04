@@ -32,7 +32,7 @@ class TimeslotController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'except' => 'anon-calendar',
+                'except' => ['anon-calendar'],
                 'rules' => [
                     [
                         'allow' => true,
