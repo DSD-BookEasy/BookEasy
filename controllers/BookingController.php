@@ -49,11 +49,11 @@ class BookingController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index','update'],
+                'only' => ['index', 'update'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index','update'],
+                        'actions' => ['index', 'update'],
                         'roles' => ['manageBookings']
                     ],
                     [
@@ -93,23 +93,32 @@ class BookingController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            $me = Staff::findOne(\Yii::$app->user->id);
-            $instructors = array();
-            $staff = Staff::find()->all();
-            foreach($staff as $s) {
-                if (\Yii::$app->authManager->checkAccess($s->id, 'assignedToBooking')) {
-                    $instructors[$s->id] = $s->name . ' ' . $s->surname;
-                }
+        if ($model->load(Yii::$app->request->post())) {
+            //instructor id comes as a string, convert it to int
+            $ins = Yii::$app->request->post()['Booking']['assigned_instructor'];
+            $ins_id = null;
+            if ($ins != null) {
+                $ins_id = (int)$ins;
             }
-            return $this->render('update', [
-                'model' => $model,
-                'me' => $me,
-                'instructors' => $instructors
-            ]);
+            $model->assigned_instructor = $ins_id;
+            if ($model->save()) {
+                return $this->actionView($id);
+            }
         }
+        $me = Staff::findOne(\Yii::$app->user->id);
+        $instructors = array();
+        $staff = Staff::find()->all();
+        foreach ($staff as $s) {
+            if (\Yii::$app->authManager->checkAccess($s->id, 'assignedToBooking')) {
+                $instructors[$s->id] = $s->name . ' ' . $s->surname;
+            }
+        }
+        return $this->render('update', [
+            'model' => $model,
+            'me' => $me,
+            'instructors' => $instructors
+        ]);
+
     }
 
     /**
@@ -119,14 +128,14 @@ class BookingController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id, $token=null)
+    public function actionDelete($id, $token = null)
     {
         $model = $this->findModel($id);
         if (Yii::$app->user->can('manageBookings')) {
             $token = $model->token;
         }
-        if($model->token != $token){
-            throw new ForbiddenHttpException(Yii::t('app',"You don't have permission to see this booking"));
+        if ($model->token != $token) {
+            throw new ForbiddenHttpException(Yii::t('app', "You don't have permission to see this booking"));
         }
         Timeslot::handleDeleteBooking($model);
         $model->delete();
@@ -144,7 +153,7 @@ class BookingController extends Controller
         $model->scenario = 'search';
         if ((Yii::$app->request->post())) {
 
-            if(!$model->load((Yii::$app->request->post()))){
+            if (!$model->load((Yii::$app->request->post()))) {
                 throw new \ErrorException();
             }
 
@@ -178,20 +187,19 @@ class BookingController extends Controller
             if ($booking->assigned_instructor != null) {
                 $instructor = Staff::findOne($booking->assigned_instructor);
                 $booking->assigned_instructor_name = $instructor->name . ' ' . $instructor->surname;
-            }
-            else {
+            } else {
                 $booking->assigned_instructor_name = Yii::t('app', 'Not assigned');
             }
             return $this->render('viewForStaff', [
                 'model' => $booking,
                 'entry_fee' => Parameter::getValue('entryFee', 80)
             ]);
-        } else{
+        } else {
             $token = Yii::$app->request->get('token');
         }
 
-        if($booking->token!=$token){
-            throw new ForbiddenHttpException(Yii::t('app',"You don't have permission to see this booking"));
+        if ($booking->token != $token) {
+            throw new ForbiddenHttpException(Yii::t('app', "You don't have permission to see this booking"));
         }
 
         //render the view page for anonymous user
@@ -201,10 +209,11 @@ class BookingController extends Controller
         ]);
     }
 
-    public function actionAccept($id){
+    public function actionAccept($id)
+    {
         $booking = $this->findModel($id);
         $booking->status = Booking::CONFIRMED;
-        if(!$booking->save()){
+        if (!$booking->save()) {
             throw new ErrorException('Confirm denied');
         }
         return $this->actionIndex();
@@ -214,7 +223,8 @@ class BookingController extends Controller
      * Display booking and timeslots present in session variable
      * @return string
      */
-    public function actionSummarizeBooking(){
+    public function actionSummarizeBooking()
+    {
         return $this->render('summarize', [
             'model' => Yii::$app->session[self::SESSION_PARAMETER_BOOKING],
             'timeSlots' => Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT],
@@ -237,7 +247,7 @@ class BookingController extends Controller
         // Check time slots in the GET-Request
 
         //this if solves is necessary... don't delete it ;)
-        if(Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS)){
+        if (Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS)) {
             $timeSlotIDs = Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS);
             // Check whether time slot IDs are numeric and valid
             foreach ($timeSlotIDs as $timeSlotID) {
@@ -273,10 +283,20 @@ class BookingController extends Controller
             // Summarize booking information
             return $this->actionSummarizeBooking();
         } else {
+            $me = Staff::findOne(\Yii::$app->user->id);
+            $instructors = array();
+            $staff = Staff::find()->all();
+            foreach ($staff as $s) {
+                if (\Yii::$app->authManager->checkAccess($s->id, 'assignedToBooking')) {
+                    $instructors[$s->id] = $s->name . ' ' . $s->surname;
+                }
+            }
             return $this->render('create', [
                 'model' => $booking,
                 'timeslots' => $sessionTimeSlots,
-                'entry_fee' => Parameter::getValue('entryFee', 80)
+                'entry_fee' => Parameter::getValue('entryFee', 80),
+                'me' => $me,
+                'instructors' => $instructors
             ]);
         }
     }
@@ -330,13 +350,13 @@ class BookingController extends Controller
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
             return $this->actionSummarizeBooking();
         } else {
-            $simId=Yii::$app->request->get('simulator');
-            if(empty($simId) or !is_numeric($simId)){
-                throw new BadRequestHttpException(Yii::t('app','You must specify a valid simulator'));
+            $simId = Yii::$app->request->get('simulator');
+            if (empty($simId) or !is_numeric($simId)) {
+                throw new BadRequestHttpException(Yii::t('app', 'You must specify a valid simulator'));
             }
-            $s=Simulator::findOne($simId);
-            if(empty($s)){
-                throw new NotFoundHttpException(Yii::t('app','The specifies simulator doesn\'t exist'));
+            $s = Simulator::findOne($simId);
+            if (empty($s)) {
+                throw new NotFoundHttpException(Yii::t('app', 'The specifies simulator doesn\'t exist'));
             }
 
             return $this->render('create-weekdays', [
@@ -359,8 +379,9 @@ class BookingController extends Controller
      * @throws BadRequestHttpException
      * @throws \yii\db\Exception
      */
-    public function actionConfirm(){
-        if(!isset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]) || !isset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING])){
+    public function actionConfirm()
+    {
+        if (!isset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]) || !isset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING])) {
             //anyway unset session to be sure (one of the two could be set)
             unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
@@ -409,7 +430,8 @@ class BookingController extends Controller
      *
      * @param $timeSlots
      */
-    private function saveTimeSlotsToSession($timeSlots) {
+    private function saveTimeSlotsToSession($timeSlots)
+    {
         if ($timeSlots == null) {
             return;
         }
@@ -417,7 +439,7 @@ class BookingController extends Controller
         $sessionTimeSlots = [];
 
         // Retrieve time slots
-        foreach($timeSlots as $timeSlot) {
+        foreach ($timeSlots as $timeSlot) {
             if ($this->isValidTimeSlot($timeSlot) == false) {
                 continue;
             }
@@ -435,7 +457,8 @@ class BookingController extends Controller
      * @param $timeSlot
      * @return bool
      */
-    private function isValidTimeSlot ($timeSlot) {
+    private function isValidTimeSlot($timeSlot)
+    {
         $isValid = true;
 
         if (empty($timeSlot)) {
@@ -445,7 +468,7 @@ class BookingController extends Controller
         // NOTE: A time slots does not necessary needs to have an ID since they can also be chosen freely
         // Make sure we deal with a valid time slot
         //if (empty($timeSlot->id)) {
-            // $isValid = false;
+        // $isValid = false;
         //}
 
         // Make sure start time is before end time
@@ -466,7 +489,8 @@ class BookingController extends Controller
      * @param $timeSlots
      * @return int
      */
-    private function calculateSimulatorPrice ($timeSlots) {
+    private function calculateSimulatorPrice($timeSlots)
+    {
         $simulatorFee = 0;
 
         if (empty($timeSlots) == false) {
@@ -520,10 +544,11 @@ class BookingController extends Controller
     protected function findModelForSearch($model_input)
     {
         $query = Booking::find()
-            ->where(['name' => $model_input->name,
-                    'surname' => $model_input->surname,
-                    'token' => $model_input->token
-                    ]);
+            ->where([
+                'name' => $model_input->name,
+                'surname' => $model_input->surname,
+                'token' => $model_input->token
+            ]);
 
         if (($model = $query->one()) !== null) {
             return $model;
@@ -536,7 +561,8 @@ class BookingController extends Controller
     private function notifyCoordinators($booking)
     {
         Yii::$app->mailer->compose(['html' => 'booking/new_booking_html', 'text' => 'booking/new_booking_text'], [
-            'id' => $booking->id, 'mailText' => Parameter::getValue('emailTextToCoordinator')
+            'id' => $booking->id,
+            'mailText' => Parameter::getValue('emailTextToCoordinator')
         ])
             ->setFrom(\Yii::$app->params['adminEmail'])
             ->setTo(Parameter::getValue('coordinatorEmail'))

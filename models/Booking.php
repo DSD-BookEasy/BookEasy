@@ -71,7 +71,8 @@ class Booking extends \yii\db\ActiveRecord
             'address' => Yii::t('app', 'Address'),
             'comments' => Yii::t('app', 'Your comments'),
             'token' => Yii::t('app', 'Secret Key'),
-            'assigned_instructor_name' => Yii::t('app', 'Assigned Instructor')
+            'assigned_instructor_name' => Yii::t('app', 'Assigned Instructor'),
+            'assigned_instructor' => Yii::t('app', 'Assigned Instructor')
         ];
     }
 

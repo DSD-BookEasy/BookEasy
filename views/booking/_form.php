@@ -40,28 +40,30 @@ $printEnd = false;
     if ($showAddress) {
         echo $form->field($model, 'address')->textInput(['maxlength' => 255]);
     }
-    $options = array();
-    $promptString = 'Not Assigned';
-    if ($model->assigned_instructor_name != null && strlen($model->assigned_instructor_name) > 0) {
-        $promptString = $model->assigned_instructor_name;
-    }
-    $options['prompt'] = $promptString;
-    //false if the user cannot assign instructors
-    if (!Yii::$app->user->can('assignInstructors')) {
-        $options['disabled'] = 'true';
-    }
-    $disabled = 'disabled';
-    if (Yii::$app->user->can('assignedToBooking')) {
-        $disabled = '';
-    }
-    echo $form->field($model, 'assigned_instructor')->dropDownList($instructors,$options);
-    echo "<button
+    if (Yii::$app->user->can('manageBookings')) {
+        $options = array();
+        $promptString = 'Not Assigned';/*
+        if ($model->assigned_instructor_name != null && strlen($model->assigned_instructor_name) > 0) {
+            $promptString = $model->assigned_instructor_name;
+        }*/
+        $options['prompt'] = $promptString;
+        //false if the user cannot assign instructors
+        if (!Yii::$app->user->can('assignInstructors')) {
+            $options['disabled'] = 'true';
+        }
+        $disabled = 'disabled';
+        if (Yii::$app->user->can('assignedToBooking')) {
+            $disabled = '';
+        }
+        echo $form->field($model, 'assigned_instructor')->dropDownList($instructors, $options);
+        echo "<button
             $disabled
             type=\"button\"
             class=\"btn btn-warning\"
             onclick=\"$('#booking-assigned_instructor').val($me->id)\">
             <span class=\"glyphicon glyphicon-user\"></span> Assign to me
           </button><br><br>";
+    }
     ?>
     <?= $form->field($model, 'comments', [
         'inputOptions' => [
