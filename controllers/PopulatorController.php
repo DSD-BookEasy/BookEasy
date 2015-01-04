@@ -1,7 +1,5 @@
 <?php
-
 namespace app\controllers;
-
 /**
  * define working hours and generated data range here
  * REMEMBER!: timeslot endings must coincide with midday!
@@ -27,7 +25,9 @@ use Yii;
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\db\Migration;
+
 use yii\db\IntegrityException;
+
 
 class PopulatorController extends \yii\web\Controller
 {
@@ -50,11 +50,9 @@ class PopulatorController extends \yii\web\Controller
                 } else {
                     $date->add(\DateInterval::createFromDateString('+15 hours'));
                 }
-
             }
         }
     }
-
     /**
      * @param $objectName Name of the object which is being created
      * @param $element Array of the object which contains the properties
@@ -68,12 +66,10 @@ class PopulatorController extends \yii\web\Controller
         }
         return $object;
     }
-
     public function actionIndex()
     {
         return $this->render('index', ['user' => new Staff()]);
     }
-
     public function actionClear()
     {
         Timeslot::deleteAll();
@@ -102,7 +98,6 @@ class PopulatorController extends \yii\web\Controller
         //Yii::$app->authManager->removeAll();
         return $this->render('index', ['user' => new Staff()]);
     }
-
     public function actionExecute()
     {
         //loads and creates staff objects and then saves it to the db
@@ -116,12 +111,9 @@ class PopulatorController extends \yii\web\Controller
                 try {
                     Yii::$app->authManager->assign($r, $object->id);
                 } catch (Exception $e) {
-
                 }
                 array_push($staff_ids, $object->id);
             }
-
-
             $user = new Staff();
             $user->load(Yii::$app->request->post());
             $user->email = 'mail@mail.com';
@@ -149,7 +141,6 @@ class PopulatorController extends \yii\web\Controller
         } else {
             return $this->actionIndex();
         }
-
         //loads and creates bookings objects and then saves it to the db
         $bookings = require(__DIR__ . '/../tests/codeception/fixtures/booking.php');
         $assigned_bookings_ids = array();
@@ -168,7 +159,6 @@ class PopulatorController extends \yii\web\Controller
         //mix the order
         shuffle($assigned_bookings_ids);
         shuffle($unassigned_bookings_ids);
-
         //loads and creates simulator objects and then saves it to the db
         $tmpFolderPath = Yii::getAlias('@webroot') . '/uploads';
         // Check whether the folder in which we will temporary save the uploaded image exists
@@ -197,8 +187,6 @@ class PopulatorController extends \yii\web\Controller
         $interval = \DateInterval::createFromDateString(_interval);
         $lunchBreak = \DateInterval::createFromDateString(_lunchBreak);
         $endDay = \DateTime::createFromFormat($format_string, _sunday . ' ' . _endDay_H . ':' . _endDay_M . ':00');
-
-
         //1) sunday bookings
         //1.1) already reserved and assigned
         while (count($assigned_bookings_ids) > 0 and $sunday < $endDay) {
@@ -251,7 +239,6 @@ class PopulatorController extends \yii\web\Controller
             $time_slot->id_booking = $ele;
             $time_slot->save();
         }
-
         //2) weekday bookings
         //2.1) assigned weekday bookings if any left
         while (count($assigned_bookings_ids) > 0) {
@@ -277,7 +264,6 @@ class PopulatorController extends \yii\web\Controller
             $time_slot->id_booking = $ele;
             $time_slot->save();
         }
-
         //TimeslotModel for sundays:
         $tempDateEnd = \DateTime::createFromFormat("Y-m-d", _sunday);
         $tempDateEnd->add(\DateInterval::createFromDateString("+6 months"));
@@ -321,5 +307,4 @@ class PopulatorController extends \yii\web\Controller
         TimeslotModel::generateNextTimeslot(\DateTime::createFromFormat("Y-m-d", "2015-04-01"));
         return $this->goHome();
     }
-
 }
