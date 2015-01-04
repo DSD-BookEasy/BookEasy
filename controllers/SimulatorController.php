@@ -206,7 +206,8 @@ class SimulatorController extends Controller
         ]);
        //
         return $this->render('agenda', [
-            'currWeek' => $currWeek,
+            'week' => $currWeek,
+            'currWeek' => $currWeek->format("Y\WW"),
             'prevWeek' => $prevWeek->format("Y\WW"),
             'nextWeek' => $nextWeek->format("Y\WW"),
             'slots' => $slots,
