@@ -19,8 +19,8 @@ modules:
         - WebDriver
     config:
 #        PhpBrowser:
-#            url: 'http://localhost:8080'
+#            url: 'http://localhost:8888'
         WebDriver:
-            url: 'http://localhost/BookEasy/web/'
+            url: 'http://localhost:8888'
             browser: firefox
             restart: true

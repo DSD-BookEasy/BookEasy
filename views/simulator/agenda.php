@@ -113,27 +113,33 @@ $this->title = Yii::t('app', "{simulator}", [
                     'className' => 'closed'
                 ]
             ];
+            $nowDate = new DateTime('now');
             //Populate calendar events with timeslots
-            foreach ($slots as $s) {
-                $a = [
-                    'start' => $s->start,
-                    'end' => $s->end,
-                    'id' => $s->id
+            foreach ($slots as $slot) {
+                $event = [
+                    'start' => $slot->start,
+                    'end' => $slot->end,
+                    'id' => $slot->id
                 ];
-                if ($s->id_booking != null) {
-                    $a['title'] = \Yii::t('app', 'Unavailable');
-                    $a['className'] = 'unavailable';
+                if ($slot->id_booking != null) {
+                    $event['title'] = \Yii::t('app', 'Unavailable');
+                    $event['className'] = 'unavailable';
                 } else {
-                    $a['title'] = \Yii::t('app', 'Available');
-                    $a['className'] = 'available';
+                    $event['title'] = \Yii::t('app', 'Available');
+                    $event['className'] = 'available';
                 }
 
-                if($s->blocking) {
-                    $a['title'] = \Yii::t('app', 'Closed');
-                    $a['className'] = 'closed';
+                if($slot->blocking) {
+                    $event['title'] = \Yii::t('app', 'Closed');
+                    $event['className'] = 'closed';
                 }
-                checkBorders($borders, $s->start, $s->end);
-                $events[] = $a;
+
+                $startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $slot->start);
+                if ($startDate < $nowDate) {
+                    $event['className'] = "passedSlot";
+                }
+                checkBorders($borders, $slot->start, $slot->end);
+                $events[] = $event;
             }
 
             $bookUrl = Url::to(['/booking/create', 'timeslots[]' => '']);
@@ -218,7 +224,11 @@ $this->title = Yii::t('app', "{simulator}", [
 
     function slotBooking(event, element) {
         if (event.rendering != "background" && event.rendering != "inverse-background") {
-            if (element.hasClass("available")) {
+            if (element.hasClass("passedSlot")) {
+                element.attr("title", "<?=\Yii::t('app',"This timeslot is expired")?>");
+                element.tooltip();
+            }
+            else if (element.hasClass("available")) {
                 element.attr("title", "<?=\Yii::t('app',"This timeslot is available. and it costs {price}SEK for {duration} minutes",[
                 'price' => $price,
                 'duration' => $duration
