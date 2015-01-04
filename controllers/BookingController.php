@@ -277,6 +277,13 @@ class BookingController extends Controller
         if ($wasPopulatedSuccessfully) {
             //a booking in opening hours is automatically confirmed
             $booking->status = Booking::CONFIRMED;
+            //instructor id comes as a string, convert it to int
+            $ins = Yii::$app->request->post()['Booking']['assigned_instructor'];
+            $ins_id = null;
+            if ($ins != null) {
+                $ins_id = (int)$ins;
+            }
+            $booking->assigned_instructor = $ins_id;
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $booking;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = false;
 
