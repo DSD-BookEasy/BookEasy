@@ -14,6 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
+        <?= Yii::t('app', 'From here you can manage recurring time slots for the simulators you have created. In this way it is possible to define a scheme for the opening hours.') ?> <br><br>
         <!-- Create new recurring time slot button -->
         <?= Html::a(Yii::t('app', 'Create new'), ['create'], ['class' => 'btn btn-success']) ?>
 

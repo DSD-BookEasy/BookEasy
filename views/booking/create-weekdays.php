@@ -14,7 +14,7 @@ use kartik\datetime\DateTimePicker;
 /* @var $timeslots app\models\Timeslot[] */
 /* @var $businessHours array */
 
-$this->title = Yii::t('app', 'Request Special Booking');
+$this->title = Yii::t('app', 'Request Booking');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -26,15 +26,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p><?= Yii::t('app','You are about to send a request for opening the museum for a special visit and a flight simulation. Below please fill the information about your booking')?>:</p>
+    <p><?= Yii::t('app','You are about to send a request for opening the museum for a special visit and a flight simulation.
+    Please fill in the following form to continue')?>:</p>
 
     <?= Html::ul([
         Yii::t('app','Entrance Fee: {0, number, currency}', $entry_fee),
-        Yii::t('app','Flight Simulator Fee: {0, number, currency}', $simulator->price_simulation),
+        Yii::t('app','Flight Simulator slot price: {0, number, currency}', $simulator->price_simulation),
+        Yii::t('app','Simulator slot duration: {duration} minutes', ['duration' => $simulator->flight_duration]),
         Yii::t('app','Total Fee: {0, number, currency}', $totalFee),
     ]);
     ?>
-    <p><?=Yii::t('app','Additional costs may be applied for the museum opening out of usual opening hours. You will receive the final quotation as soon as the staff can confirm your booking.')?></p>
+    <p><?=Yii::t('app','Please note that the above prices are subject to change. Additional costs may be applied for the museum opening out of usual opening hours. You will receive the final quotation as soon as the staff can confirm your booking.')?></p>
 
     <?php
     $form = ActiveForm::begin(['action' => ['']]);
@@ -82,6 +84,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ?>
             <a href="#" id="dynamic_add" class="btn btn-success"><?= Yii::t('app','Add more Time Spans')?></a>
+            <!-- This paragraph just creates some space to the elements below -->
+            <p><br></p>
         </div>
 
     <?php

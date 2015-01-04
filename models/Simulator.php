@@ -74,7 +74,7 @@ class Simulator extends ActiveRecord
             'name' => Yii::t('app', 'Name'),
             'description' => Yii::t('app', 'Description'),
             'flight_duration' => Yii::t('app', 'Flight Duration'),
-            'price_simulation' => Yii::t('app', 'Price Simulation'),
+            'price_simulation' => Yii::t('app', 'Price'),
             'uploadFile' => Yii::t('app', 'Upload Image'),
         ];
     }

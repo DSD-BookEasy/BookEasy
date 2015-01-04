@@ -40,7 +40,8 @@ $printEnd=false;
     }
     ?>
 
-    <?= $form->field($model, 'comments', ['inputOptions' => ['placeholder' => Yii::t('app', '(e.g. preferred instruction language, additional guided tour required?, ...)')]])->textarea(['rows' => 4, 'style'=>'width:100%;']) ?>
+    <?= $form->field($model, 'comments', ['inputOptions' => ['placeholder' =>
+        Yii::t('app', 'E.g. preferred instruction language (if other than Swedish), disability, wish for a guided tour (outside regular opening hours) ...')]])->textarea(['rows' => 4, 'style'=>'width:100%;']) ?>
 
     <?php
         if($printEnd) {

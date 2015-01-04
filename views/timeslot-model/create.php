@@ -9,7 +9,7 @@ use yii\helpers\Html;
 
 
 $this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Time Slot Model',
+    'modelClass' => 'Time Slot',
 ]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slot Models'), 'url' => 'index'];
 $this->params['breadcrumbs'][] = $this->title;
