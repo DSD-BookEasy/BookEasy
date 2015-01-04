@@ -94,8 +94,23 @@ class Booking extends \yii\db\ActiveRecord
     }
 
     /**
-     * Modify the status with the semantic value of its status.
+     * Return the string that correspond to the semantic value of the status
+     * @return string
      */
+    public function statusToString(){
+        switch($this->status){
+            case Booking::CONFIRMED:
+                return 'Confirmed';
+            case Booking::NOT_CONFIRMED:
+                return 'Not Confirmed';
+            case Booking::WAITING_FOR_CONFIRMATION:
+                return 'Waiting for Confirmation';
+        }
+    }
+
+
+    /*
+     * old status to string
     public function statusToString(){
         switch($this->status){
             case Booking::CONFIRMED:
@@ -109,6 +124,6 @@ class Booking extends \yii\db\ActiveRecord
                 break;
         }
     }
-
+    */
 
 }

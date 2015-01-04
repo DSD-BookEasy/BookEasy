@@ -33,11 +33,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
     //prepare the status to be shown
-    $model->statusToString();
+    $bookingToShow = new Booking($model);
+    $bookingToShow->status = $bookingToShow->statusToString();
     ?>
 
     <?= DetailView::widget([
-        'model' => $model,
+        'model' => $bookingToShow,
         'attributes' => $attributes,
         'template' => function($attribute){
             //this function set a class for each row in the table.
@@ -76,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
         echo Html::a(Yii::t('app', 'Update Booking'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
         //check if the user have also the permission for confirm booking
         if (Yii::$app->user->can('confirmBooking') && $model->status == Booking::WAITING_FOR_CONFIRMATION){
-            echo Html::a(Yii::t('app', 'Confirm'), ['accept', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                echo Html::a(Yii::t('app', 'Confirm'), ['accept', 'id' => $model->id], ['class' => 'btn btn-primary']);
         }
 
         // Display 'delete' button

@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
         //parse the enumeration of status in its string value
         //this is the only way I found to modify the content of a column
         'beforeRow' => function ($model){
-            $model->statusToString();
+            $model->status = $model->statusToString();
         }
     ]); ?>
 
