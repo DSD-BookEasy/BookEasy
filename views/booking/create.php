@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>You are about to book the following simulator:</p>
+    <p><?= Yii::t('app', 'You are about to book the following simulator:')?></p>
 
     <?php
     $flight_price = $timeslots[0]->cost > 0 ? $timeslots[0]->cost : $timeslots[0]->simulator->price_simulation;
@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]);
     ?>
 
-    <p>Provide the following information to continue.</p>
+    <p><?= Yii::t('app', 'Provide the following information to continue.') ?></p>
 
     <?= $this->render('_form', [
         'model' => $model,
