@@ -100,11 +100,11 @@ class Booking extends \yii\db\ActiveRecord
     public function statusToString(){
         switch($this->status){
             case Booking::CONFIRMED:
-                return 'Confirmed';
+                return Yii::t('app', 'Confirmed');
             case Booking::NOT_CONFIRMED:
-                return 'Not Confirmed';
+                return Yii::t('app', 'Not Confirmed');
             case Booking::WAITING_FOR_CONFIRMATION:
-                return 'Waiting for Confirmation';
+                return Yii::t('app', 'Waiting for Confirmation');
         }
     }
 
