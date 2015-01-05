@@ -25,8 +25,14 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
+    <?php
+
+        $timeSlotToShow = clone $model;
+        $timeSlotToShow->frequency = $timeSlotToShow->frequencyToString();
+    ?>
+
     <?= DetailView::widget([
-        'model' => $model,
+        'model' => $timeSlotToShow,
         'attributes' => [
             'id',
             'start_time',

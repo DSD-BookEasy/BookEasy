@@ -303,7 +303,21 @@ class TimeslotModel extends ActiveRecord
      */
     public function repeatDayToString(){
         return date('l', strtotime("this Sunday + $this->repeat_day days"));
+    }
 
+    /**
+     * Return the string that correspond to the semantic value of the status
+     * @return string
+     */
+    public function frequencyToString(){
+        switch($this->frequency){
+            case TimeslotModel::DAILY:
+                return Yii::t('app', 'Daily');
+            case TimeslotModel::WEEKLY:
+                return Yii::t('app', 'Weekly');
+            default:
+                return $this->frequency;
+        }
     }
 
 

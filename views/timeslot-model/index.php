@@ -38,6 +38,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        'beforeRow' => function ($model){
+            $model->frequency = $model->frequencyToString();
+        }
     ]); ?>
 
 </div>
