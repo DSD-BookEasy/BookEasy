@@ -31,9 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= Html::ul([
         Yii::t('app','Entrance Fee: {0, number, currency}', $entry_fee),
-        Yii::t('app','Flight Simulator slot price: {0, number, currency}', $simulator->price_simulation),
-        Yii::t('app','Simulator slot duration: {duration} minutes', ['duration' => $simulator->flight_duration]),
-        Yii::t('app','Total Fee: {0, number, currency}', $totalFee),
+        Yii::t('app','Simulator Fee: {0, number, currency} per {duration} minutes.', [$simulator->price_simulation, 'duration' => $simulator->flight_duration]),
     ]);
     ?>
     <p><?=Yii::t('app','Please note that the above prices are subject to change. Additional costs may be applied for the museum opening out of usual opening hours. You will receive the final quotation as soon as the staff can confirm your booking.')?></p>
