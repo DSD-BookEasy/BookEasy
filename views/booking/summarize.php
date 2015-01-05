@@ -26,8 +26,13 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <?php
-
-    $names = ['name', 'surname', 'telephone', 'email', 'address', 'comments'];
+    $names = null;
+    if (Yii::$app->user->can('manageBookings')) {
+        $names = ['name', 'surname', 'assigned_instructor_name','telephone', 'email', 'address', 'comments'];
+    }
+    else {
+        $names = ['name', 'surname', 'telephone', 'email', 'address', 'comments'];
+    }
     $attributes = [];
     foreach ($names as $att) {
         if ($model[$att] != null) {

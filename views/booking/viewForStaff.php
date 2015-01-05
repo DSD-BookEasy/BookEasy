@@ -35,6 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
     //prepare the status to be shown
     $bookingToShow = new Booking($model);
     $bookingToShow->status = $bookingToShow->statusToString();
+    $bookingToShow->assigned_instructor_name = $model->assigned_instructor_name;
     ?>
 
     <?= DetailView::widget([
