@@ -320,5 +320,10 @@ class TimeslotModel extends ActiveRecord
         }
     }
 
+    public function simulatorToString(){
+        $simulator = Simulator::findOne(['id' => $this->id_simulator]);;
+        return $simulator->name;
+    }
+
 
 }

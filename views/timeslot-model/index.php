@@ -32,14 +32,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'start_time',
             'end_time',
             'frequency',
-            'start_validity',
+            'start_validity:date',
             // 'end_validity',
             // 'repeat_day',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        //this modify the value  of frequency and id_simulator. Is the only way I found to change the view of this page
         'beforeRow' => function ($model){
             $model->frequency = $model->frequencyToString();
+            $model->id_simulator = $model->simulatorToString();
         }
     ]); ?>
 
