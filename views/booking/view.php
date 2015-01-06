@@ -16,12 +16,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?=
         Html::tag('h1',
-            Yii::t('app', 'Your Secret Key is (save it!!!): ') .
+            Yii::t('app', 'Your secret key is: ') .
                 Html::tag('span', $model->token, ['class' => 'booking_view_secret_key'])
         )
-
     ?>
-
+    <p>
+        <?= Html::encode(Yii::t('app', "Please write down this key. You will need it when you want to alter the booking later.
+        You will also receive an email confirmation from us (hopefully implemented by now).")) ?>
+    <p>
     <?php
         $flight_price = 0;
         $timeSlots = $model->timeslots;
