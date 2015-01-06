@@ -48,8 +48,7 @@ class Booking extends \yii\db\ActiveRecord
             [['name', 'surname', 'telephone', 'email', 'address'], 'string', 'max' => 255],
             [['comments'], 'string', 'max' => 255],
             ['email', 'email'],
-            [['name', 'surname'], 'required'],
-            ['email', 'required', 'on' => ['weekdays']],
+            [['name', 'surname', 'email'], 'required'],
             [['name', 'surname', 'token'], 'required', 'on' => ['search']]
 
         ];
