@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <?php
-    $names = ['name', 'status','assigned_instructor_name', 'surname', 'telephone', 'email', 'address', 'comments', 'timestamp'];
+    $names = ['status','assigned_instructor_name','name', 'surname', 'telephone', 'email', 'address', 'comments', 'timestamp'];
     $attributes = [];
     foreach($names as $att){
         if($model[$att] != null){
@@ -75,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
 
         //this page is for staff, so we can always show the update button
-        echo Html::a(Yii::t('app', 'Update Booking'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+        echo Html::a(Yii::t('app', 'Edit Booking'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
         //check if the user have also the permission for confirm booking
         if (Yii::$app->user->can('confirmBooking') && $model->status == Booking::WAITING_FOR_CONFIRMATION){
                 echo Html::a(Yii::t('app', 'Confirm'), ['accept', 'id' => $model->id], ['class' => 'btn btn-primary']);
