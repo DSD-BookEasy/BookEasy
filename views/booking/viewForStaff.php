@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'template' => function($attribute){
             //this function set a class for each row in the table.
             //the class is 'booking_view_tab_<attribute_name>'
-            return "<tr class = 'booking_view_tab_" .$attribute['attribute']. "'><th>" .$attribute['label']. "</th><td>" .$attribute['value'] . "</td></tr>";
+            return "<tr class = 'booking_viewForStaff_tab_" .$attribute['attribute']. "'><th>" .$attribute['label']. "</th><td>" .$attribute['value'] . "</td></tr>";
         }
     ]) ?>
 
