@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <?php
-    $names = ['status','assigned_instructor_name','name', 'surname', 'telephone', 'email', 'address', 'comments', 'timestamp'];
+    $names = ['status','assigned_instructor_name','token','name', 'surname', 'telephone', 'email', 'address', 'comments', 'timestamp'];
     $attributes = [];
     foreach($names as $att){
         if($model[$att] != null){
