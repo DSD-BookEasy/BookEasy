@@ -24,7 +24,9 @@ $price = $simulator->price_simulation;
 $duration = $simulator->flight_duration;
 ?>
     <div class="simulator-availability">
-        <h1><?= Html::encode(Yii::t('app', "{simulator}", ['simulator' => $simulator->name])) ?></h1>
+        <h1>
+            <?= Html::encode(Yii::t('app', "{simulator}", ['simulator' => $simulator->name])) ?>
+        </h1>
 
         <p class="lead">
             <?= $simulator->description ?>
@@ -38,19 +40,14 @@ $duration = $simulator->flight_duration;
             ]) ?>
         </p>
 
-        <p class="text-center">
-
         <div class="row text-center">
             <!-- Shows a selection of all available simulators. -->
-            <?php
-
-            foreach ($simulators as $simulator_model) {
-
-                ?>
+            <?php foreach ($simulators as $simulator_model) { ?>
                 <!-- The simulators will be aligned in a column with width 2 of 12. Alignment seems to work fine this way. -->
                 <div class="col-md-2">
                     <!-- Create a click able picture linked to the corresponding simulators agenda. -->
-                    <p><a href="<?= Url::to(['/simulator/agenda', 'id' => $simulator_model->id, 'week' => $currWeek]);?>">
+                    <p>
+                        <a href="<?= Url::to(['/simulator/agenda', 'id' => $simulator_model->id, 'week' => $currWeek]);?>">
                             <?php
                             if ($simulator_model->getImage()) {
                                 echo Html::img('@web/' . $simulator_model->getImage()->getPath('125x'),
@@ -60,20 +57,15 @@ $duration = $simulator->flight_duration;
                                     ['alt' => Yii::t('app', 'Simulator image')]);
                             }
                             ?>
-                        </a></p>
-                    <!-- Following paragraph would create a button. This is not needed, because the pictures are click able. -->
-                    <!-- <p><a class="btn btn-default"
-                          href="<?/*= Url::to(['/simulator/agenda', 'id' => $simulator_model->id]); */?>"><?/*= Yii::t('app',
-                                'Book &raquo;'); */?></a>
-                    </p>-->
+                        </a>
+                    </p>
+
                     <!-- Display the simulators name -->
-                    <h4><?= $simulator_model->getAttribute("name") ?></h4>
+                    <h4>
+                        <?= $simulator_model->getAttribute("name") ?>
+                    </h4>
                 </div>
-            <?php
-
-            }
-
-            ?>
+            <?php } ?>
         </div>
 
         <div id="calendar_buttons">

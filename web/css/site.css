@@ -206,3 +206,7 @@ a.desc:after {
 .fc-time-grid-event .fc-time {
     font-size: 1.25em !important;
 }
+
+.simulator-availability ul {
+    font-size: 1em;
+}
