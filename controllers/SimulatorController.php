@@ -165,7 +165,6 @@ class SimulatorController extends Controller
      */
     public function actionAgenda()
     {
-        $model= new Simulator;
 
         $simId = \Yii::$app->request->get("id");
 
@@ -177,20 +176,23 @@ class SimulatorController extends Controller
 
         if (empty($week) || !strtotime($week)) {
             // If the week is not set (properly), it's the today's one
-            $week = date("Y\WW");
+            $week = date(DateTime::ISO8601);
         }
 
-        // Initialize the week
-        //if i change the date through the datepicker
-        //TODO avoid using POST
+        // Set the current week
         $currWeek = new DateTime($week);
-        // and the week before the current one
-        $prevWeek = clone $currWeek;
-        $prevWeek->modify("previous week");
+        $currWeek->modify('Thursday');
 
-        // and the week after the current one
+        // and the week before it
+        $prevWeek = clone $currWeek;
+        $prevWeek->modify("previous Thursday");
+
+        // and the week after it
         $nextWeek = clone $currWeek;
-        $nextWeek->modify("next week + 6 days"); //getting the last day to fix last week of the year problem (53rd week)
+        $nextWeek->modify("next Thursday");
+        // Why are we using all this Thursdays? This is caused by ISO8601's definition of the first week of the year
+        // ("the week with the year's first Thursday in it") and should solve bugs related to the transition between years
+
 
         $weekBorders = $this->findWeekBorders($currWeek);
 
