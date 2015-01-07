@@ -210,3 +210,7 @@ a.desc:after {
 .simulator-availability ul {
     font-size: 1em;
 }
+
+.btn{
+    margin-right: 10px;
+}
