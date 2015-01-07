@@ -214,3 +214,11 @@ a.desc:after {
 .btn{
     margin-right: 10px;
 }
+
+.align-simulator{
+    display: inline-block;
+    *display: inline;   /* this line is for IE7*/
+    zoom: 1;            /* this line is for IE7*/
+    margin-left: 15px;
+    margin-right: 15px
+}

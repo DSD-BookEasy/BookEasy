@@ -44,7 +44,7 @@ $duration = $simulator->flight_duration;
             <!-- Shows a selection of all available simulators. -->
             <?php foreach ($simulators as $simulator_model) { ?>
                 <!-- The simulators will be aligned in a column with width 2 of 12. Alignment seems to work fine this way. -->
-                <div class="col-md-2">
+                <div class="align-simulator"> <!--class="col-md-2"-->
                     <!-- Create a click able picture linked to the corresponding simulators agenda. -->
                     <p>
                         <a href="<?= Url::to(['/simulator/agenda', 'id' => $simulator_model->id, 'week' => $currWeek]);?>">
