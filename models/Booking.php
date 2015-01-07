@@ -49,7 +49,7 @@ class Booking extends \yii\db\ActiveRecord
             [['comments'], 'string', 'max' => 255],
             ['email', 'email'],
             [['name', 'surname', 'email'], 'required'],
-            [['name', 'surname', 'token'], 'required', 'on' => ['search']]
+            [['token'], 'required', 'on' => ['search'], 'if' => [!Yii::$app->user->can('manageBookings')]]
 
         ];
     }
