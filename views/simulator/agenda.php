@@ -68,10 +68,88 @@ $duration = $simulator->flight_duration;
             <?php } ?>
         </div>
 
-        <div id="calendar_buttons">
+
+        <div style="position: relative">
+            <div id="calendar" style="padding-top: 110px;">
+                    <?php
+                    $businessHours = [
+                        'start' => Parameter::getValue('businessTimeStart'),
+                        'end' => Parameter::getValue('businessTimeEnd')
+                    ];
+
+                    /**
+                     * We will use this to track the interval of hours to show in the calendar
+                     * Initially it will be equal to the business hours, but if there are explicit
+                     * timeslots exceeding it, we should make space for them too
+                     */
+                    $borders = $businessHours;
+
+                    $events = [
+                        [//Show Business Hours.
+                            'start' => $businessHours['start'],
+                            'end' => $businessHours['end'],
+                            'dow' => [0, 1, 2, 3, 4, 5, 6],
+                            'rendering' => 'inverse-background',
+                            'className' => 'closed'
+                        ]
+                    ];
+                    $nowDate = new DateTime('now');
+                    //Populate calendar events with timeslots
+                    foreach ($slots as $slot) {
+                        $event = [
+                            'start' => $slot->start,
+                            'end' => $slot->end,
+                            'id' => $slot->id
+                        ];
+                        if ($slot->id_booking != null) {
+                            $event['title'] = \Yii::t('app', 'Unavailable');
+                            $event['className'] = 'unavailable';
+                        } else {
+                            $event['title'] = \Yii::t('app', 'Available');
+                            $event['className'] = 'available';
+                        }
+
+                        if($slot->blocking) {
+                            $event['title'] = \Yii::t('app', 'Closed');
+                            $event['className'] = 'closed';
+                        }
+
+                        $startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $slot->start);
+                        if ($startDate < $nowDate) {
+                            $event['className'] = "passedSlot";
+                        }
+                        checkBorders($borders, $slot->start, $slot->end);
+                        $events[] = $event;
+                    }
+
+                    $bookUrl = Url::to(['/booking/create', 'timeslots[]' => '']);
+
+                    echo FullCalendar::widget([
+                        'config' => [
+                            'header' => [
+                                'left' => '',
+                                'center' => 'title',
+                                'right' => ''
+                            ],
+                            'aspectRatio' => '2',
+                            'defaultView' => 'agendaWeek',
+                            'scrollTime' => '08:00:00',
+                            'editable' => false,
+                            'firstDay' => 1,
+                            'allDaySlot' => false,
+                            'defaultDate' => $week->format("c"),
+                            'events' => $events,
+                            'eventRender' => new \yii\web\JsExpression('slotBooking'),
+                            'minTime' => $borders['start'],
+                            'maxTime' => $borders['end']
+                        ]
+                    ]); ?>
+                </div>
+            <div style="position: absolute; left:0px; top:0px; display: inline-block" id="calendar_buttons">
+            <div style="float: left; width: 20%">
             <?php
             echo Html::a(
-                Html::tag('span','',['class' => 'glyphicon glyphicon-chevron-left']),
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-left']),
                 ['agenda', 'id' => $simulator->id, 'week' => $prevWeek],
                 ['class' => 'btn btn-default']);
 
@@ -81,112 +159,36 @@ $duration = $simulator->flight_duration;
                 ['class' => 'btn btn-default']);
 
             echo Html::a(
-                Html::tag('span','',['class' => 'glyphicon glyphicon-chevron-right']),
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']),
                 ['agenda', 'id' => $simulator->id, 'week' => $nextWeek],
                 ['class' => 'btn btn-default']);
             ?>
+                </div>
+            <div style="float: right; width: 80%; display: inline-block">
 
+            <label style="float: left; margin-right: 25px; margin-top: 7px"><?= \Yii::t('app', "Pick a date"); ?></label>
+            <?php
+            $agenda_url = Url::to([
+                'agenda',
+                'id' => $simulator->id,
+            ]);
+            echo DatePicker::widget([
+                'name' => 'dp_1',
+                'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                'pluginOptions' => [
+                    'todayHighlight' => true,
+                    'todayBtn' => true,
+                    'weekStart' => '1',
+                    'startDate' => 'today',
 
-                <!-- <label><?= \Yii::t('app', "Pick a date"); ?></label> -->
-                <?php
-                $agenda_url = Url::to([
-                    'agenda',
-                    'id' => $simulator->id,
-                ]);
-                echo DatePicker::widget([
-                    'name' => 'dp_1',
-                    'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-                    'pluginOptions' => [
-                        'todayHighlight' => true,
-                        'todayBtn' => true,
-                        'weekStart' => '1',
-                        'startDate' => 'today',
+                ],
+                'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
 
-                    ],
-                    'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
-
-                ]);
-                ?>
-
-        </div>
-
-            <div id="calendar">
-                <?php
-                $businessHours = [
-                    'start' => Parameter::getValue('businessTimeStart'),
-                    'end' => Parameter::getValue('businessTimeEnd')
-                ];
-
-                /**
-                 * We will use this to track the interval of hours to show in the calendar
-                 * Initially it will be equal to the business hours, but if there are explicit
-                 * timeslots exceeding it, we should make space for them too
-                 */
-                $borders = $businessHours;
-
-                $events = [
-                    [//Show Business Hours.
-                        'start' => $businessHours['start'],
-                        'end' => $businessHours['end'],
-                        'dow' => [0, 1, 2, 3, 4, 5, 6],
-                        'rendering' => 'inverse-background',
-                        'className' => 'closed'
-                    ]
-                ];
-                $nowDate = new DateTime('now');
-                //Populate calendar events with timeslots
-                foreach ($slots as $slot) {
-                    $event = [
-                        'start' => $slot->start,
-                        'end' => $slot->end,
-                        'id' => $slot->id
-                    ];
-                    if ($slot->id_booking != null) {
-                        $event['title'] = \Yii::t('app', 'Unavailable');
-                        $event['className'] = 'unavailable';
-                    } else {
-                        $event['title'] = \Yii::t('app', 'Available');
-                        $event['className'] = 'available';
-                    }
-
-                    if($slot->blocking) {
-                        $event['title'] = \Yii::t('app', 'Closed');
-                        $event['className'] = 'closed';
-                    }
-
-                    $startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $slot->start);
-                    if ($startDate < $nowDate) {
-                        $event['className'] = "passedSlot";
-                    }
-                    checkBorders($borders, $slot->start, $slot->end);
-                    $events[] = $event;
-                }
-
-                $bookUrl = Url::to(['/booking/create', 'timeslots[]' => '']);
-
-                echo FullCalendar::widget([
-                    'config' => [
-                        'header' => [
-                            'left' => '',
-                            'center' => 'title',
-                            'right' => ''
-                        ],
-                        'aspectRatio' => '2',
-                        'defaultView' => 'agendaWeek',
-                        'scrollTime' => '08:00:00',
-                        'editable' => false,
-                        'firstDay' => 1,
-                        'allDaySlot' => false,
-                        'defaultDate' => $week->format("c"),
-                        'events' => $events,
-                        'eventRender' => new \yii\web\JsExpression('slotBooking'),
-                        'minTime' => $borders['start'],
-                        'maxTime' => $borders['end']
-                    ]
-                ]); ?>
+            ]);
+            ?>
             </div>
-
-
+        </div>
+        </div>
         <div class="alert alert-info">
             <?= Html::tag('p',Yii::t('app',"{click}",[
                 'click' => Html::a(Yii::t('app','An alternative way to create a booking is by clicking here. (Recommended for mobile devices)'),['booking/create-weekdays','simulator' => $simulator->id])
