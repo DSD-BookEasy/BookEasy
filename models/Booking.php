@@ -41,6 +41,7 @@ class Booking extends \yii\db\ActiveRecord
      */
     public function rules()
     {
+        $searchWithoutToken = Yii::$app->user->can('manageBookings');
         return [
 
             [['status'], 'integer'],
@@ -49,7 +50,7 @@ class Booking extends \yii\db\ActiveRecord
             [['comments'], 'string', 'max' => 255],
             ['email', 'email'],
             [['name', 'surname', 'email'], 'required'],
-            [['token'], 'required', 'on' => ['search'], 'if' => [!Yii::$app->user->can('manageBookings')]]
+            [['token'], 'required', 'on' => ['search'], 'strict' => $searchWithoutToken]
 
         ];
     }

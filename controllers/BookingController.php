@@ -557,13 +557,21 @@ class BookingController extends Controller
      */
     protected function findModelForSearch($model_input)
     {
-        $query = Booking::find()
-            ->where([
-                'name' => $model_input->name,
-                'surname' => $model_input->surname,
-                'token' => $model_input->token
-            ]);
-
+        if(Yii::$app->user->can('manageBookings')){
+            $query = Booking::find()
+                ->where([
+                    'name' => $model_input->name,
+                    'surname' => $model_input->surname,
+                ]);
+        }
+        else {
+            $query = Booking::find()
+                ->where([
+                    'name' => $model_input->name,
+                    'surname' => $model_input->surname,
+                    'token' => $model_input->token
+                ]);
+        }
         if (($model = $query->one()) !== null) {
             return $model;
         } else {

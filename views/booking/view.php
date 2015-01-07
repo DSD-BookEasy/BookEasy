@@ -53,9 +53,15 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         }
     ?>
+    <?php
+    //prepare the status to be shown
+    $bookingToShow = new Booking($model);
+    $bookingToShow->status = $bookingToShow->statusToString();
+    $bookingToShow->assigned_instructor_name = $model->assigned_instructor_name;
+    ?>
 
     <?= DetailView::widget([
-        'model' => $model,
+        'model' => $bookingToShow,
         'attributes' => $attributes,
         'template' => function($attribute){
             //this function set a class for each row in the table.
