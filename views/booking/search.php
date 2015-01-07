@@ -16,7 +16,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'surname')->textInput() ?>
 
-    <?= $form->field($model, 'token')->textInput() ?>
+    <?php
+            if(!Yii::$app->user->can('manageBookings')) {
+                echo $form->field($model, 'token')->textInput();
+            };
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['id' => 'searchBtn', 'class' => 'btn btn-primary']) ?>
