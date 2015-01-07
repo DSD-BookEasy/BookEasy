@@ -85,10 +85,32 @@ $duration = $simulator->flight_duration;
                 ['agenda', 'id' => $simulator->id, 'week' => $nextWeek],
                 ['class' => 'btn btn-default']);
             ?>
+
+
+                <!-- <label><?= \Yii::t('app', "Pick a date"); ?></label> -->
+                <?php
+                $agenda_url = Url::to([
+                    'agenda',
+                    'id' => $simulator->id,
+                ]);
+                echo DatePicker::widget([
+                    'name' => 'dp_1',
+                    'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                    'pluginOptions' => [
+                        'todayHighlight' => true,
+                        'todayBtn' => true,
+                        'weekStart' => '1',
+                        'startDate' => 'today',
+
+                    ],
+                    'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
+
+                ]);
+                ?>
+
         </div>
 
-        <div id="cal_datepicker" class="row">
-            <div id="calendar" class="col-md-10">
+            <div id="calendar">
                 <?php
                 $businessHours = [
                     'start' => Parameter::getValue('businessTimeStart'),
@@ -163,33 +185,11 @@ $duration = $simulator->flight_duration;
                     ]
                 ]); ?>
             </div>
-            <div id="datepicker" class="col-md-2">
 
-                <label><?= \Yii::t('app', "Pick a date"); ?></label>
-                <?php
-                $agenda_url = Url::to([
-                    'agenda',
-                    'id' => $simulator->id,
-                ]);
-                echo DatePicker::widget([
-                    'name' => 'dp_1',
-                    'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-                    'pluginOptions' => [
-                        'todayHighlight' => true,
-                        'todayBtn' => true,
-                        'weekStart' => '1',
-                        'startDate' => 'today',
 
-                    ],
-                    'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
-
-                ]);
-                ?>
-            </div>
-        </div>
         <div class="alert alert-info">
-            <?= Html::tag('p',Yii::t('app',"An alternative way to create a booking is by {click}. (Recommended for mobile devices)",[
-                'click' => Html::a(Yii::t('app','clicking here'),['booking/create-weekdays','simulator' => $simulator->id])
+            <?= Html::tag('p',Yii::t('app',"{click}",[
+                'click' => Html::a(Yii::t('app','An alternative way to create a booking is by clicking here. (Recommended for mobile devices)'),['booking/create-weekdays','simulator' => $simulator->id])
             ]))?>
         </div>
     </div>
