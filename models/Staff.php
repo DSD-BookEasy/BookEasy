@@ -41,10 +41,11 @@ class Staff extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function rules()
     {
+
         return [
             [['last_login'], 'safe'],
             [['name', 'surname', 'telephone', 'email', 'address', 'user_name', 'password', 'auth_key'], 'string', 'max' => 255],
-            [['repeat_password'], 'compare', 'compareAttribute' => 'plain_password'],
+            [['repeat_password'], 'compare', 'compareAttribute' => 'plain_password', 'skipOnEmpty' => false],
             [['plain_password'], 'safe'],
             ['email', 'email'],
             [['user_name', 'email', 'password'], 'required'],

@@ -389,9 +389,10 @@ class BookingController extends Controller
     public function actionConfirm()
     {
         if (!isset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]) || !isset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING])) {
-            //anyway unset session to be sure (one of the two could be set)
+            //anyway unset session to be sure (one of the three could be set)
             unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
+            unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
 
             throw new BadRequestHttpException();
         }
@@ -408,25 +409,31 @@ class BookingController extends Controller
 
             foreach ($timeSlots as $slot) {
                 $slot->id_booking = $booking->id;
-                $slot->creation_mode = Timeslot::WEEKDAYS;
+                if(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]){
+                    $slot->creation_mode = Timeslot::WEEKDAYS;
+                }
                 if (!$slot->save()) {
-                    //rise error
                     throw new ErrorException();
                 }
             }
 
             $transaction->commit();
 
-            //is require also for the opening hours? --> no it's not
-            $this->notifyCoordinators($booking);
+            if(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]){
+                $this->notifyCoordinators($booking);
+            }
+
+            $this->notifyCostumer($booking);
 
             unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
+            unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
             return $this->redirect(['view', 'id' => $booking->id, 'token' => $booking->token]);
         } catch (ErrorException $e) {
             $transaction->rollBack();
             unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
+            unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
 
             throw new BadRequestHttpException();
         }
@@ -575,5 +582,17 @@ class BookingController extends Controller
             ->setTo(Parameter::getValue('coordinatorEmail'))
             ->setSubject(\Yii::t('app', 'New Booking'))
             ->send();
+    }
+
+    private function notifyCostumer($booking){
+        if($booking->email != null){
+            Yii::$app->mailer->compose(['html' => 'booking/costumer_booking_html', 'text' => 'booking/costumer_booking_text'], [
+                'id' => $booking->id,
+            ])
+                ->setFrom(\Yii::$app->params['adminEmail'])
+                ->setTo($booking->email)
+                ->setSubject(\Yii::t('app', 'Your Booking'))
+                ->send();
+        }
     }
 }
