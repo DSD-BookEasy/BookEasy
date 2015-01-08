@@ -13,14 +13,15 @@ define('_endDay_H', '17');
 define('_endDay_M', '59');
 define('_interval', '+30 minutes');
 define('_lunchBreak', '+2 hours');
-define('_monday', '2014-12-08');
-define('_sunday', '2014-12-14');
+define('_monday', date('Y-m-d',strtotime('next monday')));
+define('_sunday', date('Y-m-d',strtotime('next monday') + 24*60*60*6 +1));
 //testing purpose
 use app\models\Booking;
 use app\models\Simulator;
 use app\models\Staff;
 use app\models\Timeslot;
 use app\models\TimeslotModel;
+use rico\yii2images\models\Image;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\Exception;
@@ -81,10 +82,7 @@ class PopulatorController extends \yii\web\Controller
             Yii::info("$tmpFolderPath doesn't exist. It will be created.");
             mkdir($tmpFolderPath);
         }
-        foreach ($simulators as $simulator) {
-            $simulator->clearImagesCache();
-            $simulator->removeImages();
-        }
+        Image::deleteAll();
         Simulator::deleteAll();
         Staff::deleteAll();
         TimeslotModel::deleteAll();
@@ -93,7 +91,7 @@ class PopulatorController extends \yii\web\Controller
         Yii::$app->db->createCommand("truncate table " . Simulator::tableName())->query();
         Yii::$app->db->createCommand("truncate table " . Staff::tableName())->query();
         Yii::$app->db->createCommand("truncate table " . TimeslotModel::tableName())->query();
-        Yii::$app->db->createCommand("truncate table image;")->query();
+        Yii::$app->db->createCommand("truncate table " . Image::tableName())->query();
         Yii::$app->authManager->removeAllAssignments();
         //Yii::$app->authManager->removeAll();
         return $this->render('index', ['user' => new Staff()]);
@@ -117,8 +115,8 @@ class PopulatorController extends \yii\web\Controller
             $user = new Staff();
             $user->load(Yii::$app->request->post());
             $user->email = 'mail@mail.com';
-            $user->name = 'admin_name';
-            $user->surname = 'admin_surname';
+            $user->name = 'N_admin';
+            $user->surname = 'S_admin';
             if (!$user->save()) {
                 throw new ErrorException('Admin user could not be created. There is a problem with the populator code, consult Mert');
             }
@@ -187,6 +185,21 @@ class PopulatorController extends \yii\web\Controller
         $interval = \DateInterval::createFromDateString(_interval);
         $lunchBreak = \DateInterval::createFromDateString(_lunchBreak);
         $endDay = \DateTime::createFromFormat($format_string, _sunday . ' ' . _endDay_H . ':' . _endDay_M . ':00');
+
+
+
+
+        //One passed booking to test old bookings
+        $val = array_pop($assigned_bookings_ids);
+        $time_slot = new Timeslot();
+        $oldDate = new \DateTime('previous Monday');
+        $oldDate->setTime(9,0,0);
+        $time_slot->start = $oldDate->format($format_string);
+        $time_slot->end = $oldDate->add($interval)->format($format_string);
+        $time_slot->cost = rand(100, 999);
+        $time_slot->id_simulator = array_values($simulators_ids)[rand(0, count($simulators_ids) - 1)];
+        $time_slot->id_booking = $val;
+        $time_slot->save();
         //1) sunday bookings
         //1.1) already reserved and assigned
         while (count($assigned_bookings_ids) > 0 and $sunday < $endDay) {
