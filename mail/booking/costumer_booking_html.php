@@ -11,16 +11,20 @@ use yii\helpers\Html;
 ?>
 
 <?=
-    Html::tag('p', Yii::t('app', 'Here there are your booking information:')).
-    Html::tag('p', Yii::t('app', 'Your Secret key is {0}', $booking->token ))
+    Html::tag('h2', Yii::t('app', 'Here there are your booking information:')).
+    Html::tag('h3', Yii::t('app', 'Your Secret key is {0}', $booking->token ))
 ?>
 
 
 <?php
-    echo( Html::tag('p', Yii::t('app', 'You have booked the following simulator:')));
+    echo( Html::tag('h3', Yii::t('app', 'You have booked the following simulator:')));
 
     foreach($timeSlots as $slot){
-        echo( Html::tag('p', Yii::t('app', 'starting from {0}', $slot->start )));
-        echo( Html::tag('p', Yii::t('app', 'ending at {0}', $slot->end )));
+        $simulator = $slot->simulator;
+        echo(Html::tag('h3', Yii::t('app', '{0}', $simulator->name)));
+        echo( Html::ul([
+            Yii::t('app', 'starting from {0}', $slot->start ).
+            Yii::t('app', 'ending at {0}', $slot->end )]
+        ));
     }
 ?>
