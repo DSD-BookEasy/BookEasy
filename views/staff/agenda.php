@@ -21,34 +21,7 @@ use app\models\Parameter;
 
 $this->title = Yii::t('app', "Staff Agenda");
 ?>
-
-    <div id="calendar_buttons">
-        <a id="prevButton" href="<?= Url::to([
-            '/staff/agenda',
-            'day' => $prevDay
-        ]) ?>" class="btn btn-default">
-            <span class="glyphicon glyphicon-chevron-left"></span>
-            <?= \Yii::t('app', "Previous day"); ?>
-        </a>
-
-        <a id="todayButton" href="<?= Url::to([
-            '/staff/agenda',
-        ]) ?>" class="btn btn-default">
-            <?= \Yii::t('app', "Today"); ?>
-        </a>
-
-        <a id="nextButton" href="<?= Url::to([
-            '/staff/agenda',
-            'day' => $nextDay
-        ]) ?>" class="btn btn-default">
-            <?= \Yii::t('app', "Next day"); ?>
-            <span class="glyphicon glyphicon-chevron-right"></span>
-        </a>
-
-    </div>
-
-
-    <div id="cal_datepicker" class="row">
+    <div id="cal_datepicker" style="position: relative; padding-top: 120px">
 
         <!--
             Tabs usage reference: http://getbootstrap.com/javascript/#tabs-usage
@@ -75,10 +48,10 @@ $this->title = Yii::t('app', "Staff Agenda");
                 'end' => $businessHours['end'],
                 'dow' => [0, 1, 2, 3, 4, 5, 6],
                 'rendering' => 'inverse-background',
-                'className' => 'closed'
+                'className' => 'closedSlot'
             ]
         ];
-        echo "<div id='calendar' class='col-md-10'>";
+        echo "<div id='calendar' class='col-md-12'>";
         echo "<ul id='simulatorTab' class='nav nav-tabs'>";
         $counter = 0;
         foreach ($simulators as $simulator) {
@@ -98,7 +71,7 @@ $this->title = Yii::t('app', "Staff Agenda");
                     'end' => $businessHours['end'],
                     'dow' => [0, 1, 2, 3, 4, 5, 6],
                     'rendering' => 'inverse-background',
-                    'className' => 'closed'
+                    'className' => 'closedSlot'
                 ]
             ];
             $nowDate = new DateTime('now');
@@ -114,21 +87,24 @@ $this->title = Yii::t('app', "Staff Agenda");
                     if ($bookings[$slot->id_booking]->assigned_instructor != null) {
                         //if the booking is assigned that show the name
                         $iid = $bookings[$slot->id_booking]->assigned_instructor;
-                        $event['title'] = \Yii::t('app', '{name} {lname} has booked this slot, which is assigned to {ins_name} {ins_lname}, on {ts} ', [
-                            'name' => $bookings[$slot->id_booking]->name,
-                            'lname' => $bookings[$slot->id_booking]->surname,
-                            'ts' => $bookings[$slot->id_booking]->timestamp,
-                            'ins_name' => $staff[$iid]->name,
-                            'ins_lname' => $staff[$iid]->surname,
-                        ]);
+                        $event['title'] = \Yii::t('app',
+                            '{name} {lname} has booked this slot, which is assigned to {ins_name} {ins_lname}, on {ts} ',
+                            [
+                                'name' => $bookings[$slot->id_booking]->name,
+                                'lname' => $bookings[$slot->id_booking]->surname,
+                                'ts' => $bookings[$slot->id_booking]->timestamp,
+                                'ins_name' => $staff[$iid]->name,
+                                'ins_lname' => $staff[$iid]->surname,
+                            ]);
                         $event['className'] = 'assigned';
                     } else {
                         //the booking is not assigned then warn the user about it
-                        $event['title'] = \Yii::t('app', '{name} {lname} has booked this slot, which is NOT assigned, on {ts} ', [
-                            'name' => $bookings[$slot->id_booking]->name,
-                            'lname' => $bookings[$slot->id_booking]->surname,
-                            'ts' => $bookings[$slot->id_booking]->timestamp,
-                        ]);
+                        $event['title'] = \Yii::t('app',
+                            '{name} {lname} has booked this slot, which is NOT assigned, on {ts} ', [
+                                'name' => $bookings[$slot->id_booking]->name,
+                                'lname' => $bookings[$slot->id_booking]->surname,
+                                'ts' => $bookings[$slot->id_booking]->timestamp,
+                            ]);
                         $event['className'] = 'unassigned';
                     }
                 } else {
@@ -138,7 +114,7 @@ $this->title = Yii::t('app', "Staff Agenda");
 
                 if ($slot->blocking) {
                     $event['title'] = \Yii::t('app', 'Closed');
-                    $event['className'] = 'closed closed_dayview';
+                    $event['className'] = 'closedSlot closed_dayview';
                 }
                 $startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $slot->start);
                 if ($startDate < $nowDate) {
@@ -154,7 +130,7 @@ $this->title = Yii::t('app', "Staff Agenda");
                         'center' => 'title',
                         'right' => ''
                     ],
-                    'aspectRatio' => '2',
+                    'aspectRatio' => '2.4',
                     'defaultView' => 'agendaDay',
                     'scrollTime' => '08:00:00',
                     'editable' => false,
@@ -163,20 +139,8 @@ $this->title = Yii::t('app', "Staff Agenda");
                     'defaultDate' => $currDay->format("c"),
                     'events' => $events,
                     'eventRender' => new \yii\web\JsExpression('slotSelecting'),
-                    //Features for booking during weekdays
-                    'selectable' => true,
-                    'selectOverlap' => new \yii\web\JsExpression("function(event)
-                {
-                    return (event.rendering === 'background' || event.rendering === 'inverse-background');
-                }"),
-                    'selectConstraint' => [
-                        'start' => $businessHours['start'],
-                        'end' => $businessHours['end'],
-                        'dow' => [0, 1, 2, 3, 4, 5, 6]
-                    ],
                     'minTime' => $borders['start'],
                     'maxTime' => $borders['end'],
-                    //'select' => new \yii\web\JsExpression("goToCreateWeekdays")
                 ]
             ]);
             echo "</div>"; //end of the bootstrap div for each tab
@@ -184,9 +148,31 @@ $this->title = Yii::t('app', "Staff Agenda");
         echo "</div>"; // end of the bootstrap div which contains all the tabs
         echo "</div>"; // end of the <div id='calendar' ....>  which contains all the calendars
         ?>
-        <div id="datepicker" class="col-md-2">
+        <div id="calendar_tools">
+            <div id="calendar_buttons">
+                <a id="prevButton" href="<?= Url::to([
+                    '/staff/agenda',
+                    'day' => $prevDay
+                ]) ?>" class="btn btn-default">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    <?= \Yii::t('app', "Previous day"); ?>
+                </a>
 
-            <label><?= \Yii::t('app', "Pick a date"); ?></label>
+                <a id="todayButton" href="<?= Url::to([
+                    '/staff/agenda',
+                ]) ?>" class="btn btn-default">
+                    <?= \Yii::t('app', "Today"); ?>
+                </a>
+
+                <a id="nextButton" href="<?= Url::to([
+                    '/staff/agenda',
+                    'day' => $nextDay
+                ]) ?>" class="btn btn-default">
+                    <?= \Yii::t('app', "Next day"); ?>
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+
+            </div>
             <?php
             $agenda_url = Url::to([
                 '/staff/agenda'
@@ -194,11 +180,11 @@ $this->title = Yii::t('app', "Staff Agenda");
             echo DatePicker::widget([
                 'name' => 'dp_1',
                 'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                'options' => ['placeholder' => \Yii::t('app', "Pick a date ") . 'mm/dd/yyyy'],
                 'pluginOptions' => [
                     'todayHighlight' => true,
                     'todayBtn' => true,
                     'weekStart' => '1',
-                    'startDate' => 'today',
                 ],
                 'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?day='+e.date.getDateString();}"],
 
@@ -206,7 +192,13 @@ $this->title = Yii::t('app', "Staff Agenda");
             ?>
         </div>
     </div>
-
+    <ul id="colorMap" style="list-style: none; text-align: center">
+        <li class="available"><span><?= \Yii::t('app', 'Available'); ?></span></li>
+        <li class="assigned"><span><?= \Yii::t('app', 'Booked and assigned'); ?></span></li>
+        <li class="unassigned"><span><?= \Yii::t('app', 'Booked and unassigned'); ?></span></li>
+        <li class="passedSlot"><span><?= \Yii::t('app', 'Past slot'); ?></span></li>
+        <li class="closedSlot"><span><?= \Yii::t('app', 'Closed hours'); ?></span></li>
+    </ul>
 <?php
 $this->registerJs("
         var selectedSim = 'sim0';
@@ -288,7 +280,7 @@ $this->registerJs("
                         ev.preventDefault();
                         window.location.href = "<?=$bookUrlView?>" + "/" + event.id_booking + "/view";
                     });
-                } else if (element.hasClass("closed")){
+                } else if (element.hasClass("closedSlot")) {
                     element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
                     element.tooltip();
                     element.click(function (ev) {
