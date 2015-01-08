@@ -131,13 +131,17 @@ a.desc:after {
 
 
 .available{
-    background-color: #008000;
-    border-color: #32CD32;
+    background-color: #08b510;
+    border-color: #3cf43c;
 }
 
 .assigned {
     border-color: #9acfea;
     background-color: #9999FF;
+}
+.assignedToYou {
+    border-color: #72b0ea;
+    background-color: #2a33ff;
 }
 
 .unassigned {
@@ -151,6 +155,10 @@ a.desc:after {
 }
 
 .fc-event.assigned:hover{
+    cursor: pointer;
+    background-color: #ffdc2e;
+}
+.fc-event.assignedToYou:hover{
     cursor: pointer;
     background-color: #ffdc2e;
 }

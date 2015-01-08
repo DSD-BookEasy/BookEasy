@@ -96,7 +96,12 @@ $this->title = Yii::t('app', "Staff Agenda");
                                 'ins_name' => $staff[$iid]->name,
                                 'ins_lname' => $staff[$iid]->surname,
                             ]);
-                        $event['className'] = 'assigned';
+                        if ($iid == Yii::$app->user->id) {
+                            $event['className'] = 'assignedToYou';
+                        }
+                        else {
+                            $event['className'] = 'assigned';
+                        }
                     } else {
                         //the booking is not assigned then warn the user about it
                         $event['title'] = \Yii::t('app',
@@ -193,6 +198,7 @@ $this->title = Yii::t('app', "Staff Agenda");
     <ul id="colorMap" style="list-style: none; text-align: center">
         <li class="available"><span><?= \Yii::t('app', 'Available'); ?></span></li>
         <li class="assigned"><span><?= \Yii::t('app', 'Booked and assigned'); ?></span></li>
+        <li class="assignedToYou"><span><?= \Yii::t('app', 'Assigned to you'); ?></span></li>
         <li class="unassigned"><span><?= \Yii::t('app', 'Booked and unassigned'); ?></span></li>
         <li class="passedSlot"><span><?= \Yii::t('app', 'Past slot'); ?></span></li>
         <li class="closedSlot"><span><?= \Yii::t('app', 'Closed hours'); ?></span></li>
@@ -263,7 +269,7 @@ $this->registerJs("
                         window.location.href = "<?=$bookUrl?>" + event.id;
                     });
                 }
-                else if (element.hasClass("assigned")) {
+                else if (element.hasClass("assigned") || element.hasClass('assignedToYou')) {
                     element.attr("title", "<?=\Yii::t('app',"Click the timeslot to edit the booking")?>");
                     element.tooltip();
                     element.click(function (ev) {
