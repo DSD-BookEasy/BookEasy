@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
             Html::ul([
                 Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($slot->start)),
                 Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($slot->end)),
-                Yii::t('app','Flight Simulation: {0, number, currency}', $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation)
+                Yii::t('app','Flight Simulation: {0, number} SEK', $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation)
             ]).
 
             Html::a(Yii::t('app', 'Edit Time Slot'), ['timeslot/update', 'id' => $slot->id, 'goTo' =>

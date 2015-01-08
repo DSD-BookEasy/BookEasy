@@ -18,9 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
         Html::tag('h3', 'Your booking cost: ') .
 
         Html::ul([
-            Yii::t('app', 'Entrance Fee: {0, number, currency}', $entry_fee),
-            Yii::t('app', 'Simulator Fee: {0, number, currency}', $simulator_fee),
-            Yii::t('app', 'Total Fee: {0, number, currency}', $entry_fee + $simulator_fee),
+            Yii::t('app', 'Entrance Fee: {0, number} SEK', $entry_fee),
+            Yii::t('app', 'Simulator Fee: {0, number} SEK', $simulator_fee),
+            Yii::t('app', 'Total Fee: {0, number} SEK', $entry_fee + $simulator_fee),
         ])
     );
     ?>
