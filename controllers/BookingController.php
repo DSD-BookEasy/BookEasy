@@ -419,17 +419,17 @@ class BookingController extends Controller
                 }
             }
 
-            $transaction->commit();
-
             if (Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]) {
                 $this->notifyCoordinators($booking);
             }
 
-            $this->notifyCostumer($booking);
+            $this->notifyCostumer($booking, $timeSlots);
 
             unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
+
+            $transaction->commit();
             return $this->redirect(['view', 'id' => $booking->id, 'token' => $booking->token]);
         } catch (ErrorException $e) {
             $transaction->rollBack();
@@ -593,14 +593,15 @@ class BookingController extends Controller
             ->send();
     }
 
-    private function notifyCostumer($booking)
+    private function notifyCostumer($booking, $timeSlots)
     {
         if ($booking->email != null) {
             Yii::$app->mailer->compose([
                 'html' => 'booking/costumer_booking_html',
                 'text' => 'booking/costumer_booking_text'
             ], [
-                'id' => $booking->id,
+                'booking' => $booking,
+                'timeSlots' => $timeSlots,
             ])
                 ->setFrom(\Yii::$app->params['adminEmail'])
                 ->setTo($booking->email)
