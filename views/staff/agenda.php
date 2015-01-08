@@ -155,7 +155,6 @@ $this->title = Yii::t('app', "Staff Agenda");
                     'day' => $prevDay
                 ]) ?>" class="btn btn-default">
                     <span class="glyphicon glyphicon-chevron-left"></span>
-                    <?= \Yii::t('app', "Previous day"); ?>
                 </a>
 
                 <a id="todayButton" href="<?= Url::to([
@@ -168,7 +167,6 @@ $this->title = Yii::t('app', "Staff Agenda");
                     '/staff/agenda',
                     'day' => $nextDay
                 ]) ?>" class="btn btn-default">
-                    <?= \Yii::t('app', "Next day"); ?>
                     <span class="glyphicon glyphicon-chevron-right"></span>
                 </a>
 
