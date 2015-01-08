@@ -1,4 +1,7 @@
 <?php
+
+use yii\helpers\Html;
+
 /**
  * Created by PhpStorm.
  * User: Ale
