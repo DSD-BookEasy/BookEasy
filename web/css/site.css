@@ -257,3 +257,7 @@ a.desc:after {
     cursor: default;
     padding: 10px 10px 10px 10px;
 }
+
+.mail_bold{
+    font-weight: bold;
+}
