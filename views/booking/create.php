@@ -29,9 +29,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= Html::ul([
         Yii::t('app', 'Start: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->start)),
         Yii::t('app', 'End: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->end)),
-        Yii::t('app', 'Entrance: {0, number} SEK', $entry_fee),
-        Yii::t('app', 'Flight Simulation: {0, number} SEK', $flight_price),
-        Yii::t('app', 'Total Cost: {0, number} SEK', $entry_fee + $flight_price),
+        Yii::t('app', 'Entrance: {0, number} kr', $entry_fee),
+        Yii::t('app', 'Flight Simulation: {0, number} kr', $flight_price),
+        Yii::t('app', 'Total Cost: {0, number} kr', $entry_fee + $flight_price),
     ]);
     ?>
 

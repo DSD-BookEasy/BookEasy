@@ -229,7 +229,7 @@ $duration = $simulator->flight_duration;
                     element.tooltip();
                 }
                 else if (element.hasClass("available")) {
-                    element.attr("title", "<?=\Yii::t('app',"This timeslot is available. and it costs {price}SEK for {duration} minutes",[
+                    element.attr("title", "<?=\Yii::t('app',"This timeslot is available. and it costs {price} kr for {duration} minutes",[
                 'price' => $price,
                 'duration' => $duration
                 ])?>");

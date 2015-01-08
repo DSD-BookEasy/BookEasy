@@ -38,8 +38,8 @@ $this->params['breadcrumbs'][] = $this->title;
             Html::tag('h3', 'Your booking cost: ') .
 
             Html::ul([
-            Yii::t('app', 'Entrance: {0, number} SEK', $entry_fee),
-            Yii::t('app', 'Total Cost: {0, number} SEK', $entry_fee + $flight_price),
+            Yii::t('app', 'Entrance: {0, number} kr', $entry_fee),
+            Yii::t('app', 'Total Cost: {0, number} kr', $entry_fee + $flight_price),
             ])
         );
     ?>
@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 Html::ul([
                     Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($slot->start)),
                     Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($slot->end)),
-                    Yii::t('app','Flight Simulation: {0, number} SEK', $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation)
+                    Yii::t('app','Flight Simulation: {0, number} kr', $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation)
                 ])
             );
         }

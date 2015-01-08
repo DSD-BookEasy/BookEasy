@@ -30,8 +30,8 @@ $this->params['breadcrumbs'][] = $this->title;
     Please fill in the following form to continue')?>:</p>
 
     <?= Html::ul([
-        Yii::t('app','Entrance Fee: {0, number} SEK', $entry_fee),
-        Yii::t('app','Simulator Fee: {0, number} SEK per {duration} minutes.', [$simulator->price_simulation, 'duration' => $simulator->flight_duration]),
+        Yii::t('app','Entrance Fee: {0, number} kr', $entry_fee),
+        Yii::t('app','Simulator Fee: {0, number} kr per {duration} minutes.', [$simulator->price_simulation, 'duration' => $simulator->flight_duration]),
     ]);
     ?>
     <p><?=Yii::t('app','Please note that the above prices are subject to change. Additional costs may be applied for the museum opening out of usual opening hours. You will receive the final quotation as soon as the staff can confirm your booking.')?></p>
