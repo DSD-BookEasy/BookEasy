@@ -139,7 +139,14 @@ class BookingController extends Controller
         }
         Timeslot::handleDeleteBooking($model);
         $model->delete();
-        return $this->redirect(['index']);
+
+        // if the user who deleted the booking can manageBookings, send him to the booking/index, otherwise it is a customer, send him to the site/index
+        if (Yii::$app->user->can('manageBookings')) {
+            return $this->redirect(['index']);
+        }
+        else {
+        return $this->redirect(['site/index']);
+        }
     }
 
     /**
