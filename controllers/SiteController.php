@@ -11,29 +11,6 @@ use yii\filters\VerbFilter;
 
 class SiteController extends Controller
 {
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-
     public function actions()
     {
         return [
@@ -52,16 +29,9 @@ class SiteController extends Controller
         $simulators = new ActiveDataProvider([
             'query' => Simulator::find(),
         ]);
-
-        if ( Yii::$app->user->isGuest ) {
             return $this->render('index', [
                 'simulators' => $simulators->getModels(),
             ]);
-        } else {
-            return $this->render('admin-index', [
-                'simulators' => $simulators->getModels(),
-            ]);
-        }
     }
 
     public function actionAbout()

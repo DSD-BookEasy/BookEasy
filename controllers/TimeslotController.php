@@ -2,13 +2,17 @@
 
 namespace app\controllers;
 
-use app\models\TimeslotModel;
+use app\models\Simulator;
 use Yii;
 use app\models\Timeslot;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\helpers\Url;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * TimeslotController implements the CRUD actions for Timeslot model.
@@ -25,6 +29,17 @@ class TimeslotController extends Controller
                 'actions' => [
                     'delete' => ['post'],
                 ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'except' => ['anon-calendar'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['manageTimeslots']
+                    ],
+                ],
+
             ],
         ];
     }
@@ -57,6 +72,50 @@ class TimeslotController extends Controller
     }
 
     /**
+     * Ajax action for fullcalendar AJAX source returning anonymous data
+     * @param $simulator the id of the simulator to show the timeslots of
+     * @param string $start the starting date of timeslots to show. Must be encoded in ISO8601
+     * @param string $end the ending date of timeslots to show. Must be encoded in ISO8601
+     * @param bool $background whether the timeslot should be rendered as background ones
+     * @return string
+     */
+    public function actionAnonCalendar($simulator, $start = null, $end = null, $background = false){
+        $timeslots=[];
+        if(!empty($simulator) and is_numeric($simulator)){
+            try {
+                $s = new \DateTime($start);
+                $e = new \DateTime($end);
+
+                $timeslots = Timeslot::find()->
+                where(['id_simulator' => $simulator])->
+                andWhere(['>=', 'start', $s->format("c")])->
+                andWhere(['<=', 'end', $e->format("c")])->all();
+            }
+            catch(\Exception $e){
+                //Invalid dates. Return empty timeslots
+            }
+
+            $out=[];
+
+            foreach($timeslots as $t){
+                $out[]=[
+                    'id' => $t->id,
+                    'title' => $t->id_simulator? Yii::t('app','Unavailable') : Yii::t('app','Available'),
+                    'allDay' => false,
+                    'start' => $t->start,
+                    'end' => $t->end,
+                    'className' => $t->id_simulator? 'unavailable' : 'available',
+                    'rendering' => $background? 'background' : null
+                ];
+            }
+
+            $resp = Yii::$app->response;
+            $resp->data = $out;
+            $resp->format = Response::FORMAT_JSON;
+        }
+    }
+
+    /**
      * Creates a new Timeslot model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
@@ -68,8 +127,14 @@ class TimeslotController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
+
+            $simulators = new ActiveDataProvider([
+                'query' => Simulator::find(),
+            ]);
+
             return $this->render('create', [
                 'model' => $model,
+                'simulators' => $simulators->getModels(),
             ]);
         }
     }
@@ -80,14 +145,20 @@ class TimeslotController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $goTo = null)
     {
         $model = $this->findModel($id);
+
+        if($goTo != null){
+            Yii::$app->user->setReturnUrl($goTo);
+        }else{
+            Yii::$app->user->setReturnUrl(Url::to(['view', 'id' => $model->id]));
+        }
 
         if ($model->load(Yii::$app->request->post())){
             $model->id_timeSlotModel = NULL;
             if($model->save()){
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->goBack();
             }
         } else {
             return $this->render('update', [

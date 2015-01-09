@@ -32,23 +32,48 @@ AppAsset::register($this);
                     'class' => 'navbar-inverse navbar-fixed-top',
                 ],
             ]);
-            echo Nav::widget([
-                'options' => ['class' => 'navbar-nav navbar-right'],
-                'items' => [
-                    ['label' => \Yii::t('app','Home'), 'url' => ['index']],
-                    //['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => \Yii::t('app','Look for a Booking'), 'url' => ['/booking/search']],
-                    Yii::$app->user->isGuest ?
-                        ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
-                        ['label' => \Yii::t('app','Logout ({username})',
-                            ['username'=>Yii::$app->user->identity->user_name]),
-                            'url' => ['/staff/logout']],
-                ],
-            ]);
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav navbar-right'],
+            'items' => [
+                Yii::$app->user->isGuest ?  // if user is guest, show empty label, otherwise show System dropdown
+                    ['label' => \Yii::t('app', '')] :
+                    ['label' => \Yii::t('app', 'System'),
+                        'items' => [
+                            ['label' => \Yii::t('app', 'Time Slots'), 'url' => ['timeslot-model/index']],
+                            ['label' => \Yii::t('app', 'Simulators'), 'url' => ['simulator/index']],
+                            ['label' => \Yii::t('app', 'Permissions'), 'url' => ['permission/index']],
+                            ['label' => \Yii::t('app', 'Roles'), 'url' => ['permission/roles']],
+                            ['label' => \Yii::t('app', 'System Parameters'), 'url' => ['parameter/index']],
+                            ['label' => \Yii::t('app', 'Staff Accounts'), 'url' => ['staff/index']]
+                        ]
+                    ],
+                
+                Yii::$app->user->isGuest ?  // if user is guest, show empty label, otherwise show Bookings dropdown
+                    ['label' => \Yii::t('app', '')] :
+                    ['label' => \Yii::t('app', 'Bookings'),
+                        'items' => [
+                            ['label' => \Yii::t('app', 'Todays Bookings'), 'url' => ['staff/agenda']],
+                            ['label' => \Yii::t('app', 'New Booking'), 'url' => ['site/index']],
+                            ['label' => \Yii::t('app', 'Booking List'), 'url' => ['booking/index']],
+                            ['label' => \Yii::t('app', 'Search Booking'), 'url' => ['booking/search']]
+                        ]
+                    ],
+
+                ['label' => \Yii::t('app','Search Booking'), 'url' => ['/booking/search']],
+                Yii::$app->user->isGuest ?
+                    ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
+                    [
+                        'label' => \Yii::t('app','Logout ({username})',
+                        ['username'=>Yii::$app->user->identity->user_name]),
+                        'url' => ['/staff/logout']
+                    ],
+
+            ],
+        ]);
             NavBar::end();
         ?>
 
-        <div class="container">
+        <div class="container controller-<?= Yii::$app->controller->id?> action-<?= Yii::$app->controller->action->id ?>">
             <?= Breadcrumbs::widget([
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>

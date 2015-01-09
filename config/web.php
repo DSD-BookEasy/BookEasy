@@ -8,8 +8,20 @@ $config = [
     //'language' => 'sv-SE',
     'bootstrap' => ['log'],
     'modules' => [
+
         'api' => [
             'class' => 'app\modules\api\Module',
+        ],
+        'yii2images' => [
+            'class' => 'rico\yii2images\Module',
+            //be sure, that permissions ok
+            //if you cant avoid permission errors you have to create "uploads" folder in web root manually and set 777 permissions
+            'imagesStorePath' => 'uploads/images/store',
+            //path to origin images
+            'imagesCachePath' => 'uploads/images/cache',
+            //path to resized copies
+            'graphicsLibrary' => 'GD',
+            //but really its better to use 'Imagick'
         ],
     ],
     'components' => [
@@ -36,7 +48,7 @@ $config = [
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
-            'useFileTransport' => true,
+            //'useFileTransport' => true,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -60,13 +72,15 @@ $config = [
             'translations' => [
                 'app*' => [
                     'class' => 'yii\i18n\PhpMessageSource',
-                    //'basePath' => '@app/messages',
-                    'sourceLanguage' => 'en-US',
-                    /*'fileMap' => [
-                        'app' => 'app.php',
-                    ],*/
+                    'basePath' => '@app/messages',
+                    'fileMap' => [
+                        'app' => 'App.php',
+                    ],
                 ],
             ],
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
         ],
     ],
     'params' => $params,

@@ -58,7 +58,8 @@ class TimeslotModel extends ActiveRecord
             [['start_validity', 'end_validity'], 'safe'],
             [['generated_until'], 'safe'],
             [['frequency'], 'string'],
-            [['repeat_day', 'id_simulator'], 'integer']
+            [['repeat_day', 'id_simulator'], 'integer'],
+            [['blocking'], 'boolean']
         ];
     }
 
@@ -302,7 +303,26 @@ class TimeslotModel extends ActiveRecord
      */
     public function repeatDayToString(){
         return date('l', strtotime("this Sunday + $this->repeat_day days"));
+    }
 
+    /**
+     * Return the string that correspond to the semantic value of the status
+     * @return string
+     */
+    public function frequencyToString(){
+        switch($this->frequency){
+            case TimeslotModel::DAILY:
+                return Yii::t('app', 'Daily');
+            case TimeslotModel::WEEKLY:
+                return Yii::t('app', 'Weekly');
+            default:
+                return $this->frequency;
+        }
+    }
+
+    public function simulatorToString(){
+        $simulator = Simulator::findOne(['id' => $this->id_simulator]);;
+        return $simulator->name;
     }
 
 

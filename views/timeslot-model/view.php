@@ -25,17 +25,27 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
+    <?php
+
+        $timeSlotToShow = clone $model;
+        $timeSlotToShow->frequency = $timeSlotToShow->frequencyToString();
+        $timeSlotToShow->id_simulator = $timeSlotToShow->simulatorToString();
+        $timeSlotToShow->repeat_day = $timeSlotToShow->repeatDayToString();
+
+    ?>
+
     <?= DetailView::widget([
-        'model' => $model,
+        'model' => $timeSlotToShow,
         'attributes' => [
             'id',
             'start_time',
             'end_time',
             'frequency',
-            'start_validity',
-            'end_validity',
+            'start_validity:date',
+            'end_validity:date',
             'repeat_day',
             'id_simulator',
+            'blocking:boolean'
         ],
     ]) ?>
 

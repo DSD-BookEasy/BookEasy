@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\base\ErrorException;
 
+
 /**
  * This is the model class for table "booking".
  *
@@ -22,6 +23,12 @@ use yii\base\ErrorException;
  */
 class Booking extends \yii\db\ActiveRecord
 {
+
+    const CONFIRMED = 1;
+    const NOT_CONFIRMED = 0;
+    const WAITING_FOR_CONFIRMATION = 2;
+
+    public $assigned_instructor_name;
     /**
      * @inheritdoc
      */
@@ -35,6 +42,7 @@ class Booking extends \yii\db\ActiveRecord
      */
     public function rules()
     {
+        $searchWithoutToken = Yii::$app->user->can('manageBookings');
         return [
 
             [['status'], 'integer'],
@@ -42,9 +50,9 @@ class Booking extends \yii\db\ActiveRecord
             [['name', 'surname', 'telephone', 'email', 'address'], 'string', 'max' => 255],
             [['comments'], 'string', 'max' => 255],
             ['email', 'email'],
-            [['name', 'surname'], 'required'],
-            ['email', 'required', 'on' => ['weekdays']],
-            [['id', 'name', 'surname', 'token'], 'required', 'on' => ['search']]
+            ['telephone','number', 'message'=>'The phone number must contain only number'],
+            [['name', 'surname', 'email'], 'required'],
+            [['token'], 'required', 'on' => ['search'], 'strict' => $searchWithoutToken]
 
         ];
     }
@@ -52,18 +60,24 @@ class Booking extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
+
+
+
     public function attributeLabels()
     {
         return [
             'id' => Yii::t('app', 'ID'),
             'status' => Yii::t('app', 'Status'),
-            'timestamp' => Yii::t('app', 'Timestamp'),
+            'timestamp' => Yii::t('app', 'Booking Created on'),
             'name' => Yii::t('app', 'Name'),
             'surname' => Yii::t('app', 'Surname'),
             'telephone' => Yii::t('app', 'Telephone'),
             'email' => Yii::t('app', 'Email'),
             'address' => Yii::t('app', 'Address'),
-            'comments' => Yii::t('app', 'Comments'),
+            'comments' => Yii::t('app', 'Your comments'),
+            'token' => Yii::t('app', 'Secret Key'),
+            'assigned_instructor_name' => Yii::t('app', 'Assigned Instructor'),
+            'assigned_instructor' => Yii::t('app', 'Assigned Instructor')
         ];
     }
 
@@ -84,5 +98,37 @@ class Booking extends \yii\db\ActiveRecord
         return false;
     }
 
+    /**
+     * Return the string that correspond to the semantic value of the status
+     * @return string
+     */
+    public function statusToString(){
+        switch($this->status){
+            case Booking::CONFIRMED:
+                return Yii::t('app', 'Confirmed');
+            case Booking::NOT_CONFIRMED:
+                return Yii::t('app', 'Not Confirmed');
+            case Booking::WAITING_FOR_CONFIRMATION:
+                return Yii::t('app', 'Waiting for Confirmation');
+        }
+    }
+
+
+    /*
+     * old status to string
+    public function statusToString(){
+        switch($this->status){
+            case Booking::CONFIRMED:
+                $this->status = 'Confirmed';
+                break;
+            case Booking::NOT_CONFIRMED:
+                $this->status = 'Not Confirmed';
+                break;
+            case Booking::WAITING_FOR_CONFIRMATION:
+                $this->status = 'Waiting for Confirmation';
+                break;
+        }
+    }
+    */
 
 }

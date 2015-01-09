@@ -50,6 +50,7 @@ class Timeslot extends ActiveRecord
         $newTS->end = $day->format('Y-m-d') . ' ' . $model->end_time;
         $newTS->id_timeSlotModel = $model->id;
         $newTS->creation_mode = self::MODEL;
+        $newTS->blocking = $model->blocking;
 
         return $newTS->save();
 
@@ -62,7 +63,8 @@ class Timeslot extends ActiveRecord
     {
         return [
             [['start', 'end'], 'checkConsistency'],
-            [['cost', 'id_timeSlotModel', 'id_simulator', 'creation_mode'], 'integer']
+            [['cost', 'id_timeSlotModel', 'id_simulator', 'creation_mode'], 'integer'],
+            [['blocking'], 'boolean']
         ];
     }
 

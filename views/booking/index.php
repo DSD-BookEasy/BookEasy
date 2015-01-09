@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use \app\models\Booking;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a(Yii::t('app', 'Create {modelClass}', [
     'modelClass' => 'Booking',
-]), ['create'], ['class' => 'btn btn-success']) ?>
+]), ['site/index'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -35,6 +36,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        //parse the enumeration of status in its string value
+        //this is the only way I found to modify the content of a column
+        'beforeRow' => function ($model){
+            $model->status = $model->statusToString();
+        }
     ]); ?>
 
 </div>

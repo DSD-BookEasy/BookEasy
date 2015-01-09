@@ -5,14 +5,13 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TimeslotModel */
-/* @var $weekDays string[] */
 /* @var $simulators app\models\Simulator[]*/
 
 
 $this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Time Slot Model',
+    'modelClass' => 'Time Slot',
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slot Models'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slot Models'), 'url' => 'index'];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="time-slot-model-create">
@@ -21,7 +20,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
-        'weekDays' => $weekDays,
         'simulators' => $simulators
     ]) ?>
 

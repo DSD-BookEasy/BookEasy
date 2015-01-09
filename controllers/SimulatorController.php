@@ -7,9 +7,12 @@ use DateTime;
 use Yii;
 use app\models\Simulator;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
+
 
 
 /**
@@ -25,6 +28,17 @@ class SimulatorController extends Controller
                 'actions' => [
                     'delete' => ['post'],
                 ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index','view','create','update','delete'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['manageSimulator']
+                    ],
+                ],
+
             ],
         ];
     }
@@ -67,8 +81,20 @@ class SimulatorController extends Controller
     {
         $model = new Simulator();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isPost) {
+
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+                $model->uploadFile = UploadedFile::getInstance($model, 'uploadFile');
+
+                // Check whether the user did upload a file and validate to be sure it is an image
+                if ($model->uploadFile && $model->validate()) {
+                    $model->uploadImage();
+                }
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -86,8 +112,30 @@ class SimulatorController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isPost) {
+
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+                if ( Yii::$app->request->post('del_image') ) {
+                    $model->removeImages();
+                }
+
+                $model->uploadFile = UploadedFile::getInstance($model, 'uploadFile');
+
+                // Check whether the user did upload a file and validate to be sure it is an image
+                if ($model->uploadFile && $model->validate()) {
+
+                    // Since we're allowing only one image for simulator, we delete the other ones to keep it clean
+                    if ( $model->getImage() ) {
+                        $model->removeImages();
+                    }
+
+                    $model->uploadImage();
+                }
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -117,7 +165,6 @@ class SimulatorController extends Controller
      */
     public function actionAgenda()
     {
-        $model= new Simulator;
 
         $simId = \Yii::$app->request->get("id");
 
@@ -129,20 +176,23 @@ class SimulatorController extends Controller
 
         if (empty($week) || !strtotime($week)) {
             // If the week is not set (properly), it's the today's one
-            $week = date("Y\WW");
+            $week = date(DateTime::ISO8601);
         }
 
-        // Initialize the week
-        //if i change the date through the datepicker
-        //TODO avoid using POST
+        // Set the current week
         $currWeek = new DateTime($week);
-        // and the week before the current one
-        $prevWeek = clone $currWeek;
-        $prevWeek->modify("previous week");
+        $currWeek->modify('Thursday this week');
 
-        // and the week after the current one
+        // and the week before it
+        $prevWeek = clone $currWeek;
+        $prevWeek->modify("previous Thursday");
+
+        // and the week after it
         $nextWeek = clone $currWeek;
-        $nextWeek->modify("next week + 6 days"); //getting the last day to fix last week of the year problem (53rd week)
+        $nextWeek->modify("next Thursday");
+        // Why are we using all this Thursdays? This is caused by ISO8601's definition of the first week of the year
+        // ("the week with the year's first Thursday in it") and should solve bugs related to the transition between years
+
 
         $weekBorders = $this->findWeekBorders($currWeek);
 
@@ -151,13 +201,20 @@ class SimulatorController extends Controller
         where(['id_simulator' => $simId])->
         andWhere(['>=', 'start', $weekBorders['first']->format("c")])->
         andWhere(['<=', 'end', $weekBorders['last']->format("c")])->all();
+
+        // Find simulators
+        $simulators = new ActiveDataProvider([
+            'query' => \app\models\Simulator::find(),
+        ]);
        //
         return $this->render('agenda', [
-            'currWeek' => $currWeek,
+            'week' => $currWeek,
+            'currWeek' => $currWeek->format("Y\WW"),
             'prevWeek' => $prevWeek->format("Y\WW"),
             'nextWeek' => $nextWeek->format("Y\WW"),
             'slots' => $slots,
             'simulator' => $this->findModel($simId),
+            'simulators' => $simulators->getModels(),
         ]);
 
 

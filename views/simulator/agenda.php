@@ -5,250 +5,253 @@ use kartik\date\DatePicker;
 use yii\helpers\Html;
 use talma\widgets\FullCalendar;
 use yii\helpers\Url;
+use app\models\Parameter;
 
 
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-/* @var $week string */
+/* @var $week DateTime */
 /* @var $slots array */
 /* @var $simulator integer */
-/* @var $currWeek DateTime */
+/* @var $currWeek string */
 /* @var $prevWeek string */
 /* @var $nextWeek string */
 /* @var $simulator Simulator */
-/* @var $model app\models\DatePicker */
+/* @var $simulators app\models\Simulator[] */
 
-$price = $simulator->getAttribute("price_simulation");
-$duration = $simulator->getAttribute("flight_duration");
-$this->title = Yii::t('app', "{simulator}'s agenda", [
-    'simulator' => $simulator->getAttribute("name")
-]);
-
+$price = $simulator->price_simulation;
+$duration = $simulator->flight_duration;
 ?>
-
-
     <div class="simulator-availability">
-    <h1><?= Html::encode($this->title) ?></h1>
+        <h1>
+            <?= Html::encode(Yii::t('app', "{simulator}", ['simulator' => $simulator->name])) ?>
+        </h1>
 
-    <p><?= \Yii::t('app', 'Click on a timeslot to make a booking'); ?></p>
-    <p><?= \Yii::t('app', 'Click on an empty spot in the calendar to send a request for a special booking'); ?></p>
+        <p class="lead">
+            <?= $simulator->description ?>
+        </p>
 
-    <div id="calendar_buttons">
-        <a href="<?= Url::to([
-                'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
-                'week' => $prevWeek
-            ]) ?>"  class="btn btn-default">
-                <span class="glyphicon glyphicon-chevron-left"></span>
-                <?= \Yii::t('app', "Previous week"); ?>
-            </a>
+        <p>
+            <?= Html::ul([
+                Yii::t('app',
+                    'Click on an available time slot to book this simulator inside the regular opening hours of the museum.'),
+                Yii::t('app',
+                    'Click on an empty spot in the calendar to make a request for a booking outside the opening hours or hold and drag to request a longer time span.'),
+                Yii::t('app',
+                    'Keep in mind, that bookings outside of the regular opening hours have to be confirmed by the museum.'),
+            ]) ?>
+        </p>
 
-        <a href="<?= Url::to([
-                'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
-            ]) ?>" class="btn btn-default">
-                <?= \Yii::t('app', "Today"); ?>
-            </a>
+        <div class="row text-center">
+            <!-- Shows a selection of all available simulators. -->
+            <?php foreach ($simulators as $simulator_model) { ?>
+                <!-- The simulators will be aligned in a column with width 2 of 12. Alignment seems to work fine this way. -->
+                <div class="align-simulator"> <!--class="col-md-2"-->
+                    <!-- Create a click able picture linked to the corresponding simulators agenda. -->
+                    <p>
+                        <a href="<?= Url::to([
+                            '/simulator/agenda',
+                            'id' => $simulator_model->id,
+                            'week' => $currWeek
+                        ]); ?>">
+                            <?php
+                            if ($simulator_model->getImage()) {
+                                echo Html::img('@web/' . $simulator_model->getImage()->getPath('125x'),
+                                    ['alt' => Yii::t('app', 'Simulator image')]);
+                            } else {
+                                echo Html::img('http://placehold.it/125',
+                                    ['alt' => Yii::t('app', 'Simulator image')]);
+                            }
+                            ?>
+                        </a>
+                    </p>
 
-        <a href="<?= Url::to([
-                'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
-                'week' => $nextWeek
-            ]) ?>" class="btn btn-default">
-                <?= \Yii::t('app', "Next week"); ?>
-                <span class="glyphicon glyphicon-chevron-right"></span>
-            </a>
+                    <!-- Display the simulators name -->
+                    <h4>
+                        <?= $simulator_model->getAttribute("name") ?>
+                    </h4>
+                </div>
+            <?php } ?>
+        </div>
 
-    </div>
 
-    <div id="cal_datepicker" class="row">
-        <div id="calendar" class="col-md-10">
-            <?php
-            $businessHours = [//TODO Make these dynamic
-                'start' => '8:00',
-                'end' => '19:00'
-            ];
-
-            /**
-             * We will use this to track the interval of hours to show in the calendar
-             * Initially it will be equal to the business hours, but if there are explicit
-             * timeslots exceeding it, we should make space for them too
-             */
-            $borders = $businessHours;
-
-            $events = [
-                [//Show Business Hours.
-                    'start' => $businessHours['start'],
-                    'end' => $businessHours['end'],
-                    'dow' => [0, 1, 2, 3, 4, 5, 6],
-                    'rendering' => 'inverse-background',
-                    'className' => 'closed'
-                ]
-            ];
-            //Populate calendar events with timeslots
-            foreach ($slots as $s) {
-                $a = [
-                    'start' => $s->start,
-                    'end' => $s->end,
-                    'id' => $s->id
+        <div style="position: relative">
+            <div id="calendar" style="padding-top: 110px;">
+                <?php
+                $businessHours = [
+                    'start' => Parameter::getValue('businessTimeStart'),
+                    'end' => Parameter::getValue('businessTimeEnd')
                 ];
-                if ($s->id_booking != null) {
-                    $a['title'] = \Yii::t('app', 'Unavailable');
-                    $a['className'] = 'unavailable';
-                } else {
-                    $a['title'] = \Yii::t('app', 'Available');
-                    $a['className'] = 'available';
-                }
-                checkBorders($borders, $s->start, $s->end);
-                $events[] = $a;
-            }
 
-            $bookUrl = Url::to(['booking/create', 'timeslots[]' => '']);
-            $bookUrlWeekday = Url::to(['booking/create-weekdays']);
+                /**
+                 * We will use this to track the interval of hours to show in the calendar
+                 * Initially it will be equal to the business hours, but if there are explicit
+                 * timeslots exceeding it, we should make space for them too
+                 */
+                $borders = $businessHours;
 
-            echo FullCalendar::widget([
-                'config' => [
-                    'header' => [
-                        'left' => '',
-                        'center' => 'title',
-                        'right' => ''
-                    ],
-                    'aspectRatio' => '2',
-                    'defaultView' => 'agendaWeek',
-                    'scrollTime' => '08:00:00',
-                    'editable' => false,
-                    'firstDay' => 1,
-                    'allDaySlot' => false,
-                    'defaultDate' => $currWeek->format("c"),
-                    'events' => $events,
-                    'eventRender' => new \yii\web\JsExpression('slotBooking'),
-                    //Features for booking during weekdays
-                    'selectable' => true,
-                    'selectOverlap' => new \yii\web\JsExpression("function(event)
-                {
-                    return (event.rendering === 'background' || event.rendering === 'inverse-background');
-                }"),
-                    'selectConstraint' => [
+                $events = [
+                    [//Show Business Hours.
                         'start' => $businessHours['start'],
                         'end' => $businessHours['end'],
-                        'dow' => [0, 1, 2, 3, 4, 5, 6]
+                        'dow' => [0, 1, 2, 3, 4, 5, 6],
+                        'rendering' => 'inverse-background',
+                        'className' => 'closedSlot'
+                    ]
+                ];
+                $nowDate = new DateTime('now');
+                //Populate calendar events with timeslots
+                foreach ($slots as $slot) {
+                    $event = [
+                        'start' => $slot->start,
+                        'end' => $slot->end,
+                        'id' => $slot->id
+                    ];
+                    if ($slot->id_booking != null) {
+                        $event['title'] = \Yii::t('app', 'Unavailable');
+                        $event['className'] = 'unavailable';
+                    } else {
+                        $event['title'] = \Yii::t('app', 'Available');
+                        $event['className'] = 'available';
+                    }
+
+                    if ($slot->blocking) {
+                        $event['title'] = \Yii::t('app', 'Closed');
+                        $event['className'] = 'closedSlot';
+                    }
+
+                    $startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $slot->start);
+                    if ($startDate < $nowDate) {
+                        $event['className'] = "passedSlot";
+                    }
+                    checkBorders($borders, $slot->start, $slot->end);
+                    $events[] = $event;
+                }
+
+                $bookUrl = Url::to(['/booking/create', 'timeslots[]' => '']);
+
+                echo FullCalendar::widget([
+                    'config' => [
+                        'header' => [
+                            'left' => '',
+                            'center' => 'title',
+                            'right' => ''
+                        ],
+                        'aspectRatio' => '2.45',
+                        'defaultView' => 'agendaWeek',
+                        'scrollTime' => '08:00:00',
+                        'editable' => false,
+                        'firstDay' => 1,
+                        'allDaySlot' => false,
+                        'defaultDate' => $week->format("c"),
+                        'events' => $events,
+                        'eventRender' => new \yii\web\JsExpression('slotBooking'),
+                        'minTime' => $borders['start'],
+                        'maxTime' => $borders['end']
+                    ]
+                ]); ?>
+                <div class="alert alert-info">
+                    <?= Html::tag('p', Yii::t('app', "{click}", [
+                        'click' => Html::a(Yii::t('app',
+                            'An alternative way to create a booking is by clicking here. (Recommended for mobile devices)'),
+                            ['booking/create-weekdays', 'simulator' => $simulator->id])
+                    ])) ?>
+                </div>
+            </div>
+            <div id="calendar_tools">
+                <div id="calendar_buttons">
+                    <?php
+                    echo Html::a(
+                        Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-left']),
+                        ['agenda', 'id' => $simulator->id, 'week' => $prevWeek],
+                        ['class' => 'btn btn-default']);
+
+                    echo Html::a(
+                        Yii::t('app', "This Week"),
+                        ['agenda', 'id' => $simulator->id],
+                        ['class' => 'btn btn-default']);
+
+                    echo Html::a(
+                        Html::tag('span', '', ['class' => 'glyphicon glyphicon-chevron-right']),
+                        ['agenda', 'id' => $simulator->id, 'week' => $nextWeek],
+                        ['class' => 'btn btn-default']);
+                    ?>
+                </div>
+                <?php
+                $agenda_url = Url::to([
+                    'agenda',
+                    'id' => $simulator->id,
+                ]);
+                echo DatePicker::widget([
+                    'name' => 'dp_1',
+                    'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                    'options' => ['placeholder' => \Yii::t('app', "Pick a date ") . 'mm/dd/yyyy'],
+                    'pluginOptions' => [
+                        'todayHighlight' => true,
+                        'todayBtn' => true,
+                        'weekStart' => '1',
+                        'startDate' => 'today',
                     ],
-                    'minTime' => $borders['start'],
-                    'maxTime' => $borders['end'],
-                    'select' => new \yii\web\JsExpression("goToCreateWeekdays")
-                ]
-            ]); ?>
+                    'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
+
+                ]);
+                ?>
+            </div>
         </div>
-        <div id="datepicker" class="col-md-2">
-
-            <label><?= \Yii::t('app', "Pick a date"); ?></label>
-            <?php
-            $agenda_url = Url::to([
-                'simulator/agenda',
-                'id' => $simulator->getAttribute("id"),
-            ]);
-            echo DatePicker::widget([
-                'name' => 'dp_1',
-                'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-                'pluginOptions' => [
-                    'todayHighlight' => true,
-                    'todayBtn' => true,
-                    'weekStart' => '1',
-                    'startDate' => 'today',
-
-                ],
-                'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
-
-            ]);
-            ?>
-        </div>
-
     </div>
-</div>
-<script type="text/javascript">
-    Date.prototype.getWeek = function() {
-        var date = new Date(this.getTime());
-        date.setHours(0, 0, 0, 0);
-        // Thursday in current week decides the year.
-        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-        // January 4 is always in week 1.
-        var week1 = new Date(date.getFullYear(), 0, 4);
-        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-        var $result = 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
-        - 3 + (week1.getDay() + 6) % 7) / 7);
 
-        if ( $result < 10 ) {
-            $result = '0' + $result;
-        }
+    <script type="text/javascript">
+        Date.prototype.getWeek = function () {
+            var date = new Date(this.getTime());
+            date.setHours(0, 0, 0, 0);
+            // Thursday in current week decides the year.
+            date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+            // January 4 is always in week 1.
+            var week1 = new Date(date.getFullYear(), 0, 4);
+            // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+            var $result = 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+                - 3 + (week1.getDay() + 6) % 7) / 7);
 
-        return $result;
-    };
+            if ($result < 10) {
+                $result = '0' + $result;
+            }
 
-    // Returns the four-digit year corresponding to the ISO week of the date.
-    Date.prototype.getWeekYear = function() {
-        var date = new Date(this.getTime());
-        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-        return date.getFullYear();
-    };
+            return $result;
+        };
 
-    function slotBooking(event, element) {
-        if (event.rendering != "background" && event.rendering != "inverse-background") {
-            if (element.hasClass("available")) {
-                element.attr("title", "<?=\Yii::t('app',"This timeslot is available. and it costs {price}SEK for {duration} minutes",[
+        // Returns the four-digit year corresponding to the ISO week of the date.
+        Date.prototype.getWeekYear = function () {
+            var date = new Date(this.getTime());
+            date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+            return date.getFullYear();
+        };
+
+        function slotBooking(event, element) {
+            if (event.rendering != "background" && event.rendering != "inverse-background") {
+                if (element.hasClass("passedSlot")) {
+                    element.attr("title", "<?=\Yii::t('app',"This timeslot is expired")?>");
+                    element.tooltip();
+                }
+                else if (element.hasClass("available")) {
+                    element.attr("title", "<?=\Yii::t('app',"This timeslot is available. and it costs {price} kr for {duration} minutes",[
                 'price' => $price,
                 'duration' => $duration
                 ])?>");
 
-                element.tooltip();
-                element.click(function (ev) {
-                    ev.preventDefault();
-                    window.location.href = "<?=$bookUrl?>" + event.id;
-                })
-            }
-            else {
-                element.attr("title", "<?=\Yii::t('app',"This timeslot is already booked. Choose another one, please.")?>");
-                element.tooltip();
+                    element.tooltip();
+                    element.click(function (ev) {
+                        ev.preventDefault();
+                        window.location.href = "<?=$bookUrl?>" + event.id;
+                    })
+                }
+                else {
+                    element.attr("title", "<?=\Yii::t('app',"This timeslot can't be booked. Choose another one, please.")?>");
+                    element.tooltip();
+                }
             }
         }
-    }
-
-    function goToCreateWeekdays(start, end, jsEvent) {
-        var $d = $('#dialog');
-        if ($d.length == 0) {
-            $('body').append('<div id="dialog"></div>');
-            $d = $('#dialog');
-            $d.dialog({
-                modal: true,
-                autoOpen: false
-            });
-        }
-
-        $d.html('<?=\Yii::t('app',"Do you want to send a request for making a special booking for this simulator?") ?><br />\
-        <?= \Yii::t('app',"Starting from")?>: <span class="new_timeslot">' + start.format("d-M-YYYY HH:mm") + '</span> <br />\
-        <?= \Yii::t('app',"Ending")?>: <span class="new_timeslot">' + end.format("d-M-YYYY HH:mm") + '</span>');
-        $d.dialog("option", "buttons", {
-            "<?=\Yii::t('app',"Confirm");?>": function () {
-                window.location.href = '<?=$bookUrlWeekday?>?'
-                + encodeURIComponent('timeslots[0][start]') + '=' + encodeURIComponent(start.format())
-                + '&' + encodeURIComponent('timeslots[0][end]') + '=' + encodeURIComponent(end.format())
-                + '&' + encodeURIComponent('timeslots[0][id_simulator]') + '=' + getSimulatorId();
-            },
-            "<?= \Yii::t('app',"Cancel")?>": function () {
-                $('.fullcalendar').fullCalendar('unselect');
-                $(this).dialog("close");
-            }
-        });
-
-        $d.dialog('open');
-    }
-
-    function getSimulatorId() {
-        var url = window.location.href;
-        var paths = url.split('/');
-        return paths[paths.length - 2];
-    }
-</script>
+    </script>
 <?php
 function checkBorders(&$borders, $start, $end)
 {

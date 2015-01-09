@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $model app\models\simulator */
 
 $this->title = Yii::t('app', 'Add new {modelClass}', [
-    'modelClass' => 'Simulator',
+    'modelClass' => 'simulator',
 ]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Simulators'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
