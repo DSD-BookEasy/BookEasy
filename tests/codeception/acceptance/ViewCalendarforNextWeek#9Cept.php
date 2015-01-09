@@ -5,21 +5,22 @@ $I = new AcceptanceTester($scenario);
 $I->wantTo("test that calendar view works for next week story #9");
 
 $I->amOnPage(Yii::$app->homeUrl);
-$I->see("Choose the simulator you wish to book", "p.lead");
-$I->click("(//a[contains(text(),'Book »')])[2]");
+$I->see("Please choose the simulator you wish to book or return to our website.", "//p");
+$I->click("img[alt=\"Simulator image\"]");
 
 if (method_exists($I, 'wait')) {
     $I->wait(1); // only for selenium
 }
-$I->fillField("#w1", "12/12/2014");
+$date = new \DateTime('next week');
+$dateString = $date->format('m-d-Y');
+$I->fillField("#w1", $dateString);
 
 if (method_exists($I, 'wait')) {
     $I->wait(1); // only for selenium
 }
-$I->see("Dec 8 - 14, 2014", "h2");
-$I->seeLink("Next week");
-$I->click("Next week");
+$I->click("//div[@id='calendar_buttons']/a[3]");
 if (method_exists($I, 'wait')) {
-    $I->wait(1); // only for selenium
+    $I->wait(5); // only for selenium
 }
-$I->see("Dec 15 - 21, 2014", "h2");
+$I->see("Est Simulator");
+$I->seeInCurrentUrl($date->modify('1 week')->format("Y\WW"));
