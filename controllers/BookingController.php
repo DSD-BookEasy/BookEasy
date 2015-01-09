@@ -285,12 +285,14 @@ class BookingController extends Controller
             //a booking in opening hours is automatically confirmed
             $booking->status = Booking::CONFIRMED;
             //instructor id comes as a string, convert it to int
-            $ins = Yii::$app->request->post()['Booking']['assigned_instructor'];
-            $ins_id = null;
-            if ($ins != null) {
-                $ins_id = (int)$ins;
+            if (array_key_exists('assigned_instructor', Yii::$app->request->post()['Booking'])) {
+                $ins = Yii::$app->request->post()['Booking']['assigned_instructor'];
+                $ins_id = null;
+                if ($ins != null) {
+                    $ins_id = (int)$ins;
+                }
+                $booking->assigned_instructor = $ins_id;
             }
-            $booking->assigned_instructor = $ins_id;
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $booking;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = false;
 
@@ -416,7 +418,7 @@ class BookingController extends Controller
 
             foreach ($timeSlots as $slot) {
                 $slot->id_booking = $booking->id;
-                if(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]){
+                if (Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]) {
                     $slot->creation_mode = Timeslot::WEEKDAYS;
                 }
                 if (!$slot->save()) {
@@ -424,17 +426,17 @@ class BookingController extends Controller
                 }
             }
 
-            $transaction->commit();
-
-            if(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]){
+            if (Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]) {
                 $this->notifyCoordinators($booking);
             }
 
-            $this->notifyCostumer($booking);
+            $this->notifyCostumer($booking, $timeSlots);
 
             unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
+
+            $transaction->commit();
             return $this->redirect(['view', 'id' => $booking->id, 'token' => $booking->token]);
         } catch (ErrorException $e) {
             $transaction->rollBack();
@@ -564,14 +566,13 @@ class BookingController extends Controller
      */
     protected function findModelForSearch($model_input)
     {
-        if(Yii::$app->user->can('manageBookings')){
+        if (Yii::$app->user->can('manageBookings')) {
             $query = Booking::find()
                 ->where([
                     'name' => $model_input->name,
                     'surname' => $model_input->surname,
                 ]);
-        }
-        else {
+        } else {
             $query = Booking::find()
                 ->where([
                     'name' => $model_input->name,
@@ -599,10 +600,15 @@ class BookingController extends Controller
             ->send();
     }
 
-    private function notifyCostumer($booking){
-        if($booking->email != null){
-            Yii::$app->mailer->compose(['html' => 'booking/costumer_booking_html', 'text' => 'booking/costumer_booking_text'], [
-                'id' => $booking->id,
+    private function notifyCostumer($booking, $timeSlots)
+    {
+        if ($booking->email != null) {
+            Yii::$app->mailer->compose([
+                'html' => 'booking/costumer_booking_html',
+                'text' => 'booking/costumer_booking_text'
+            ], [
+                'booking' => $booking,
+                'timeSlots' => $timeSlots,
             ])
                 ->setFrom(\Yii::$app->params['adminEmail'])
                 ->setTo($booking->email)

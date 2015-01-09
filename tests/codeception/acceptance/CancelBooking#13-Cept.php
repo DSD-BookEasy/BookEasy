@@ -10,11 +10,13 @@ $populatePage->populate();
 
 $I->amOnPage(Yii::$app->homeUrl);
 $I->see('Choose the simulator you wish to book');
-$I->seeLink('Look for a Booking');
-$I->click('Look for a Booking');
+$I->seeLink('Search Booking');
+$I->click('Search Booking');
 $I->seeInCurrentUrl('booking/search');
 $booking = Booking::find()->one();
-$I->fillField("#booking-id", $booking->{'id'});
+$I->fillField("#booking-name", $booking->{'name'});
+$I->fillField("#booking-surname", $booking->{'surname'});
+$I->fillField("#booking-token", $booking->{'token'});
 $I->click("button[type=\"submit\"]");
 if (method_exists($I, 'wait')) {
     $I->wait(2); // only for selenium
@@ -27,10 +29,12 @@ if (method_exists($I, 'acceptPopup')) {
     $I->acceptPopup();
 }
 $I->amOnPage(Yii::$app->homeUrl);
-$I->click('Look for a Booking');
-$I->fillField("#booking-id", $booking->{'id'});
+$I->click('Search Booking');
+$I->fillField("#booking-name", $booking->{'name'});
+$I->fillField("#booking-surname", $booking->{'surname'});
+$I->fillField("#booking-token", $booking->{'token'});
 $I->click("button[type=\"submit\"]");
 if (method_exists($I, 'wait')) {
     $I->wait(2); // only for selenium
 }
-$I->see('The requested page does not exist');
+$I->see('Incorrect input');
