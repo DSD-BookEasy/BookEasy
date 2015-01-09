@@ -2,8 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use \talma\widgets\FullCalendar;
-use \yii\helpers\Url;
 use kartik\datetime\DateTimePicker;
 
 
@@ -86,8 +84,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <p><br></p>
         </div>
 
-    <?php
-    echo Html::label(Yii::t('app','Below you can see the availability of the chosen simulator').':');
+<!-- The calendar to show the booked timeslots around the selected date is currently disabled, because it's not working properly and fixing it would require to much effort at the moment   --><?php
+/*    echo Html::label(Yii::t('app','Below you can see the availability of the chosen simulator').':');
     echo FullCalendar::widget([
         'config' => [
             'header' => [
@@ -106,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'eventRender' => new \yii\web\JsExpression('calendarAddTimespan')
         ]
     ]);
-    ?>
+    */?>
     </fieldset>
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'),
