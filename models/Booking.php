@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\base\ErrorException;
 
+
 /**
  * This is the model class for table "booking".
  *
@@ -49,6 +50,7 @@ class Booking extends \yii\db\ActiveRecord
             [['name', 'surname', 'telephone', 'email', 'address'], 'string', 'max' => 255],
             [['comments'], 'string', 'max' => 255],
             ['email', 'email'],
+            ['telephone','number', 'message'=>'The phone number must contain only number'],
             [['name', 'surname', 'email'], 'required'],
             [['token'], 'required', 'on' => ['search'], 'strict' => $searchWithoutToken]
 
@@ -58,6 +60,9 @@ class Booking extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
+
+
+
     public function attributeLabels()
     {
         return [
