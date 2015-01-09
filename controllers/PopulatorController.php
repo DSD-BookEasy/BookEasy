@@ -197,7 +197,7 @@ class PopulatorController extends \yii\web\Controller
         $time_slot->start = $oldDate->format($format_string);
         $time_slot->end = $oldDate->add($interval)->format($format_string);
         $time_slot->cost = rand(100, 999);
-        $time_slot->id_simulator = array_values($simulators_ids)[rand(0, count($simulators_ids) - 1)];
+        $time_slot->id_simulator = 1;
         $time_slot->id_booking = $val;
         $time_slot->save();
         //1) sunday bookings

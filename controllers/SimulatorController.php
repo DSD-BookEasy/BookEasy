@@ -181,7 +181,7 @@ class SimulatorController extends Controller
 
         // Set the current week
         $currWeek = new DateTime($week);
-        $currWeek->modify('Thursday');
+        $currWeek->modify('Thursday this week');
 
         // and the week before it
         $prevWeek = clone $currWeek;
