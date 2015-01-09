@@ -266,11 +266,14 @@ class BookingController extends Controller
             // Retrieve time slots from the database with the given IDs
             $timeSlots = Timeslot::findAll($timeSlotIDs);
 
+            // Keep the timeslots ordered chronologically
+            usort($timeSlots, array($this, 'compTimeslots'));
+
             // Save time slots to the session
             $this->saveTimeSlotsToSession($timeSlots);
         }
 
-        // Retrieve time slots from current sesscion
+        // Retrieve time slots from current session
         $sessionTimeSlots = Yii::$app->session->get(self::SESSION_PARAMETER_TIME_SLOT);
 
         if (empty($sessionTimeSlots)) {
@@ -302,14 +305,22 @@ class BookingController extends Controller
             $me = Staff::findOne(\Yii::$app->user->id);
             $instructors = array();
             $staff = Staff::find()->all();
+
             foreach ($staff as $s) {
                 if (\Yii::$app->authManager->checkAccess($s->id, 'assignedToBooking')) {
                     $instructors[$s->id] = $s->name . ' ' . $s->surname;
                 }
             }
+
+            // Get the last timeslot
+            $lastTimeslot = end((array_values($sessionTimeSlots)));
+            // and its next contiguous
+            $nextTimeslot = $lastTimeslot->nextTimeslot();
+
             return $this->render('create', [
                 'model' => $booking,
                 'timeslots' => $sessionTimeSlots,
+                'nextTimeslot' => $nextTimeslot,
                 'entry_fee' => Parameter::getValue('entryFee', 80),
                 'me' => $me,
                 'instructors' => $instructors
@@ -506,6 +517,18 @@ class BookingController extends Controller
         }
 
         return $isValid;
+    }
+
+    /**
+     * A comparison function for timeslots to be used with usort
+     * @param Timeslot $a
+     * @param Timeslot $b
+     * @return int less than or greater than zero if the starting time of the first timeslot respectively precedes
+     * or succeeds the second timeslot's one
+     */
+    private function compTimeslots($a, $b)
+    {
+        return strtotime($a->start) - strtotime($b->start);
     }
 
     /**
