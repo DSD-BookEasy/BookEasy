@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo("assigToMeCept");
+$I->wantTo("assign a instructor or themself to a booking");
 $I->amOnPage("/index-test.php");
 $I->click("Login");
 $I->fillField("#staff-user_name", "mercedes26");

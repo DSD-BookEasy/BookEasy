@@ -3,7 +3,7 @@
 
 $I = new AcceptanceTester($scenario);
 
-$I->wantTo("insertBooking");
+$I->wantTo("show info of booking");
         $I->amOnPage("/index-test.php/");
         $I->click("(//a[contains(text(),'Book »')])[2]");
         $I->click("//div[@id='w0']/div[2]/div/table/tbody/tr/td/div/div/div[3]/table/tbody/tr/td[8]/div/a[6]/div");

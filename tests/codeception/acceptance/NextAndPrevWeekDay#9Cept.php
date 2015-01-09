@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo("provaCept");
+$I->wantTo("select the next and prev week using button");
 $I->amOnPage("/index-test.php");
 $I->wait(1);
 $I->click("(//a[contains(text(),'Book »')])[2]");

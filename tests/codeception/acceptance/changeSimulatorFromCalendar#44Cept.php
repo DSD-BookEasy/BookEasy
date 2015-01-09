@@ -3,7 +3,7 @@
 
 $I = new AcceptanceTester($scenario);
 
-$I->wantTo("insertBooking");
+$I->wantTo("change simulator from calendar view");
 $I->amOnPage("/index-test.php/");
 $I->click("(//a[contains(text(),'Book »')])[2]");
 $I->wait(2);

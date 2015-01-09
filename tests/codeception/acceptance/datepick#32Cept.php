@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo("datepick");
+$I->wantTo("pick a date from datepicker");
 $I->amOnPage("/index-test.php");
 $I->click("(//a[contains(text(),'Book »')])[2]");
 $I->wait(2);

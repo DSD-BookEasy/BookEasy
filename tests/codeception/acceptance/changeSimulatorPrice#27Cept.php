@@ -1,6 +1,6 @@
 <?php
 $I = new AcceptanceTester($scenario);
-$I->wantTo("changePrice");
+$I->wantTo("changePrice of simulatore");
 $I->amOnPage("/index-test.php");
 $I->click("Login");
 $I->fillField("#staff-user_name", "admin");
