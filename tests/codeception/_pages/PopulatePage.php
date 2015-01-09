@@ -25,14 +25,14 @@ class PopulatePage extends BasePage
         //specific to selenium
         if (method_exists($this->actor, 'acceptPopup')) {
             $this->actor->acceptPopup();
-            $this->actor->wait(5);
+            $this->actor->wait(2);
         }
         $this->actor->fillField("#staff-user_name", "admin");
         $this->actor->fillField("#staff-plain_password", "123456789");
         $this->actor->fillField("#staff-repeat_password", "123456789");
         $this->actor->click('Click me once');
         if (method_exists($this->actor, 'wait')) {
-            $this->actor->wait(10); // only for selenium
+            $this->actor->wait(5); // only for selenium
         }
     }
 }
