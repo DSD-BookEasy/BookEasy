@@ -179,5 +179,16 @@ class Timeslot extends ActiveRecord
         return false;
     }
 
+    /**
+     * @return Timeslot the next adjacent Timeslot
+     */
+    public function nextTimeslot() {
+
+        return self::find()
+            ->where(['id_simulator' => $this->id_simulator])
+            ->andWhere(['=', 'start', $this->end])
+            ->one();
+
+    }
 
 }
