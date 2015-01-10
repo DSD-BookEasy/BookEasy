@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\Booking;
 use Yii;
 use yii\base\ErrorException;
 use yii\data\ActiveDataProvider;
@@ -21,14 +22,14 @@ use yii\data\ActiveDataProvider;
  * @property integer $assigned_instructor
  * @property string $token
  */
-class Booking extends \yii\db\ActiveRecord
+class BookingSearch extends Booking
 {
 
     const CONFIRMED = 1;
     const NOT_CONFIRMED = 0;
     const WAITING_FOR_CONFIRMATION = 2;
 
-    public $assigned_instructor_name;
+    public $id;
     /**
      * @inheritdoc
      */
@@ -45,14 +46,7 @@ class Booking extends \yii\db\ActiveRecord
         $searchWithoutToken = Yii::$app->user->can('manageBookings');
         return [
 
-            [['status'], 'integer'],
-            [['timestamp','id','token'], 'safe'],
-            [['name', 'surname', 'telephone', 'email', 'address'], 'string', 'max' => 255],
-            [['comments'], 'string', 'max' => 255],
-            ['email', 'email'],
-            [['name', 'surname', 'email'], 'required'],
-            [['token'], 'required', 'on' => ['search'], 'strict' => $searchWithoutToken]
-
+            [['id'], 'safe'],
         ];
     }
 
@@ -80,11 +74,6 @@ class Booking extends \yii\db\ActiveRecord
     public function getTimeslots() {
         // Booking has_many Timeslot via timeslot.id_booking -> id
         return $this->hasMany(Timeslot::className(), ['id_booking' => 'id']);
-    }
-
-    public function getid() {
-        // Booking has_many Timeslot via timeslot.id_booking -> id
-        return 'id';
     }
 
 
@@ -132,24 +121,35 @@ class Booking extends \yii\db\ActiveRecord
     }
     */
 
-    public function search($params) {
+    public function search() {
         $query = Booking::find();
+        $query->joinWith(['id']);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
-           if (!($this->load($params) && $this->validate())) {
-                 return $dataProvider;
-             }
+        /**
+         * Setup your sorting attributes
+         * Note: This is setup before the $this->load($params)
+         * statement below
+         */
+                $dataProvider->setSort([
+                    'attributes' => [
+                        'id',
+                    ]
+                ]);
+
+     //   if (!($this->load($params) && $this->validate())) {
+   //         return $dataProvider;
+   //     }
 
         $query->andFilterWhere([
             'id' => $this->id,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name]);
+      //  $query->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
     }
-
 
 }

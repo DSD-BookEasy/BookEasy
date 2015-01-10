@@ -9,6 +9,7 @@ use app\models\Timeslot;
 use Faker\Provider\DateTime;
 use Yii;
 use app\models\Booking;
+use app\models\BookingSearch;
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\data\ActiveDataProvider;
@@ -72,15 +73,37 @@ class BookingController extends Controller
      * @return mixed
      */
     public function actionIndex()
-    {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Booking::find(),
-        ]);
+/*    {
+    //    $query = Booking::find();
+    //    $dataProvider = new ActiveDataProvider([
+    //        'query' => $query,
+    //    ]);
+
+        $searchModel = new Booking();
+        $params = $searchModel->load(Yii::$app->request->post());
+        $dataProvider = $searchModel->search($params);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }*/
+    {
+    $searchModel = new Booking();
+
+        // Trying to set an initial filter value here
+    $searchModel->id = 1;
+
+    $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+    return $this->render('index', [
+    'searchModel' => $searchModel,
+    'dataProvider' => $dataProvider,
+    ]);
+        // the gridview shows the id filter input value = 1
+        // but grid records are not filtered (no GET request is fired)
     }
+
+
 
 
     /**

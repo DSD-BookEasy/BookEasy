@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use \app\models\Booking;
+use app\models\BookingSearch;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -17,16 +17,21 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a(Yii::t('app', 'Create {modelClass}', [
     'modelClass' => 'Booking',
-]), ['site/index'], ['class' => 'btn btn-success']) ?>
+]), ['site/index'], ['class' => 'btn btn-success']);
+        echo "hallo";
+       ?>
     </p>
 
-    <?= GridView::widget([
+    <?= /** @var BookingSearch $searchModel */
+    GridView::widget([
         'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
             'status',
+            'assigned_instructor',
             'timestamp',
             'name',
             'surname',
