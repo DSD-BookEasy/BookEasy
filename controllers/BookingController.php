@@ -212,6 +212,7 @@ class BookingController extends Controller
         //render the view page for anonymous user
         return $this->render('view', [
             'model' => $booking,
+            'flight_price' => $this->sumTimeslotsCost($booking->timeslots),
             'entry_fee' => Parameter::getValue('entryFee', 80)
         ]);
     }
@@ -232,10 +233,13 @@ class BookingController extends Controller
      */
     public function actionSummarizeBooking()
     {
+        $booking = Yii::$app->session[self::SESSION_PARAMETER_BOOKING];
+        $timeslots = Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT];
+
         return $this->render('summarize', [
-            'model' => Yii::$app->session[self::SESSION_PARAMETER_BOOKING],
-            'timeSlots' => Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT],
-            'simulator_fee' => $this->calculateSimulatorPrice(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]),
+            'model' => $booking,
+            'timeSlots' => $timeslots,
+            'flight_price' => $this->sumTimeslotsCost($timeslots),
             'entry_fee' => Parameter::getValue('entryFee', 80)
         ]);
     }
@@ -321,6 +325,7 @@ class BookingController extends Controller
                 'model' => $booking,
                 'timeslots' => $sessionTimeSlots,
                 'nextTimeslot' => $nextTimeslot,
+                'flight_price' => $this->sumTimeslotsCost($sessionTimeSlots),
                 'entry_fee' => Parameter::getValue('entryFee', 80),
                 'me' => $me,
                 'instructors' => $instructors
@@ -518,6 +523,25 @@ class BookingController extends Controller
 
         return $isValid;
     }
+
+    /**
+     * Calculates the total cost of multiple Timeslots
+     * NOTE: it doesn't include entry fees or any other fee unrelated to the cost of the simulation
+     * @param Timeslot[] $timeslots
+     * @return int total cost of the simulations
+     */
+    public static function sumTimeslotsCost($timeslots)
+    {
+        $simulationFee = 0;
+
+        foreach ($timeslots as $timeslot) {
+            // Add to the price of the simulation
+            $simulationFee += $timeslot->calculateCost();
+        }
+
+        return $simulationFee;
+    }
+
 
     /**
      * A comparison function for timeslots to be used with usort

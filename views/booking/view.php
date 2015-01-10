@@ -7,6 +7,7 @@ use app\models\Booking;
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
 /* @var $entry_fee integer */
+/* @var $flight_price integer */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -24,14 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::encode(Yii::t('app', "Please write down this key. You will need it when you want to alter the booking later.
         You will also receive an email confirmation from us (hopefully implemented by now).")) ?>
     <p>
-    <?php
-        $flight_price = 0;
-        $timeSlots = $model->timeslots;
-
-        foreach ($timeSlots as $slot) {
-            $flight_price += $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation;
-        }
-    ?>
 
     <?= Html::tag('div',
 
@@ -70,6 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     ]) ?>
 
+    <div class="row">
     <?php
 
         foreach($timeSlots as $slot){
@@ -81,11 +75,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($slot->start)),
                     Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($slot->end)),
                     Yii::t('app','Flight Simulation: {0, number} kr', $slot->cost > 0 ? $slot->cost : $slot->simulator->price_simulation)
-                ])
+                ]),
+                ['class' => 'col-md-3']
             );
         }
 
     ?>
+    </div>
 
     <div>
         <?php

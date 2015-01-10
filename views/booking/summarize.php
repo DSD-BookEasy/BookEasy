@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
 /* @var $entry_fee integer */
-/* @var simulator_fee integer */
+/* @var flight_price integer */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -19,8 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
         Html::ul([
             Yii::t('app', 'Entrance Fee: {0, number} kr', $entry_fee),
-            Yii::t('app', 'Simulator Fee: {0, number} kr', $simulator_fee),
-            Yii::t('app', 'Total Fee: {0, number} kr', $entry_fee + $simulator_fee),
+            Yii::t('app', 'Simulator Fee: {0, number} kr', $flight_price),
+            Yii::t('app', 'Total Fee: {0, number} kr', $entry_fee + $flight_price),
         ])
     );
     ?>
@@ -51,6 +51,8 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     ]) ?>
 
+    <div class="row">
+
     <?php
 
     foreach($timeSlots as $slot){
@@ -61,11 +63,14 @@ $this->params['breadcrumbs'][] = $this->title;
             Html::ul([
                 Yii::t('app','Start: {0, date, medium} {0, time, short}', strtotime($slot->start)),
                 Yii::t('app','End: {0, date, medium} {0, time, short}', strtotime($slot->end))
-            ])
+            ]),
+            ['class' => 'col-md-3']
         );
     }
 
     ?>
+
+    </div>
 
 
     <?=

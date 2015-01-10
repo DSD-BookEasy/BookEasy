@@ -48,6 +48,8 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     ]) ?>
 
+    <div class="row">
+
     <?php
     $timeSlots = $model->timeslots;
     foreach($timeSlots as $slot){
@@ -65,11 +67,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     Url::to(['booking/view', 'id' => $model->id, 'token' => $model->token], true)],
                     ['class' => 'btn btn-primary']).
 
-            "<br></br>"
+            "<br></br>",
+            ['class' => 'col-md-3']
         );
     }
 
     ?>
+    </div>
 
     <div>
         <?php

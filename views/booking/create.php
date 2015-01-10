@@ -6,6 +6,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
 /* @var $entry_fee integer */
+/* @var $flight_price int */
 /* @var $timeslots \app\models\Timeslot[] */
 /* @var $nextTimeslot \app\models\Timeslot */
 /* @var $me app\models\Staff */
@@ -23,13 +24,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p><?= Yii::t('app', 'You are about to book the following simulator:')?></p>
 
-    <?php
-    $flight_price = $timeslots[0]->cost > 0 ? $timeslots[0]->cost : $timeslots[0]->simulator->price_simulation;
-    ?>
-
     <?= Html::ul([
         Yii::t('app', 'Start: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->start)),
-        Yii::t('app', 'End: {0, date, medium} {0, time, short}', strtotime($timeslots[0]->end)),
+        Yii::t('app', 'End: {0, date, medium} {0, time, short}', strtotime($timeslots[count($timeslots)-1]->end)),
         Yii::t('app', 'Entrance: {0, number} kr', $entry_fee),
         Yii::t('app', 'Flight Simulation: {0, number} kr', $flight_price),
         Yii::t('app', 'Total Cost: {0, number} kr', $entry_fee + $flight_price),

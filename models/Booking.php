@@ -29,6 +29,7 @@ class Booking extends \yii\db\ActiveRecord
     const WAITING_FOR_CONFIRMATION = 2;
 
     public $assigned_instructor_name;
+
     /**
      * @inheritdoc
      */
@@ -60,9 +61,6 @@ class Booking extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-
-
-
     public function attributeLabels()
     {
         return [
@@ -112,23 +110,5 @@ class Booking extends \yii\db\ActiveRecord
                 return Yii::t('app', 'Waiting for Confirmation');
         }
     }
-
-
-    /*
-     * old status to string
-    public function statusToString(){
-        switch($this->status){
-            case Booking::CONFIRMED:
-                $this->status = 'Confirmed';
-                break;
-            case Booking::NOT_CONFIRMED:
-                $this->status = 'Not Confirmed';
-                break;
-            case Booking::WAITING_FOR_CONFIRMATION:
-                $this->status = 'Waiting for Confirmation';
-                break;
-        }
-    }
-    */
 
 }
