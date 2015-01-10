@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row">
     <?php
 
-        foreach($timeSlots as $slot){
+        foreach($model->timeslots as $slot){
             echo Html::tag('div',
 
                 Html::tag('h3', $slot->simulator->name) .
