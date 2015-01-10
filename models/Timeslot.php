@@ -191,4 +191,37 @@ class Timeslot extends ActiveRecord
 
     }
 
+    /**
+     * Calculates the simulation cost using the custom cost or the default one taken from the simulator price.
+     * @return int the cost of this timeslot
+     */
+    public function calculateCost()
+    {
+
+        if (!empty($this->cost) && $this->cost > 0) {
+            // If this Timeslot has a cost specifically set for it, return it
+
+            return $this->cost;
+        } else {
+            // Otherwise, calculate its cost using the simulator's price
+
+            // The number of seconds of simulation in the time slot
+            $timeSpanInSeconds = strtotime($this->end) - strtotime($this->start);
+
+            $simulator = $this->simulator;
+
+            // Convert to seconds the default simulator's flight duration
+            // NOTE: Simulator stores time slot length in minutes
+            $simulatorFlightDurationInSecs = $simulator->flight_duration * 60;
+
+            // Number of time slots
+            $numberOfTimeSlots = ceil($timeSpanInSeconds / $simulatorFlightDurationInSecs);
+
+            // Return the price of the simulation
+            return $numberOfTimeSlots * $simulator->price_simulation;
+
+        }
+
+    }
+
 }

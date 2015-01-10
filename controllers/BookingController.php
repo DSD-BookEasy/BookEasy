@@ -313,7 +313,7 @@ class BookingController extends Controller
             }
 
             // Get the last timeslot
-            $lastTimeslot = end((array_values($sessionTimeSlots)));
+            $lastTimeslot = $sessionTimeSlots[count($sessionTimeSlots)-1];
             // and its next contiguous
             $nextTimeslot = $lastTimeslot->nextTimeslot();
 
@@ -529,40 +529,6 @@ class BookingController extends Controller
     private function compTimeslots($a, $b)
     {
         return strtotime($a->start) - strtotime($b->start);
-    }
-
-    /**
-     * @param $timeSlots
-     * @return int
-     */
-    private function calculateSimulatorPrice($timeSlots)
-    {
-        $simulatorFee = 0;
-
-        if (empty($timeSlots) == false) {
-            $timeSlot = $timeSlots[0];
-
-            $startDateInSeconds = strtotime($timeSlot->start);
-            $endDateInSeconds = strtotime($timeSlot->end);
-
-            // Booked time span in milliseconds
-            $timeSpanInMillis = $endDateInSeconds - $startDateInSeconds;
-
-            // Booked simulator
-            $bookedSimulator = $timeSlot->simulator;
-
-            // Price for a single time slot of a simulator
-            // NOTE: Simulator stores time slot length in minutes
-            $initialPricingTimeSpanInSeconds = $bookedSimulator->flight_duration * 60;
-
-            // Total number of booked time slots
-            $numberOfBookedTimeSlots = ceil($timeSpanInMillis / $initialPricingTimeSpanInSeconds);
-
-            // Final simulator price
-            $simulatorFee = $numberOfBookedTimeSlots * $bookedSimulator->price_simulation;
-        }
-
-        return $simulatorFee;
     }
 
 
