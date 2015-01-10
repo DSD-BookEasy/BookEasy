@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'timestamp',
             'name',
             'surname',
+            'assigned_instructor_name',
             // 'telephone',
             // 'email:email',
             // 'address',
@@ -40,6 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
         //this is the only way I found to modify the content of a column
         'beforeRow' => function ($model){
             $model->status = $model->statusToString();
+            $model->assigned_instructor_name = $model->instructorToString();
         }
     ]); ?>
 

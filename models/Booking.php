@@ -113,6 +113,14 @@ class Booking extends \yii\db\ActiveRecord
         }
     }
 
+    public function instructorToString(){
+        if ($this->assigned_instructor != null) {
+            $instructor = Staff::findOne($this->assigned_instructor);
+            return $instructor->name . ' ' . $instructor->surname;
+        } else {
+            return null;
+        }
+    }
 
     /*
      * old status to string
