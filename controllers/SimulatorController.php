@@ -181,6 +181,13 @@ class SimulatorController extends Controller
 
         // Set the current week
         $currWeek = new DateTime($week);
+
+        if ( $currWeek->format('N') == 7 ) {
+            // This is a workaround for a PHP bug that causes it to think that 'Thursday this week' on Sunday means
+            // next week (someone, somewhere (SPOILER ALERT: murica) messed up the first day of the week).
+            $currWeek->modify('yesterday');
+        }
+
         $currWeek->modify('Thursday this week');
 
         // and the week before it
