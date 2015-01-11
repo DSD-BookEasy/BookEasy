@@ -6,7 +6,8 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Booking */
 /* @var $entry_fee integer */
-/* @var simulator_fee integer */
+/* @var $simulator_fee integer */
+/* @var $timeSlots \app\models\Timeslot[] */
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;

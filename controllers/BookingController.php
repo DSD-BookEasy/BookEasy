@@ -359,13 +359,54 @@ class BookingController extends Controller
         $model = new Booking();
         $model->scenario = 'weekdays';
 
+        $ok=true;
+        $tmpSlot=[];
         if ($model->load(Yii::$app->request->post())) {
+            $simId = Yii::$app->request->post('simulator');
+            if (empty($simId) or !is_numeric($simId)) {
+                throw new BadRequestHttpException(Yii::t('app', 'You must specify a valid simulator'));
+            }
+            $s = Simulator::findOne($simId);
+            if (empty($s)) {
+                throw new NotFoundHttpException(Yii::t('app', 'The specifies simulator doesn\'t exist'));
+            }
+
             //a booking in non opening hours has to be confirmed
             $model->status = Booking::WAITING_FOR_CONFIRMATION;
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $model;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
+
+            foreach(Yii::$app->request->post('Timeslot') as $start) {
+                if(!empty($start)) {
+                    try {
+                        $startDate = new \DateTime($start);
+
+                        $slot = new Timeslot();
+                        $slot->start = $start;
+                        $slot->end = $startDate->add(new \DateInterval("PT" . $s->flight_duration . "M"))->format('Y-m-d H:i');
+                        $slot->id_simulator = $simId;
+                        $slot->creation_mode = Timeslot::WEEKDAYS;
+
+                        $tmpSlot[] = $slot;
+                    } catch(Exception $e){
+                        $ok=false;
+                    }
+                }
+            }
+
+            if($ok) {
+                Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT] = $tmpSlot;
+            }
+        }
+
+        if ($ok and Yii::$app->request->isPost) {
             return $this->actionSummarizeBooking();
-        } else {
+        } else{
+            //New Booking, reset session to avoid merging data from previous unended bookings
+            unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
+            unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
+            unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);
+
             $simId = Yii::$app->request->get('simulator');
             if (empty($simId) or !is_numeric($simId)) {
                 throw new BadRequestHttpException(Yii::t('app', 'You must specify a valid simulator'));
@@ -378,7 +419,7 @@ class BookingController extends Controller
             return $this->render('create-weekdays', [
                 'model' => $model,
                 'simulator' => $s,
-                'timeslots' => [new Timeslot()],//TODO add this model handling for error detection
+                'timeslots' => empty($tmpSlot) ? [new Timeslot()] : $tmpSlot,
                 'entry_fee' => Parameter::getValue('entryFee', 80),
                 'businessHours' => [
                     'start' => Parameter::getValue('businessTimeStart'),
@@ -418,9 +459,6 @@ class BookingController extends Controller
 
             foreach ($timeSlots as $slot) {
                 $slot->id_booking = $booking->id;
-                if (Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]) {
-                    $slot->creation_mode = Timeslot::WEEKDAYS;
-                }
                 if (!$slot->save()) {
                     throw new ErrorException();
                 }
