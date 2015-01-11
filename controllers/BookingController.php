@@ -212,6 +212,7 @@ class BookingController extends Controller
         //render the view page for anonymous user
         return $this->render('view', [
             'model' => $booking,
+            'flight_price' => $this->sumTimeslotsCost($booking->timeslots),
             'entry_fee' => Parameter::getValue('entryFee', 80)
         ]);
     }
@@ -232,10 +233,13 @@ class BookingController extends Controller
      */
     public function actionSummarizeBooking()
     {
+        $booking = Yii::$app->session[self::SESSION_PARAMETER_BOOKING];
+        $timeslots = Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT];
+
         return $this->render('summarize', [
-            'model' => Yii::$app->session[self::SESSION_PARAMETER_BOOKING],
-            'timeSlots' => Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT],
-            'simulator_fee' => $this->calculateSimulatorPrice(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]),
+            'model' => $booking,
+            'timeSlots' => $timeslots,
+            'flight_price' => $this->sumTimeslotsCost($timeslots),
             'entry_fee' => Parameter::getValue('entryFee', 80)
         ]);
     }
@@ -266,11 +270,14 @@ class BookingController extends Controller
             // Retrieve time slots from the database with the given IDs
             $timeSlots = Timeslot::findAll($timeSlotIDs);
 
+            // Keep the timeslots ordered chronologically
+            usort($timeSlots, array($this, 'compTimeslots'));
+
             // Save time slots to the session
             $this->saveTimeSlotsToSession($timeSlots);
         }
 
-        // Retrieve time slots from current sesscion
+        // Retrieve time slots from current session
         $sessionTimeSlots = Yii::$app->session->get(self::SESSION_PARAMETER_TIME_SLOT);
 
         if (empty($sessionTimeSlots)) {
@@ -302,14 +309,23 @@ class BookingController extends Controller
             $me = Staff::findOne(\Yii::$app->user->id);
             $instructors = array();
             $staff = Staff::find()->all();
+
             foreach ($staff as $s) {
                 if (\Yii::$app->authManager->checkAccess($s->id, 'assignedToBooking')) {
                     $instructors[$s->id] = $s->name . ' ' . $s->surname;
                 }
             }
+
+            // Get the last timeslot
+            $lastTimeslot = $sessionTimeSlots[count($sessionTimeSlots)-1];
+            // and its next contiguous
+            $nextTimeslot = $lastTimeslot->nextTimeslot();
+
             return $this->render('create', [
                 'model' => $booking,
                 'timeslots' => $sessionTimeSlots,
+                'nextTimeslot' => $nextTimeslot,
+                'flight_price' => $this->sumTimeslotsCost($sessionTimeSlots),
                 'entry_fee' => Parameter::getValue('entryFee', 80),
                 'me' => $me,
                 'instructors' => $instructors
@@ -547,37 +563,34 @@ class BookingController extends Controller
     }
 
     /**
-     * @param $timeSlots
-     * @return int
+     * Calculates the total cost of multiple Timeslots
+     * NOTE: it doesn't include entry fees or any other fee unrelated to the cost of the simulation
+     * @param Timeslot[] $timeslots
+     * @return int total cost of the simulations
      */
-    private function calculateSimulatorPrice($timeSlots)
+    public static function sumTimeslotsCost($timeslots)
     {
-        $simulatorFee = 0;
+        $simulationFee = 0;
 
-        if (empty($timeSlots) == false) {
-            $timeSlot = $timeSlots[0];
-
-            $startDateInSeconds = strtotime($timeSlot->start);
-            $endDateInSeconds = strtotime($timeSlot->end);
-
-            // Booked time span in milliseconds
-            $timeSpanInMillis = $endDateInSeconds - $startDateInSeconds;
-
-            // Booked simulator
-            $bookedSimulator = $timeSlot->simulator;
-
-            // Price for a single time slot of a simulator
-            // NOTE: Simulator stores time slot length in minutes
-            $initialPricingTimeSpanInSeconds = $bookedSimulator->flight_duration * 60;
-
-            // Total number of booked time slots
-            $numberOfBookedTimeSlots = ceil($timeSpanInMillis / $initialPricingTimeSpanInSeconds);
-
-            // Final simulator price
-            $simulatorFee = $numberOfBookedTimeSlots * $bookedSimulator->price_simulation;
+        foreach ($timeslots as $timeslot) {
+            // Add to the price of the simulation
+            $simulationFee += $timeslot->calculateCost();
         }
 
-        return $simulatorFee;
+        return $simulationFee;
+    }
+
+
+    /**
+     * A comparison function for timeslots to be used with usort
+     * @param Timeslot $a
+     * @param Timeslot $b
+     * @return int less than or greater than zero if the starting time of the first timeslot respectively precedes
+     * or succeeds the second timeslot's one
+     */
+    private function compTimeslots($a, $b)
+    {
+        return strtotime($a->start) - strtotime($b->start);
     }
 
 

@@ -17,9 +17,10 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'surname')->textInput() ?>
 
     <?php
-            if(!Yii::$app->user->can('manageBookings')) {
+            // Secret Key is not required for searching when can manageBookings, but without it only a random booking will be found
+            // if(!Yii::$app->user->can('manageBookings')) {
                 echo $form->field($model, 'token')->textInput();
-            };
+           // };
     ?>
 
     <div class="form-group">
