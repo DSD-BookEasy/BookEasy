@@ -27,17 +27,25 @@ $I->click("#loginBtn");
 if (method_exists($I, 'wait')) {
     $I->wait(1); // only for selenium
 }
-$I->see("Logout (admin)");
-$I->click("Bookings");
-$I->click("Booking List");
-$I->see("Waiting for Confirmation", "//div[@id='w0']/table/tbody/tr/td[3]");
+$I->click("b.caret");
+$I->click("Time Slots");
+$I->click("Manage single time slots");
 $I->click("span.glyphicon.glyphicon-eye-open");
-$I->see("Waiting for Confirmation", "td");
-$I->click("Confirm");
-$I->see("Confirmed", "//div[@id='w0']/table/tbody/tr/td[3]");
-$I->click("span.glyphicon.glyphicon-eye-open");
-$I->see("Confirmed", "td");
-
+$I->click("Update");
+$I->fillField("#timeslot-end", "2015-01-05 09:20");
+$I->click("button.btn.btn-primary");
+$I->click("button.btn.btn-primary");
 if (method_exists($I, 'wait')) {
     $I->wait(1); // only for selenium
 }
+$oldDate = new \DateTime('previous Monday');
+$oldDate->setTime(9,20,0);
+$I->see($oldDate->format('Y-m-d H:i:s'), "//tr[3]/td");
+$I->click("(//a[contains(text(),'Time Slots')])[2]");
+$I->click("span.glyphicon.glyphicon-trash");
+if (method_exists($I, 'acceptPopup')) {
+    $I->acceptPopup();
+    $I->wait(2);
+}
+$I->see("2", "//div[@id='w0']/table/tbody/tr/td[2]");
+
