@@ -2,7 +2,7 @@
 use tests\codeception\_pages\PopulatePage;
 
 $I = new AcceptanceTester($scenario);
-$I->wantTo("test that confirm booking works");
+$I->wantTo("test that I can also select a time span outside the opening hours #24");
 
 //$populatePage = PopulatePage::openBy($I);
 //$populatePage->populate();
