@@ -21,6 +21,12 @@ $style_btn = 'background-color: #337ab7;color: #fff;text-decoration: none;displa
     Yii::t('app', 'Hello, {0} <br> we have received your request. Below you can find a summary of your booking:',
         $booking->name), ['style' => 'margin: 0 0 10px;']) ?>
 
+<p style="margin: 0 0 10px;">
+    <?= Yii::t('app', 'Hello, {0}', $booking->name) ?>
+    <br>
+    <?= Yii::t('app', 'we have received your request. Below you can find a summary of your booking:') ?>
+</p>
+
 <table class="table table-striped" style="<?= $style_table ?>">
     <tbody>
     <tr>
@@ -28,24 +34,20 @@ $style_btn = 'background-color: #337ab7;color: #fff;text-decoration: none;displa
         <?= Html::tag('td', $booking->name . ' ' . $booking->surname, ['style' => $style_td_odd]) ?>
     </tr>
     <tr>
-        <?= Html::tag('td', Yii::t('app', 'Status'), ['style' => $style_td_even]) ?>
-        <?= Html::tag('td', $booking->status, ['style' => $style_td_even]) ?>
+        <?= Html::tag('td', Yii::t('app', 'Secret key'), ['style' => $style_td_even]) ?>
+        <?= Html::tag('td', $booking->token, ['style' => $style_td_even]) ?>
     </tr>
     <tr>
-        <?= Html::tag('td', Yii::t('app', 'Secret key'), ['style' => $style_td_odd]) ?>
-        <?= Html::tag('td', $booking->token, ['style' => $style_td_odd]) ?>
+        <?= Html::tag('td', Yii::t('app', 'Flight cost'), ['style' => $style_td_odd]) ?>
+        <?= Html::tag('td', $totalSimulationCost .' kr', ['style' => $style_td_odd]) ?>
     </tr>
     <tr>
-        <?= Html::tag('td', Yii::t('app', 'Flight cost'), ['style' => $style_td_even]) ?>
-        <?= Html::tag('td', $totalSimulationCost .' kr', ['style' => $style_td_even]) ?>
+        <?= Html::tag('td', Yii::t('app', 'Entry fee'), ['style' => $style_td_even]) ?>
+        <?= Html::tag('td', $entryFee .' kr', ['style' => $style_td_even]) ?>
     </tr>
     <tr>
-        <?= Html::tag('td', Yii::t('app', 'Entry fee'), ['style' => $style_td_odd]) ?>
-        <?= Html::tag('td', $entryFee .' kr', ['style' => $style_td_odd]) ?>
-    </tr>
-    <tr>
-        <?= Html::tag('td', Yii::t('app', 'Total cost'), ['style' => $style_td_even]) ?>
-        <?= Html::tag('td', $totalSimulationCost + $entryFee .' kr', ['style' => $style_td_even]) ?>
+        <?= Html::tag('td', Yii::t('app', 'Total cost'), ['style' => $style_td_odd]) ?>
+        <?= Html::tag('td', $totalSimulationCost + $entryFee .' kr', ['style' => $style_td_odd]) ?>
     </tr>
     </tbody>
 </table>
