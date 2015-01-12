@@ -484,7 +484,7 @@ class BookingController extends Controller
                 $this->notifyCoordinators($booking);
             }
 
-            $this->notifyCostumer($booking, $timeSlots);
+            $this->notifyCustomer($booking, $timeSlots);
 
             unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
@@ -651,12 +651,12 @@ class BookingController extends Controller
             ->send();
     }
 
-    private function notifyCostumer($booking, $timeSlots)
+    private function notifyCustomer($booking, $timeSlots)
     {
         if ($booking->email != null) {
             Yii::$app->mailer->compose([
-                'html' => 'booking/costumer_booking_html',
-                'text' => 'booking/costumer_booking_text'
+                'html' => 'booking/customer_booking_html',
+                'text' => 'booking/customer_booking_text'
             ], [
                 'booking' => $booking,
                 'timeSlots' => $timeSlots,
