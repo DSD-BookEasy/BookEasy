@@ -183,20 +183,25 @@ $duration = $simulator->flight_duration;
                     'agenda',
                     'id' => $simulator->id,
                 ]);
-                echo DatePicker::widget([
-                    'name' => 'dp_1',
-                    'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-                    'options' => ['placeholder' => \Yii::t('app', "Pick a date ") . 'mm/dd/yyyy'],
-                    'pluginOptions' => [
-                        'todayHighlight' => true,
-                        'todayBtn' => true,
-                        'weekStart' => '1',
-                        'startDate' => 'today',
-                    ],
-                    'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
-
-                ]);
                 ?>
+
+                <div style="width: 35%">
+                    <?php
+                    echo DatePicker::widget([
+                        'name' => 'dp_1',
+                        'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                        'options' => ['placeholder' => \Yii::t('app', "Pick a date ")],
+                        'pluginOptions' => [
+                            'todayHighlight' => true,
+                            'todayBtn' => true,
+                            'weekStart' => '1',
+                            'startDate' => 'today',
+                        ],
+                        'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
+
+                    ]);
+                    ?>
+                </div>
             </div>
         </div>
     </div>
