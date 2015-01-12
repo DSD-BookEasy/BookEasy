@@ -55,6 +55,7 @@ class TimeslotModel extends ActiveRecord
     {
         return [
             [['start_time', 'end_time'], 'safe'],
+            [['start_validity'], 'required'],
             [['start_validity', 'end_validity'], 'safe'],
             [['generated_until'], 'safe'],
             [['frequency'], 'string'],
