@@ -19,15 +19,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
     <h1><?= Html::encode($this->title) ?></h1>
     <p><?= Yii::t('app',"From here you can change the global parameters of the system")?></p>
 
-    <p>
-        <?php
-        //TODO when we have permissions, this button should be rendered only if user can create parameters
-        ?>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Parameter',
-]), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
