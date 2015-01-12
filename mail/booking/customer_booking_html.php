@@ -78,5 +78,5 @@ foreach ($timeslots as $timeslot) {
 }
 ?>
 <p>
-    <a class="btn btn-primary" href="<?= Url::to(['booking', 'id' => $booking->id, 'token' => $booking->token], true) ?>"><?= Yii::t('app', 'View or cancel') ?></a><?= Yii::t('app', ' your booking on our website') ?>
+    <a class="btn btn-primary" href="<?= Url::to(['view', 'id' => $booking->id, 'token' => $booking->token], true) ?>"><?= Yii::t('app', 'View or cancel') ?></a><?= Yii::t('app', ' your booking on our website') ?>
 </p>
