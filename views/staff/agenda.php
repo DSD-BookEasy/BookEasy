@@ -176,6 +176,7 @@ $this->title = Yii::t('app', "Staff Agenda");
                 </a>
 
             </div>
+            <div style="width: 35%">
             <?php
             $agenda_url = Url::to([
                 '/staff/agenda'
@@ -183,7 +184,7 @@ $this->title = Yii::t('app', "Staff Agenda");
             echo DatePicker::widget([
                 'name' => 'dp_1',
                 'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-                'options' => ['placeholder' => \Yii::t('app', "Pick a date ") . 'mm/dd/yyyy'],
+                'options' => ['placeholder' => \Yii::t('app', "Pick a date ")],
                 'pluginOptions' => [
                     'todayHighlight' => true,
                     'todayBtn' => true,
@@ -193,6 +194,7 @@ $this->title = Yii::t('app', "Staff Agenda");
 
             ]);
             ?>
+            </div>
         </div>
     </div>
     <ul id="colorMap" style="list-style: none; text-align: center">

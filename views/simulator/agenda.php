@@ -190,7 +190,7 @@ $duration = $simulator->flight_duration;
                     echo DatePicker::widget([
                         'name' => 'dp_1',
                         'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-                        'options' => ['placeholder' => \Yii::t('app', "Pick a date ")],
+                        'options' => ['placeholder' => \Yii::t('app', "Pick a date")],
                         'pluginOptions' => [
                             'todayHighlight' => true,
                             'todayBtn' => true,
