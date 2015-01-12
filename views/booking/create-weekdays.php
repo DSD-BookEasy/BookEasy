@@ -13,6 +13,7 @@ use kartik\datetime\DateTimePicker;
 /* @var $simulator app\models\Simulator */
 /* @var $timeslots app\models\Timeslot[] */
 /* @var $businessHours array */
+/* @var $error string */
 
 $this->title = Yii::t('app', 'Request Booking');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
@@ -29,6 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <p><?= Yii::t('app','You are about to send a request for opening the museum for a special visit and a flight simulation.
     Please fill in the following form to continue')?>:</p>
 
+    <?php
+        if(!empty($error)){
+            Html::tag('div',$error,['class' => 'alert alert-danger']);
+        }
+    ?>
+
     <?= Html::ul([
         Yii::t('app','Entrance Fee: {0, number} kr', $entry_fee),
         Yii::t('app','Simulator Fee: {0, number} kr per {duration} minutes.', [$simulator->price_simulation, 'duration' => $simulator->flight_duration]),
@@ -43,7 +50,9 @@ $this->params['breadcrumbs'][] = $this->title;
     echo $this->render('_form', [
         'model' => $model,
         'showAddress' => true,
-        'form' => $form
+        'form' => $form,
+        'instructors' => $instructors,
+        'me' => $me,
     ]);
     ?>
     <fieldset>

@@ -345,33 +345,6 @@ class BookingController extends Controller
      */
     public function actionCreateWeekdays()
     {
-        /*
-        // Check time slot values in the GET-Request
-        $tmpTimeSlots = Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS);
-
-        // Provide an empty array for time slot
-        $timeSlots = [];
-
-        // Create time slots for every GET-Parameter
-        if (empty($tmpTimeSlots) == false) {
-            foreach ($tmpTimeSlots as $key => $value) {
-                $timeSlot = new Timeslot();
-                $timeSlot->load($value, '');
-
-                $timeSlots[] = $timeSlot;
-            }
-        }
-
-        // Save time slots to session
-        $this->saveTimeSlotsToSession($timeSlots);
-
-        // Retrieve time slots from current session
-        $sessionTimeSlots = Yii::$app->session->get(self::SESSION_PARAMETER_TIME_SLOT);
-
-        if (empty($sessionTimeSlots)) {
-            throw new BadRequestHttpException(self::ERROR_MESSAGE_NO_TIME_SLOTS);
-        }
-        */
         $model = new Booking();
 
         $ok=true;
@@ -405,8 +378,14 @@ class BookingController extends Controller
                         $tmpSlot[] = $slot;
                     } catch(Exception $e){
                         $ok=false;
+                        $timeSlotError = Yii::t('app', "You specified an invalid time span");
                     }
                 }
+            }
+
+            if(count($tmpSlot)<=0){
+                $ok=false;
+                $timeSlotError = Yii::t('app', "You must specify at least one time span to book");
             }
 
             if($ok) {
@@ -431,11 +410,24 @@ class BookingController extends Controller
                 throw new NotFoundHttpException(Yii::t('app', 'The specifies simulator doesn\'t exist'));
             }
 
+            $me = Staff::findOne(\Yii::$app->user->id);
+            $instructors = array();
+            $staff = Staff::find()->all();
+
+            foreach ($staff as $user) {
+                if (\Yii::$app->authManager->checkAccess($user->id, 'assignedToBooking')) {
+                    $instructors[$user->id] = $user->name . ' ' . $user->surname;
+                }
+            }
+
             return $this->render('create-weekdays', [
+                'error' => $timeSlotError,
                 'model' => $model,
                 'simulator' => $s,
                 'timeslots' => empty($tmpSlot) ? [new Timeslot()] : $tmpSlot,
                 'entry_fee' => Parameter::getValue('entryFee', 80),
+                'instructors' => $instructors,
+                'me' => $me,
                 'businessHours' => [
                     'start' => Parameter::getValue('businessTimeStart'),
                     'end' => Parameter::getValue('businessTimeEnd')
