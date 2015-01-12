@@ -17,10 +17,6 @@ $style_btn = 'background-color: #337ab7;color: #fff;text-decoration: none;displa
 
 ?>
 
-<?= Html::tag('p',
-    Yii::t('app', 'Hello, {0} <br> we have received your request. Below you can find a summary of your booking:',
-        $booking->name), ['style' => 'margin: 0 0 10px;']) ?>
-
 <p style="margin: 0 0 10px;">
     <?= Yii::t('app', 'Hello, {0}', $booking->name) ?>
     <br>

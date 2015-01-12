@@ -8,44 +8,34 @@ use yii\helpers\Url;
 /* @var $totalSimulationCost integer */
 /* @var $entryFee integer */
 /* @var $timeslots Timeslot[] */
-?>
 
-<?= Yii::t('app', 'Hello, {0} we have received your request. Below you can find a summary of your booking:', $booking->name) ?>
 
-    <?= Yii::t('app', 'Name') .': '. $booking->name . ' ' . $booking->surname ?>
-    <?= "\r\n" ?>
-    <?= Yii::t('app', 'Status') .': '. $booking->status ?>
-    <?= "\r\n" ?>
-    <?= Yii::t('app', 'Secret key') .': '. $booking->token ?>
-    <?= "\r\n" ?>
-    <?= Yii::t('app', 'Flight cost') .': '. $totalSimulationCost .' kr' ?>
-    <?= "\r\n" ?>
-    <?= Yii::t('app', 'Entry fee') .': '. $entryFee .' kr' ?>
-    <?= "\r\n" ?>
-    <?= Yii::t('app', 'Total cost') .': '. ($totalSimulationCost + $entryFee) .' kr' ?>
+echo Yii::t('app', 'Hello, {0}', $booking->name) . "\r\n";
+echo Yii::t('app', 'we have received your request. Below you can find a summary of your booking:') . "\r\n\r\n";
 
-<?= "\r\n\r\n\r\n" ?>
-<?= Yii::t('app', 'Booked simulations') ?>
-<?= "\r\n\r\n\r\n" ?>
+echo Yii::t('app', 'Name') . ': ' . $booking->name . ' ' . $booking->surname . "\r\n";
+echo Yii::t('app', 'Status') . ': ' . $booking->status . "\r\n";
+echo Yii::t('app', 'Secret key') . ': ' . $booking->token . "\r\n";
+echo Yii::t('app', 'Flight cost') . ': ' . $totalSimulationCost . ' kr' . "\r\n";
+echo Yii::t('app', 'Entry fee') . ': ' . $entryFee . ' kr' . "\r\n";
+echo Yii::t('app', 'Total cost') . ': ' . ($totalSimulationCost + $entryFee) . ' kr' . "\r\n";
 
-<?php
+echo "\r\n\r\n";
+echo Yii::t('app', 'Booked simulations') . "\r\n\r\n";
 
 foreach ($timeslots as $timeslot) {
     $simulator = $timeslot->simulator;
-    ?>
-    <?= Yii::t('app', 'Simulator') .': '. $simulator->name ?>
-    <?= "\r\n" ?>
-    <?= Yii::t('app', 'Start') .': '. $timeslot->start ?>
-    <?= "\r\n" ?>
-    <?= Yii::t('app', 'End') .': '. $timeslot->end ?>
-    <?= "\r\n" ?>
-    <?= Yii::t('app', 'Cost') .': '. $timeslot->calculateCost() .' kr' ?>
-    <?= "\r\n\r\n" ?>
-    ---------------
-    <?= "\r\n\r\n" ?>
-<?php
+
+    echo Yii::t('app', 'Simulator') . ': ' . $simulator->name . "\r\n";
+    echo Yii::t('app', 'Start') . ': ' . $timeslot->start . "\r\n";
+    echo Yii::t('app', 'End') . ': ' . $timeslot->end . "\r\n";
+    echo Yii::t('app', 'Cost') . ': ' . $timeslot->calculateCost() . ' kr' . "\r\n";
+
+    echo "\r\n";
+    echo "---------------\r\n";
+    echo "\r\n";
 }
-?>
-<?= "\r\n\r\n" ?>
-<?= Yii::t('app', 'View or cancel your booking on our website: {0}', Url::to(['view', 'id' => $booking->id, 'token' => $booking->token], true)) ?>
+echo "\r\n";
+echo Yii::t('app', 'View or cancel your booking on our website: {0}',
+    Url::to(['view', 'id' => $booking->id, 'token' => $booking->token], true));
 
