@@ -560,7 +560,7 @@ class BookingController extends Controller
      * @param Timeslot[] $timeslots
      * @return int total cost of the simulations
      */
-    public static function sumTimeslotsCost($timeslots)
+    private function sumTimeslotsCost($timeslots)
     {
         $simulationFee = 0;
 
@@ -651,6 +651,8 @@ class BookingController extends Controller
                 'text' => 'booking/customer_booking_text'
             ], [
                 'booking' => $booking,
+                'totalSimulationCost' => $this->sumTimeslotsCost($timeslots),
+                'entryFee' => Parameter::getValue('entryFee', 80),
                 'timeslots' => $timeslots,
             ])
                 ->setFrom(\Yii::$app->params['adminEmail'])

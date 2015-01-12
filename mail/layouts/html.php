@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /* @var $message \yii\mail\MessageInterface the message being composed */
 /* @var $content string main view render result */
 ?>
-<?php $this->beginPage(); Yii::warning('2'); ?>
+<?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,9 +30,20 @@ use yii\helpers\Html;
 </head>
 <body>
     <?php $this->beginBody() ?>
-    <?= $content ?>
-    <p><?= \Yii::t('app',"Best Regards,\nVästerås Flygmuseum Staff")?></p>
+    <div id="container">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <?= Html::tag('h1', Yii::t('app', 'Västerås Flygmuseum Bookings'), ['class' => 'panel-title']) ?>
+            </div>
+
+            <div class="panel-body">
+                <?= $content ?>
+                <p><?= \Yii::t('app', "Best Regards,\nVästerås Flygmuseum Staff") ?></p>
+            </div>
+
+        </div>
+    </div>
     <?php $this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage(); Yii::warning('3'); ?>
+<?php $this->endPage() ?>
