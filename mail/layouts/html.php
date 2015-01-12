@@ -13,8 +13,9 @@ use yii\helpers\Html;
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body style="font-family: 'Helvetica Neue','Helvetica',Arial,sans-serif;font-size: 14px;line-height: 1.42857143;color: #333;background-color: #fafafa;">
+<body style="font-family: 'Helvetica Neue','Helvetica',Arial,sans-serif;font-size: 14px;line-height: 1.42857143;color: #333;">
     <?php $this->beginBody() ?>
+    &nbsp;
     <div style="background-color: #fff;margin: 10px 20px;">
         <div class="panel panel-primary" style="margin-bottom: 20px;background-color: #fff;border: 1px solid transparent;border-radius: 4px;-webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);box-shadow: 0 1px 1px rgba(0,0,0,.05);border-color: #337ab7;">
             <div class="panel-heading" style="padding: 10px 15px;border-bottom: 1px solid transparent;border-top-left-radius: 3px;border-top-right-radius: 3px;color: #fff;background-color: #337ab7;border-color: #337ab7;">
@@ -28,6 +29,7 @@ use yii\helpers\Html;
 
         </div>
     </div>
+    &nbsp;
     <?php $this->endBody() ?>
 </body>
 </html>

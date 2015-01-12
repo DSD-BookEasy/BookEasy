@@ -28,24 +28,24 @@ $style_btn = 'background-color: #337ab7;color: #fff;text-decoration: none;displa
         <?= Html::tag('td', $booking->name . ' ' . $booking->surname, ['style' => $style_td_odd]) ?>
     </tr>
     <tr>
-        <?= Html::tag('td', Yii::t('app', 'Status')) ?>
-        <?= Html::tag('td', $booking->status) ?>
+        <?= Html::tag('td', Yii::t('app', 'Status'), ['style' => $style_td_even]) ?>
+        <?= Html::tag('td', $booking->status, ['style' => $style_td_even]) ?>
     </tr>
     <tr>
         <?= Html::tag('td', Yii::t('app', 'Secret key'), ['style' => $style_td_odd]) ?>
         <?= Html::tag('td', $booking->token, ['style' => $style_td_odd]) ?>
     </tr>
     <tr>
-        <?= Html::tag('td', Yii::t('app', 'Flight cost')) ?>
-        <?= Html::tag('td', $totalSimulationCost .' kr') ?>
+        <?= Html::tag('td', Yii::t('app', 'Flight cost'), ['style' => $style_td_even]) ?>
+        <?= Html::tag('td', $totalSimulationCost .' kr', ['style' => $style_td_even]) ?>
     </tr>
     <tr>
         <?= Html::tag('td', Yii::t('app', 'Entry fee'), ['style' => $style_td_odd]) ?>
         <?= Html::tag('td', $entryFee .' kr', ['style' => $style_td_odd]) ?>
     </tr>
     <tr>
-        <?= Html::tag('td', Yii::t('app', 'Total cost')) ?>
-        <?= Html::tag('td', $totalSimulationCost + $entryFee .' kr') ?>
+        <?= Html::tag('td', Yii::t('app', 'Total cost'), ['style' => $style_td_even]) ?>
+        <?= Html::tag('td', $totalSimulationCost + $entryFee .' kr', ['style' => $style_td_even]) ?>
     </tr>
     </tbody>
 </table>
@@ -64,21 +64,21 @@ foreach ($timeslots as $timeslot) {
             <?= Html::tag('td', $simulator->name, ['style' => $style_td_odd]) ?>
         </tr>
         <tr>
-            <?= Html::tag('td', Yii::t('app', 'Start')) ?>
-            <?= Html::tag('td', $timeslot->start) ?>
+            <?= Html::tag('td', Yii::t('app', 'Start'), ['style' => $style_td_even]) ?>
+            <?= Html::tag('td', $timeslot->start, ['style' => $style_td_even]) ?>
         </tr>
         <tr>
             <?= Html::tag('td', Yii::t('app', 'End'), ['style' => $style_td_odd]) ?>
             <?= Html::tag('td', $timeslot->end, ['style' => $style_td_odd]) ?>
         </tr>
         <tr>
-            <?= Html::tag('td', Yii::t('app', 'Cost')) ?>
-            <?= Html::tag('td', $timeslot->calculateCost() .' kr') ?>
+            <?= Html::tag('td', Yii::t('app', 'Cost'), ['style' => $style_td_even]) ?>
+            <?= Html::tag('td', $timeslot->calculateCost() .' kr', ['style' => $style_td_even]) ?>
         </tr>
         </tbody>
     </table>
 
-    <hr>
+    <hr style="height: 0;margin-top: 20px;margin-bottom: 20px;border: 0;border-top: 1px solid #eee;">
 <?php
 }
 ?>
