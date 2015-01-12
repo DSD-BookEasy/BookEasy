@@ -9,8 +9,8 @@
 echo "Here there are your booking information: \n
 Your Secret key is ". $booking->token . "\n\n
 You have booked the following simulator: \n";
-Yii::info($timeSlots);
-foreach($timeSlots as $slot){
+Yii::info($timeslots);
+foreach($timeslots as $slot){
     //$simulator = $slot->getSimulator();
 
     echo ""." \n

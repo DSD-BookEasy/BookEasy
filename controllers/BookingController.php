@@ -643,7 +643,7 @@ class BookingController extends Controller
             ->send();
     }
 
-    private function notifyCustomer($booking, $timeSlots)
+    private function notifyCustomer($booking, $timeslots)
     {
         if ($booking->email != null) {
             Yii::$app->mailer->compose([
@@ -651,7 +651,7 @@ class BookingController extends Controller
                 'text' => 'booking/customer_booking_text'
             ], [
                 'booking' => $booking,
-                'timeSlots' => $timeSlots,
+                'timeslots' => $timeslots,
             ])
                 ->setFrom(\Yii::$app->params['adminEmail'])
                 ->setTo($booking->email)
