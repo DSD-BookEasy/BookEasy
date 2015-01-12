@@ -373,7 +373,6 @@ class BookingController extends Controller
         }
         */
         $model = new Booking();
-        $model->scenario = 'weekdays';
 
         $ok=true;
         $tmpSlot=[];
