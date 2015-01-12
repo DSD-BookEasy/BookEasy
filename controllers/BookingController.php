@@ -349,6 +349,7 @@ class BookingController extends Controller
 
         $ok=true;
         $tmpSlot=[];
+        $timeSlotError='';
         if ($model->load(Yii::$app->request->post())) {
             $simId = Yii::$app->request->post('simulator');
             if (empty($simId) or !is_numeric($simId)) {
