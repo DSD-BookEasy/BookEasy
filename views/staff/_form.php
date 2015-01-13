@@ -31,6 +31,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($user, 'address')->textInput(['maxlength' => 255]) ?>
 
+    <?= $form->field($user, 'disabled')->checkbox([ 'label' => Yii::t('app', 'Disable account')]) ?>
+
     <?php
     $identity=Yii::$app->user;
     if($identity->can('assignRoles')) {
