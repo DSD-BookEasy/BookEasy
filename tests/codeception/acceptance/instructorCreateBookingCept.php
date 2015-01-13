@@ -15,9 +15,8 @@ $I->click("New Booking");
 $I->wait(1);
 $I->click("(//a[contains(text(),'Book »')])[2]");
 $I->wait(1);
-if(($I->grabTextFrom("h2"))=="Jan 5 - 11, 2015"){
-    $I->click("//div[@id='calendar_buttons']/a[3]");
-}
+
+$I->click("//div[@id='calendar_buttons']/a[3]");
 $I->wait(1);
 
 $I->click("//div[@id='w0']/div[2]/div/table/tbody/tr/td/div/div/div[3]/table/tbody/tr/td[8]/div/a/div");
