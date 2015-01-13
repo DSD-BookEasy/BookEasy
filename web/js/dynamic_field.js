@@ -33,7 +33,12 @@ $(function(){
         ev.preventDefault();
 
         var $t=$(this);
-        var val=new Date($t.val());
+
+        var splitVal = $t.val().split(' ');
+        var splitDate  = splitVal[0].split('-');
+        var splitHour = splitVal[1].split(':');
+
+        var val=new Date(splitDate[0],splitDate[1],splitDate[2],splitHour[0],splitHour[1]);
         //Calculate the moment of the end
         val.setMinutes(val.getMinutes() + simulationDuration);
 
