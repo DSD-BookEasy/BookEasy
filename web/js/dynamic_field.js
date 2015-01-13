@@ -13,7 +13,7 @@ $(function(){
         //Timeslots array indexing management
         var n=/Timeslot\[(\d+)\]/.exec($('input',$copied).first().attr('name'))[1];
         n++;
-        $('input',$copied).first().attr('name','Timeslot[' + n + '][start]');
+        $('input',$copied).first().attr('name','Timeslot[' + n + ']');
 
 
         $copied.append('<div class="col-md-2"><a href="#" class="btn btn-warning glyphicon glyphicon-remove dynamic_remove"></a></div>');//Add the delete button
