@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'telephone',
             'email',
             'address',
-            'disabled'
+            'disabled:boolean'
         ],
     ]) ?>
 
