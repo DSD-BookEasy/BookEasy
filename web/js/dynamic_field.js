@@ -6,7 +6,9 @@ $(function(){
         $('input',$copied).val('');//Empty the fields
         $('.input-group.date',$copied).each(function(){
             $(this).datetimepicker({
-                autoclose: true
+                autoclose: true,
+                startDate: new Date(),
+                minuteStep: 30
             });
         });
 
@@ -54,7 +56,9 @@ $(function(){
     //Enable datetimepicker for initial existing fields
     jQuery('.picker_input').each(function() {
         $(this).parent().datetimepicker({
-            autoclose: true
+            autoclose: true,
+            startDate: new Date(),
+            minuteStep: 30
         });
     });
 });

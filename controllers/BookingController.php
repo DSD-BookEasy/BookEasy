@@ -365,6 +365,7 @@ class BookingController extends Controller
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $model;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
 
+            $today= new \DateTime();
             foreach(Yii::$app->request->post('Timeslot') as $borders) {
                 if(!empty($borders['start'])) {
                     try {
@@ -374,6 +375,16 @@ class BookingController extends Controller
                         } else{
                             $endDate = clone $startDate;
                             $endDate->add(new \DateInterval("PT" . $s->flight_duration . "M"));
+                        }
+
+                        if($startDate<=$today){
+                            $ok = false;
+                            $timeSlotError = Yii::t('app',"The specified time spans cannot be in the past");
+                        }
+
+                        if($endDate<=$startDate){
+                            $ok = false;
+                            $timeSlotError = Yii::t('app',"The ending date of all the time spans must be after its starting time");
                         }
 
                         $slot = new Timeslot();
