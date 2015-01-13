@@ -34,6 +34,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        'beforeRow' => function ($model){
+            $model->id_simulator = $model->simulatorToString();
+        }
     ]); ?>
 
 </div>
