@@ -71,14 +71,17 @@ $this->params['breadcrumbs'][] = $this->title;
         <span class="input-group-addon" title="Select date &amp; time">
             <span class="glyphicon glyphicon-calendar"></span>
         </span>
-        <input type="text" class="form-control picker_input picker_start" name="Timeslot['.$i.']" placeholder="Enter starting time ...">
+        <input type="text" class="form-control picker_input picker_start" name="Timeslot['.$i.'][start]" placeholder="Enter starting time ...">
     </div>
     <div class="help-block"></div>
 </div>
 <div class="col-md-5 field-timeslot-end">
     <label class="control-label" for="timeslot-end">End</label>
-    <div>
-        <input type="text" class="form-control" disabled="disabled" readonly="readonly">
+    <div class="input-group date">
+        <span class="input-group-addon" title="Select date &amp; time">
+            <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+        <input type="text" class="form-control picker_input picker_end" name="Timeslot['.$i.'][end]" placeholder="Enter ending time ...">
     </div>
     <div class="help-block"></div>
 </div>';

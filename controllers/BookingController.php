@@ -365,14 +365,20 @@ class BookingController extends Controller
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $model;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
 
-            foreach(Yii::$app->request->post('Timeslot') as $start) {
-                if(!empty($start)) {
+            foreach(Yii::$app->request->post('Timeslot') as $borders) {
+                if(!empty($borders['start'])) {
                     try {
-                        $startDate = new \DateTime($start);
+                        $startDate = new \DateTime($borders['start']);
+                        if(!empty($borders['end'])){
+                            $endDate = new \DateTime($borders['end']);
+                        } else{
+                            $endDate = clone $startDate;
+                            $endDate->add(new \DateInterval("PT" . $s->flight_duration . "M"));
+                        }
 
                         $slot = new Timeslot();
-                        $slot->start = $start;
-                        $slot->end = $startDate->add(new \DateInterval("PT" . $s->flight_duration . "M"))->format('Y-m-d H:i');
+                        $slot->start = $startDate->format('Y-m-d H:i');
+                        $slot->end = $endDate->format('Y-m-d H:i');
                         $slot->id_simulator = $simId;
                         $slot->creation_mode = Timeslot::WEEKDAYS;
 

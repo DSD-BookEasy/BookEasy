@@ -13,7 +13,8 @@ $(function(){
         //Timeslots array indexing management
         var n=/Timeslot\[(\d+)\]/.exec($('input',$copied).first().attr('name'))[1];
         n++;
-        $('input',$copied).first().attr('name','Timeslot[' + n + ']');
+        $('.picker_start',$copied).attr('name','Timeslot[' + n + '][start]');
+        $('.picker_end',$copied).attr('name','Timeslot[' + n + '][end]');
 
 
         $copied.append('<div class="col-md-2"><a href="#" class="btn btn-warning glyphicon glyphicon-remove dynamic_remove"></a></div>');//Add the delete button
@@ -37,7 +38,6 @@ $(function(){
         val.setMinutes(val.getMinutes() + simulationDuration);
 
         var $container = $t.closest('.dynamic_field');
-        console.log($container);
         $('input:not(.picker_start)', $container).val(
             val.getFullYear()+"-"+
             (val.getMonth()+1)+"-"+
