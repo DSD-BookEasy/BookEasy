@@ -62,14 +62,24 @@ class StaffController extends \yii\web\Controller
         } else {
             $staff = Staff::findOne(['user_name' => $loginData['user_name']]);
             if (!empty($staff) and $staff->isValidPassword($loginData['password'])) {
-                Yii::$app->user->login($staff, 3600 * 24 * 30);
-                return $this->redirect('agenda');
+
+                if ($staff->disabled) {
+                    $staff = new Staff();
+                    $staff->user_name = $loginData['user_name'];
+                    $staff->addError('disabled', \Yii::t('app', 'This account is disabled, you can\'t login'));
+                    return $this->render('login', [
+                        'model' => $staff,
+                    ]);
+                } else {
+                    Yii::$app->user->login($staff, 3600 * 24 * 30);
+                    return $this->redirect('agenda');
+                }
             } else {
                 $staff = new Staff();
                 $staff->user_name = $loginData['user_name'];
+                $staff->addError('', \Yii::t('app', 'Invalid Username or Password'));
                 return $this->render('login', [
                     'model' => $staff,
-                    'error' => \Yii::t('app', 'Invalid Username or Password')
                 ]);
             }
         }
