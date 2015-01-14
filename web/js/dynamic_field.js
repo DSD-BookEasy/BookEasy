@@ -63,7 +63,19 @@ $(function(){
     });
 });
 
-function calendarAddTimespan(){
-    //$('#dynamic_add').click();
+function calendarAddTimespan(start, end, jsEvent, view){
+    var diff=end.diff(start)/1000;//Seconds of difference
+    if(diff<=(simulationDuration*60*1000)){//Half an hour selected. Convert into simulation duration
+        end = start.clone();
+        end = end.add(simulationDuration, 'minutes');
+    }
 
+    var $timespan = $('.dynamic_field:last');
+    if ($('.picker_start',$timespan).val() != '') {
+        $('#dynamic_add').click();
+        $timespan = $('.dynamic_field:last');
+    }
+
+    $('.picker_start',$timespan).val(start.format('YYYY-MM-DD HH:mm'));
+    $('.picker_end',$timespan).val(end.format('YYYY-MM-DD HH:mm'));
 }

@@ -101,26 +101,28 @@ $this->params['breadcrumbs'][] = $this->title;
             <p><br></p>
         </div>
         <?php
-    echo Html::label(Yii::t('app','Below you can see the availability of the chosen simulator (time span in red are not available for booking)').':');
-    echo FullCalendar::widget([
-        'config' => [
-            'header' => [
-                'left' => '',
-                'center' => 'title',
-            ],
-            'aspectRatio' => '2.5',
-            'defaultView' => 'agendaWeek',
-            'scrollTime' => '08:00:00',
-            'editable' => false,
-            'firstDay' => 1,
-            'allDaySlot' => false,
-            'events' => Url::to(['/timeslot/anon-calendar','simulator' => $simulator->id, 'background' => true]),
-            'minTime' => $businessHours['start'],
-            'maxTime' => $businessHours['end'],
-            'eventRender' => new \yii\web\JsExpression('calendarAddTimespan')
-        ]
-    ]);
-    ?>
+        echo Html::label(Yii::t('app','Below you can see the availability of the chosen simulator. Click on the calendar to add time spans to your booking (time spans in red are not available for booking)').':');
+
+        echo FullCalendar::widget([
+            'config' => [
+                'header' => [
+                    'left' => '',
+                    'center' => 'title',
+                ],
+                'aspectRatio' => '2.5',
+                'defaultView' => 'agendaWeek',
+                'scrollTime' => '08:00:00',
+                'editable' => false,
+                'firstDay' => 1,
+                'allDaySlot' => false,
+                'events' => Url::to(['/timeslot/anon-calendar','simulator' => $simulator->id, 'background' => true]),
+                'minTime' => $businessHours['start'],
+                'maxTime' => $businessHours['end'],
+                'selectable' => true,
+                'select' => new \yii\web\JsExpression('calendarAddTimespan')
+            ]
+        ]);
+        ?>
     </fieldset>
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'),
