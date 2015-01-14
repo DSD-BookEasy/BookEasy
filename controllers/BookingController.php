@@ -365,45 +365,15 @@ class BookingController extends Controller
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $model;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
 
-            $today= new \DateTime();
-            foreach(Yii::$app->request->post('Timeslot') as $borders) {
-                if(!empty($borders['start'])) {
-                    try {
-                        $startDate = new \DateTime($borders['start']);
-                        if(!empty($borders['end'])){
-                            $endDate = new \DateTime($borders['end']);
-                        } else{
-                            $endDate = clone $startDate;
-                            $endDate->add(new \DateInterval("PT" . $s->flight_duration . "M"));
-                        }
-
-                        if($startDate<=$today){
-                            $ok = false;
-                            $timeSlotError = Yii::t('app',"The specified time spans cannot be in the past");
-                        }
-
-                        if($endDate<=$startDate){
-                            $ok = false;
-                            $timeSlotError = Yii::t('app',"The ending date of all the time spans must be after its starting time");
-                        }
-
-                        $slot = new Timeslot();
-                        $slot->start = $startDate->format('Y-m-d H:i');
-                        $slot->end = $endDate->format('Y-m-d H:i');
-                        $slot->id_simulator = $simId;
-                        $slot->creation_mode = Timeslot::WEEKDAYS;
-
-                        $tmpSlot[] = $slot;
-                    } catch(Exception $e){
-                        $ok=false;
-                        $timeSlotError = Yii::t('app', "You specified an invalid time span");
-                    }
+            try {
+                $tmpSlot = $this->timespanHandling(Yii::$app->request->post('Timeslot'), $s);
+                if(count($tmpSlot)<=0){
+                    $ok=false;
+                    $timeSlotError = Yii::t('app', "You must specify at least one time span to book");
                 }
-            }
-
-            if(count($tmpSlot)<=0){
+            } catch(Exception $e){
                 $ok=false;
-                $timeSlotError = Yii::t('app', "You must specify at least one time span to book");
+                $timeSlotError = $e->getMessage();
             }
 
             if($ok) {
@@ -426,6 +396,12 @@ class BookingController extends Controller
             $s = Simulator::findOne($simId);
             if (empty($s)) {
                 throw new NotFoundHttpException(Yii::t('app', 'The specifies simulator doesn\'t exist'));
+            }
+
+            try {
+                $tmpSlot = $this->timespanHandling(Yii::$app->request->get('Timeslot'), $s);
+            } catch(Exception $e){
+                $timeSlotError = $e->getMessage();
             }
 
             $me = Staff::findOne(\Yii::$app->user->id);
@@ -452,6 +428,50 @@ class BookingController extends Controller
                 ]
             ]);
         }
+    }
+
+    private function timespanHandling($input, $simulator){
+        $tmpSlot=[];
+        $today= new \DateTime();
+
+        if($input==null){
+            return $tmpSlot;
+        }
+
+        foreach($input as $borders) {
+            if (!empty($borders['start'])) {
+                try {
+                    $startDate = new \DateTime($borders['start']);
+                    if (!empty($borders['end'])) {
+                        $endDate = new \DateTime($borders['end']);
+                    } else {
+                        $endDate = clone $startDate;
+                        $endDate->add(new \DateInterval("PT" . $simulator->flight_duration . "M"));
+                    }
+                } catch (Exception $e) {
+                    throw new Exception(Yii::t('app', "You specified an invalid time span"));
+                }
+
+                if ($startDate <= $today) {
+                    throw new Exception(Yii::t('app', "The specified time spans cannot be in the past"));
+                }
+
+                if ($endDate <= $startDate) {
+                    throw new Exception(Yii::t('app',
+                        "The ending date of all the time spans must be after its starting time"));
+                }
+
+                $slot = new Timeslot();
+                $slot->start = $startDate->format('Y-m-d H:i');
+                $slot->end = $endDate->format('Y-m-d H:i');
+                $slot->id_simulator = $simulator->id;
+                $slot->creation_mode = Timeslot::WEEKDAYS;
+
+                $tmpSlot[] = $slot;
+            }
+        }
+
+        return $tmpSlot;
     }
 
     /**
