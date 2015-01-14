@@ -23,7 +23,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
         'user_name',
         'name',
         'surname',
-        ['class' => 'yii\grid\ActionColumn'],
+        [
+            'class' => 'yii\grid\ActionColumn',
+            'template' => '{view} {update}',
+        ],
     ],
-
 ]); ?>
