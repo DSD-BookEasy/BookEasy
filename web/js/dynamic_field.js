@@ -65,6 +65,12 @@ $(function(){
 
 function calendarAddTimespan(start, end, jsEvent, view){
     var diff=end.diff(start)/1000;//Seconds of difference
+
+    //Cannot select dates in the past
+    if(start.isBefore(moment()) || end.isBefore(moment())){
+        return;
+    }
+
     if(diff<=(simulationDuration*60*1000)){//Half an hour selected. Convert into simulation duration
         end = start.clone();
         end = end.add(simulationDuration, 'minutes');
@@ -78,4 +84,6 @@ function calendarAddTimespan(start, end, jsEvent, view){
 
     $('.picker_start',$timespan).val(start.format('YYYY-MM-DD HH:mm'));
     $('.picker_end',$timespan).val(end.format('YYYY-MM-DD HH:mm'));
+
+    $('.fullcalendar').fullCalendar('unselect');
 }
