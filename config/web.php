@@ -71,11 +71,9 @@ $config = [
         'i18n' => [
             'translations' => [
                 'app*' => [
-                    'class' => 'yii\i18n\PhpMessageSource',
+                    'class' => 'yii\i18n\GettextMessageSource',
                     'basePath' => '@app/messages',
-                    'fileMap' => [
-                        'app' => 'app.php',
-                    ],
+                    'catalog' => 'messages'
                 ],
             ],
         ],
