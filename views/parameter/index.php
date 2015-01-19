@@ -81,7 +81,11 @@ function renderFormTextarea($model){
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->textarea(['rows'=>2])->label(false);
+    $out .= $form->field($model, 'value', ['inputOptions' => [
+        'id' => $model->id.'-parameter-value',
+        'class' => 'form-control'
+    ]])
+        ->textarea(['rows'=>2])->label(false);
     $out .= Html::submitButton();
 
     ob_start();
@@ -100,7 +104,11 @@ function renderFormText($model){
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->textInput()->label(false);
+    $out .= $form->field($model, 'value', ['inputOptions' => [
+        'id' => $model->id.'-parameter-value',
+        'class' => 'form-control'
+    ]])
+        ->textInput()->label(false);
     $out .= Html::submitButton();
 
     ob_start();
@@ -119,12 +127,13 @@ function renderFormDateTime($model){
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->widget(DateTimePicker::className(), [
+    $out .= $form->field($model, 'value', ['inputOptions' => ['id' => $model->id.'-parameter-value']])
+        ->widget(DateTimePicker::className(), [
         'removeButton' => false,
         'pluginOptions' => [
             'autoclose' => true,
         ]
-    ]);
+    ])->label(false);
     $out .= Html::submitButton();
 
     ob_start();
@@ -144,12 +153,13 @@ function renderFormTime($model){
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->widget(TimePicker::className(), [
+    $out .= $form->field($model, 'value', ['inputOptions' => ['id' => $model->id.'-parameter-value']])
+        ->widget(TimePicker::className(), [
         'pluginOptions' => [
             'autoclose' => true,
             'showMeridian' => false,
         ]
-    ]);
+    ])->label(false);
     $out .= Html::submitButton();
 
     ob_start();
