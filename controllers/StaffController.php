@@ -327,7 +327,7 @@ class StaffController extends \yii\web\Controller
         Yii::$app->mailer->compose(['html' => 'staff/recovery_html', 'text' => 'staff/recovery_text'], [
             'staff' => $staff
         ])
-            ->setFrom(Parameter::getValue('adminEmail',''))
+            ->setFrom(Parameter::getValue('coordinatorEmail',''))
             ->setTo($staff->email)
             ->setSubject(Yii::t('app', 'Booking System Password Recovery'))
             ->send();
