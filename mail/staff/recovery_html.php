@@ -15,7 +15,7 @@ use \yii\helpers\Url;
     <?= Yii::t('app', "Click on the following link to reset your password and set a new one:"); ?>
     <br />
     <?php
-    $url= Url::to(['staff/pass-reset','hash' => $staff->recover_hash, 'id' => $staff->id], true);
+    $url= Url::to(['staff/pass-reset','recover_hash' => $staff->recover_hash, 'id' => $staff->id], true);
     echo Html::tag('a',$url,['href' => $url]);
     ?>
     <br />
