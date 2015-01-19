@@ -6,6 +6,11 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
+$this->title = Yii::t('app','Password Reset');
+$this->params['breadcrumbs'][] = $this->title;
+
+echo Html::tag('h1',$this->title);
+
 if($confirm){
     Html::tag('div', Yii::t('app',"Your password has been successfully reset. You can now login."), ['class' => 'alert
     alert-success']);

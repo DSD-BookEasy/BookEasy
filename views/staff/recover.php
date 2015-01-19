@@ -10,10 +10,12 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-?>
-<h1><?= Yii::t('app', 'Password Recovery') ?></h1>
+$this->title = Yii::t('app','Password Recovery');
+$this->params['breadcrumbs'][] = $this->title;
 
-<?php
+echo Html::tag('h1',$this->title);
+
+
 //This block handles committed error messages, e.g. "email not found"
 if (!empty($error)) {
     echo Html::tag('div', $error, ['class' => 'alert alert-warning']);
