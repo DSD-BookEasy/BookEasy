@@ -5,12 +5,14 @@ namespace app\controllers;
 use app\models\Parameter;
 use Yii;
 use app\models\Staff;
+use yii\base\ErrorException;
 use yii\data\ActiveDataProvider;
 use app\models\Booking;
 use app\models\Simulator;
 use app\models\Timeslot;
 use DateTime;
 use yii\filters\AccessControl;
+use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
@@ -108,7 +110,7 @@ class StaffController extends \yii\web\Controller
                 // email has been found, send recovery email
 
                 $this->sendRecovery($staff);
-                $confirm = Yii::t('app', 'Recovery E-Mail has been send');
+                $confirm = Yii::t('app', 'Recovery E-Mail has been sent');
             } else{
                 $error = Yii::t('app', 'E-Mail not found');
             }
@@ -118,6 +120,56 @@ class StaffController extends \yii\web\Controller
             'error' => $error,
             'confirm' => $confirm
         ]);
+    }
+
+    public function actionPassReset()
+    {
+        //Find the identification data
+        if(Yii::$app->request->isGet) {
+            $hash = Yii::$app->request->get('recover_hash');
+            $id = Yii::$app->request->get('id');
+        } elseif (Yii::$app->request->isPost){
+            $temp_s = Yii::$app->request->post('Staff');
+            $hash = $temp_s['recover_hash'];
+            $id = $temp_s['id'];
+        }
+
+        if (!empty($hash) && !empty($id)) {
+            //Verify identification data is valid
+            $date = new \DateTime();
+            $date->sub(new \DateInterval('PT24H'));
+
+            $user = Staff::find()
+                ->where(['id' => $id])
+                ->andWhere(['recover_hash' => $hash])
+                ->andWhere(['>','last_recover', $date->format('Y-m-d H:i')])
+                ->one();
+            if(empty($user)){
+                throw new NotFoundHttpException(Yii::t('app',"User not found or no password reset request issued"));
+            }
+
+            $confirm = false;
+            if(Yii::$app->request->isPost) {//Set a new password and save
+                $user->load($temp_s);
+
+                //Reset the recover data, so this link can be use only one time
+                $user->recover_hash = '';
+                $user->last_recover = '';
+                if(!$user->save()){
+                    throw new ErrorException($user->getErrors());
+                }
+                $confirm = true;
+            }
+
+            //Show the reset form, or just a confirm message
+            return $this->render('pass-reset', [
+                'staff' => $user,
+                'confirm' => $confirm
+            ]);
+        } else {
+            throw new BadRequestHttpException(Yii::t('app',"You didn't provide enough information for a password
+            reset"));
+        }
     }
 
     public function actionAgenda()

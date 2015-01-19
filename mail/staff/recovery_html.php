@@ -13,7 +13,7 @@ use \yii\helpers\Url;
 <p>
     <?= Yii::t('app', "Click on the following link to reset your password and set a new one:"); ?>
     <br />
-    <?= Url::to(['staff/pass-reset','hash' => $staff->recover_hash, 'email' => $staff->email]); ?>
+    <?= Url::to(['staff/pass-reset','hash' => $staff->recover_hash, 'id' => $staff->id]); ?>
     <br />
     <?= Yii::t('app', "This recovery link is valid only one time and only for the 24 hours after this request."); ?>
 </p>
