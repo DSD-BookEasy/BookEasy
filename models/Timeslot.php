@@ -79,7 +79,7 @@ class Timeslot extends ActiveRecord
             'end' => Yii::t('app', 'End'),
             'cost' => Yii::t('app', 'Cost'),
             'id_timeSlotModel' => Yii::t('app', 'Id Time Slot Model'),
-            'id_simulator' => Yii::t('app', 'Id Simulator'),
+            'id_simulator' => Yii::t('app', 'Simulator'),
             'creation_mode' => Yii::t('app', 'Creation Mode')
         ];
     }
@@ -223,5 +223,8 @@ class Timeslot extends ActiveRecord
         }
 
     }
-
+    public function simulatorToString(){
+        $simulator = Simulator::findOne(['id' => $this->id_simulator]);;
+        return $simulator->name;
+    }
 }

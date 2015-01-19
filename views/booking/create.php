@@ -12,9 +12,7 @@ use yii\helpers\Html;
 /* @var $me app\models\Staff */
 /* @var $instructors array */
 
-$this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Booking',
-]);
+$this->title = Yii::t('app', 'Create Booking');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

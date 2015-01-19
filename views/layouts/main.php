@@ -8,6 +8,13 @@ use app\assets\AppAsset;
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+
+if ( !Yii::$app->user->isGuest && Yii::$app->user->identity->disabled ) {
+    // Logout a disabled user and redirect him to the homepage
+    Yii::$app->user->logout();
+    Yii::$app->controller->redirect(Yii::$app->homeUrl);
+}
+
 AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>

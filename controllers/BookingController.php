@@ -345,38 +345,11 @@ class BookingController extends Controller
      */
     public function actionCreateWeekdays()
     {
-        /*
-        // Check time slot values in the GET-Request
-        $tmpTimeSlots = Yii::$app->request->get(self::GET_PARAMETER_TIME_SLOTS);
-
-        // Provide an empty array for time slot
-        $timeSlots = [];
-
-        // Create time slots for every GET-Parameter
-        if (empty($tmpTimeSlots) == false) {
-            foreach ($tmpTimeSlots as $key => $value) {
-                $timeSlot = new Timeslot();
-                $timeSlot->load($value, '');
-
-                $timeSlots[] = $timeSlot;
-            }
-        }
-
-        // Save time slots to session
-        $this->saveTimeSlotsToSession($timeSlots);
-
-        // Retrieve time slots from current session
-        $sessionTimeSlots = Yii::$app->session->get(self::SESSION_PARAMETER_TIME_SLOT);
-
-        if (empty($sessionTimeSlots)) {
-            throw new BadRequestHttpException(self::ERROR_MESSAGE_NO_TIME_SLOTS);
-        }
-        */
         $model = new Booking();
-        $model->scenario = 'weekdays';
 
         $ok=true;
         $tmpSlot=[];
+        $timeSlotError='';
         if ($model->load(Yii::$app->request->post())) {
             $simId = Yii::$app->request->post('simulator');
             if (empty($simId) or !is_numeric($simId)) {
@@ -392,22 +365,15 @@ class BookingController extends Controller
             Yii::$app->session[self::SESSION_PARAMETER_BOOKING] = $model;
             Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS] = true;
 
-            foreach(Yii::$app->request->post('Timeslot') as $start) {
-                if(!empty($start)) {
-                    try {
-                        $startDate = new \DateTime($start);
-
-                        $slot = new Timeslot();
-                        $slot->start = $start;
-                        $slot->end = $startDate->add(new \DateInterval("PT" . $s->flight_duration . "M"))->format('Y-m-d H:i');
-                        $slot->id_simulator = $simId;
-                        $slot->creation_mode = Timeslot::WEEKDAYS;
-
-                        $tmpSlot[] = $slot;
-                    } catch(Exception $e){
-                        $ok=false;
-                    }
+            try {
+                $tmpSlot = $this->timespanHandling(Yii::$app->request->post('Timeslot'), $s);
+                if(count($tmpSlot)<=0){
+                    $ok=false;
+                    $timeSlotError = Yii::t('app', "You must specify at least one time span to book");
                 }
+            } catch(Exception $e){
+                $ok=false;
+                $timeSlotError = $e->getMessage();
             }
 
             if($ok) {
@@ -432,17 +398,80 @@ class BookingController extends Controller
                 throw new NotFoundHttpException(Yii::t('app', 'The specifies simulator doesn\'t exist'));
             }
 
+            try {
+                $tmpSlot = $this->timespanHandling(Yii::$app->request->get('Timeslot'), $s);
+            } catch(Exception $e){
+                $timeSlotError = $e->getMessage();
+            }
+
+            $me = Staff::findOne(\Yii::$app->user->id);
+            $instructors = array();
+            $staff = Staff::find()->all();
+
+            foreach ($staff as $user) {
+                if (\Yii::$app->authManager->checkAccess($user->id, 'assignedToBooking')) {
+                    $instructors[$user->id] = $user->name . ' ' . $user->surname;
+                }
+            }
+
             return $this->render('create-weekdays', [
+                'error' => $timeSlotError,
                 'model' => $model,
                 'simulator' => $s,
                 'timeslots' => empty($tmpSlot) ? [new Timeslot()] : $tmpSlot,
                 'entry_fee' => Parameter::getValue('entryFee', 80),
+                'instructors' => $instructors,
+                'me' => $me,
                 'businessHours' => [
                     'start' => Parameter::getValue('businessTimeStart'),
                     'end' => Parameter::getValue('businessTimeEnd')
                 ]
             ]);
         }
+    }
+
+    private function timespanHandling($input, $simulator){
+        $tmpSlot=[];
+        $today= new \DateTime();
+
+        if($input==null){
+            return $tmpSlot;
+        }
+
+        foreach($input as $borders) {
+            if (!empty($borders['start'])) {
+                try {
+                    $startDate = new \DateTime($borders['start']);
+                    if (!empty($borders['end'])) {
+                        $endDate = new \DateTime($borders['end']);
+                    } else {
+                        $endDate = clone $startDate;
+                        $endDate->add(new \DateInterval("PT" . $simulator->flight_duration . "M"));
+                    }
+                } catch (Exception $e) {
+                    throw new Exception(Yii::t('app', "You specified an invalid time span"));
+                }
+
+                if ($startDate <= $today) {
+                    throw new Exception(Yii::t('app', "The specified time spans cannot be in the past"));
+                }
+
+                if ($endDate <= $startDate) {
+                    throw new Exception(Yii::t('app',
+                        "The ending date of all the time spans must be after its starting time"));
+                }
+
+                $slot = new Timeslot();
+                $slot->start = $startDate->format('Y-m-d H:i');
+                $slot->end = $endDate->format('Y-m-d H:i');
+                $slot->id_simulator = $simulator->id;
+                $slot->creation_mode = Timeslot::WEEKDAYS;
+
+                $tmpSlot[] = $slot;
+            }
+        }
+
+        return $tmpSlot;
     }
 
     /**
@@ -484,7 +513,7 @@ class BookingController extends Controller
                 $this->notifyCoordinators($booking);
             }
 
-            $this->notifyCostumer($booking, $timeSlots);
+            $this->notifyCustomer($booking, $timeSlots);
 
             unset(Yii::$app->session[self::SESSION_PARAMETER_TIME_SLOT]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
@@ -568,7 +597,7 @@ class BookingController extends Controller
      * @param Timeslot[] $timeslots
      * @return int total cost of the simulations
      */
-    public static function sumTimeslotsCost($timeslots)
+    private function sumTimeslotsCost($timeslots)
     {
         $simulationFee = 0;
 
@@ -651,15 +680,17 @@ class BookingController extends Controller
             ->send();
     }
 
-    private function notifyCostumer($booking, $timeSlots)
+    private function notifyCustomer($booking, $timeslots)
     {
         if ($booking->email != null) {
             Yii::$app->mailer->compose([
-                'html' => 'booking/costumer_booking_html',
-                'text' => 'booking/costumer_booking_text'
+                'html' => 'booking/customer_booking_html',
+                'text' => 'booking/customer_booking_text'
             ], [
                 'booking' => $booking,
-                'timeSlots' => $timeSlots,
+                'totalSimulationCost' => $this->sumTimeslotsCost($timeslots),
+                'entryFee' => Parameter::getValue('entryFee', 80),
+                'timeslots' => $timeslots,
             ])
                 ->setFrom(\Yii::$app->params['adminEmail'])
                 ->setTo($booking->email)

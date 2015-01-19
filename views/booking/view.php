@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
     <p>
         <?= Html::encode(Yii::t('app', "Please write down this key. You will need it when you want to alter the booking later.
-        You will also receive an email confirmation from us (hopefully implemented by now).")) ?>
+        You will also receive an email confirmation from us.")) ?>
     <p>
 
     <?= Html::tag('div',

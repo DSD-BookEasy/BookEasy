@@ -7,9 +7,7 @@ use yii\helpers\Html;
 /* @var $me app\models\Staff */
 /* @var $instructors array */
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-        'modelClass' => 'Booking',
-    ]) . ' ' . $model->name;
+$this->title = Yii::t('app', 'Update Booking: ') . ' ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');

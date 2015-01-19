@@ -13,6 +13,7 @@ use kartik\datetime\DateTimePicker;
 /* @var $simulator app\models\Simulator */
 /* @var $timeslots app\models\Timeslot[] */
 /* @var $businessHours array */
+/* @var $error string */
 
 $this->title = Yii::t('app', 'Request Booking');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
@@ -29,6 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <p><?= Yii::t('app','You are about to send a request for opening the museum for a special visit and a flight simulation.
     Please fill in the following form to continue')?>:</p>
 
+    <?php
+        if(!empty($error)){
+            Html::tag('div',$error,['class' => 'alert alert-danger']);
+        }
+    ?>
+
     <?= Html::ul([
         Yii::t('app','Entrance Fee: {0, number} kr', $entry_fee),
         Yii::t('app','Simulator Fee: {0, number} kr per {duration} minutes.', [$simulator->price_simulation, 'duration' => $simulator->flight_duration]),
@@ -43,7 +50,9 @@ $this->params['breadcrumbs'][] = $this->title;
     echo $this->render('_form', [
         'model' => $model,
         'showAddress' => true,
-        'form' => $form
+        'form' => $form,
+        'instructors' => $instructors,
+        'me' => $me,
     ]);
     ?>
     <fieldset>
@@ -62,14 +71,17 @@ $this->params['breadcrumbs'][] = $this->title;
         <span class="input-group-addon" title="Select date &amp; time">
             <span class="glyphicon glyphicon-calendar"></span>
         </span>
-        <input type="text" class="form-control picker_input picker_start" name="Timeslot['.$i.']" placeholder="Enter starting time ...">
+        <input type="text" class="form-control picker_input picker_start" name="Timeslot['.$i.'][start]" placeholder="Enter starting time ..." value="'.$t->start.'">
     </div>
     <div class="help-block"></div>
 </div>
 <div class="col-md-5 field-timeslot-end">
     <label class="control-label" for="timeslot-end">End</label>
-    <div>
-        <input type="text" class="form-control" disabled="disabled" readonly="readonly">
+    <div class="input-group date">
+        <span class="input-group-addon" title="Select date &amp; time">
+            <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+        <input type="text" class="form-control picker_input picker_end" name="Timeslot['.$i.'][end]" placeholder="Enter ending time ..." value="'.$t->end.'">
     </div>
     <div class="help-block"></div>
 </div>';
@@ -89,26 +101,28 @@ $this->params['breadcrumbs'][] = $this->title;
             <p><br></p>
         </div>
         <?php
-    echo Html::label(Yii::t('app','Below you can see the availability of the chosen simulator (time span in red are not available for booking)').':');
-    echo FullCalendar::widget([
-        'config' => [
-            'header' => [
-                'left' => '',
-                'center' => 'title',
-            ],
-            'aspectRatio' => '2.5',
-            'defaultView' => 'agendaWeek',
-            'scrollTime' => '08:00:00',
-            'editable' => false,
-            'firstDay' => 1,
-            'allDaySlot' => false,
-            'events' => Url::to(['/timeslot/anon-calendar','simulator' => $simulator->id, 'background' => true]),
-            'minTime' => $businessHours['start'],
-            'maxTime' => $businessHours['end'],
-            'eventRender' => new \yii\web\JsExpression('calendarAddTimespan')
-        ]
-    ]);
-    ?>
+        echo Html::label(Yii::t('app','Below you can see the availability of the chosen simulator. Click on the calendar to add time spans to your booking (time spans in red are not available for booking)').':');
+
+        echo FullCalendar::widget([
+            'config' => [
+                'header' => [
+                    'left' => '',
+                    'center' => 'title',
+                ],
+                'aspectRatio' => '2.5',
+                'defaultView' => 'agendaWeek',
+                'scrollTime' => '08:00:00',
+                'editable' => false,
+                'firstDay' => 1,
+                'allDaySlot' => false,
+                'events' => Url::to(['/timeslot/anon-calendar','simulator' => $simulator->id, 'background' => true]),
+                'minTime' => $businessHours['start'],
+                'maxTime' => $businessHours['end'],
+                'selectable' => true,
+                'select' => new \yii\web\JsExpression('calendarAddTimespan')
+            ]
+        ]);
+        ?>
     </fieldset>
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'),
