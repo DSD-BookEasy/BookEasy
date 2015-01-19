@@ -51,6 +51,7 @@ class ParameterController extends Controller
             'paramsNatures'=> [
                 'entryFee' => 'text',
                 'coordinatorEmail' => 'text',
+                'adminEmail' => 'text',
                 'businessTimeStart' => 'time',
                 'businessTimeEnd' => 'time',
             ]
