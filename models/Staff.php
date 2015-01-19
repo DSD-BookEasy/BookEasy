@@ -22,6 +22,8 @@ use yii\web\IdentityInterface;
  * @property string $auth_key
  * @property string $plain_password
  * @property string $repeat_password
+ * @property string $last_recover
+ * @property string $recover_hash
  */
 class Staff extends \yii\db\ActiveRecord implements IdentityInterface
 {
@@ -49,7 +51,6 @@ class Staff extends \yii\db\ActiveRecord implements IdentityInterface
             [['plain_password'], 'safe'],
             ['email', 'email'],
             [['user_name', 'email', 'password'], 'required'],
-            // 'password' is the attribute used for the login page, while 'plain_password' and 'repeat_password' are used for the user creation
         ];
     }
 

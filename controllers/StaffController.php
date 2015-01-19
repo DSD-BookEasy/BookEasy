@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Parameter;
 use Yii;
 use app\models\Staff;
 use yii\data\ActiveDataProvider;
@@ -83,31 +84,30 @@ class StaffController extends \yii\web\Controller
      */
     public function actionRecover()
     {
-        $loginData = Yii::$app->request->post('Staff');
-        if (empty($loginData)) {
-            // renders a view named "recover"
-            return $this->render('recover', [
-                'model' => new Staff(),
-            ]);
-        } else {
-            $staff = Staff::findOne(['email' => $loginData['email']]);
-            if (empty($staff)) {
-                //  email has not been found, echo error message
-                return $this->render('recover', [
-                    'model' => new Staff(),
-                    'error' => \Yii::t('app', 'E-Mail not found')
-                ]);
-            } else {
+        $recover = Yii::$app->request->post('identificator');
+        $error='';
+        $confirm='';
+
+        if (!empty($recover)) {
+            $staff = Staff::find()
+                ->where(['user_name' => $recover])
+                ->orWhere(['email' => $recover])
+                ->one();
+
+            if (!empty($staff)) {
                 // email has been found, send recovery email
 
                 $this->sendRecovery($staff);
-
-                return $this->render('recover', [
-                    'model' => $staff,
-                    'error' => \Yii::t('app', 'Recovery E-Mail has been send')
-                ]);
+                $confirm = Yii::t('app', 'Recovery E-Mail has been send');
+            } else{
+                $error = Yii::t('app', 'E-Mail not found');
             }
         }
+
+        return $this->render('recover', [
+            'error' => $error,
+            'confirm' => $confirm
+        ]);
     }
 
     public function actionAgenda()
@@ -307,32 +307,19 @@ class StaffController extends \yii\web\Controller
     }
 
 
-    private function sendRecovery($staff)
+    private function sendRecovery(Staff $staff)
     {
-        Yii::$app->mailer->compose(['html' => 'booking/new_booking_html', 'text' => 'booking/new_booking_text'], [
-            'id' => 1,
-            'mailText' => Yii::t('app', 'Email content.')
+        $now = new \DateTime();
+        $staff->last_recover= $now->format('Y-m-d H:i');
+        $staff->recover_hash = Yii::$app->getSecurity()->generateRandomString();
+        $staff->save();
+
+        Yii::$app->mailer->compose(['html' => 'staff/recovery_html', 'text' => 'staff/recovery_text'], [
+            'staff' => $staff
         ])
-            ->setFrom(\Yii::$app->params['adminEmail'])
-            ->setTo($staff['email'])
-            ->setSubject(\Yii::t('app', 'Booking system password recovery'))
+            ->setFrom(Parameter::getValue('adminEmail',''))
+            ->setTo($staff->email)
+            ->setSubject(Yii::t('app', 'Booking System Password Recovery'))
             ->send();
-
-/*        $getToken=rand(0, 99999);
-        $getTime=date("H:i:s");
-        $token=md5($getToken.$getTime);
-
-        $emailAdmin= Yii::t('app', 'bokning@flygmuseum.com');
-        $setText="To reset your password click the link below:<br/>
-                    <a href='http://localhost.com/index.php?r=staff/vertoken/view&token=".$token."'>Click Here to Reset Password</a><br><br>
-                    This email has been generated automaticaly. Please do not answer to it.";
-
-        $name='=?UTF-8?B?'.base64_encode(Yii::t('app', 'Flygmuseum Booking System')).'?=';
-        $subject='=?UTF-8?B?'.base64_encode(Yii::t('app', 'Booking system password recovery')).'?=';
-        $headers="From: $name <{$emailAdmin}>\r\n".
-            "Reply-To: {$emailAdmin}\r\n".
-            "MIME-Version: 1.0\r\n".
-            "Content-type: text/html; charset=UTF-8";
-        mail($staff['email'],$subject,$setText,$headers);*/
     }
 }
