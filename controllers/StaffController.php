@@ -167,8 +167,7 @@ class StaffController extends \yii\web\Controller
                 'confirm' => $confirm
             ]);
         } else {
-            throw new BadRequestHttpException(Yii::t('app',"You didn't provide enough information for a password
-            reset"));
+            throw new BadRequestHttpException(Yii::t('app',"You didn't provide enough information for a password reset"));
         }
     }
 

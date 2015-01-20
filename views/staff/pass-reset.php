@@ -17,12 +17,12 @@ if($confirm){
 } else {
     $form = ActiveForm::begin();
 
-    $form->field($staff, 'id')->hiddenInput();
-    $form->field($staff, 'recover_hash')->hiddenInput();
-    $form->field($staff, 'plain_password')->passwordInput();
-    $form->field($staff, 'repeat_password')->passwordInput();
+    echo $form->field($staff, 'id')->hiddenInput();
+    echo $form->field($staff, 'recover_hash')->hiddenInput();
+    echo $form->field($staff, 'plain_password')->passwordInput();
+    echo $form->field($staff, 'repeat_password')->passwordInput();
 
-    Html::submitButton(Yii::t('app', 'Change Password'), ['class' => 'btn btn-primary']);
+    echo Html::submitButton(Yii::t('app', 'Change Password'), ['class' => 'btn btn-primary']);
 
     $form->end();
 }
