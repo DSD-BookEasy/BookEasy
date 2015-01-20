@@ -149,22 +149,23 @@ class StaffController extends \yii\web\Controller
             }
 
             $confirm = false;
+            $error = false;
             if(Yii::$app->request->isPost) {//Set a new password and save
-                $user->load($temp_s);
+                $user->plain_password = $temp_s['plain_password'];
+                $user->repeat_password = $temp_s['repeat_password'];
 
                 //Reset the recover data, so this link can be use only one time
                 $user->recover_hash = '';
                 $user->last_recover = '';
-                if(!$user->save()){
-                    throw new ErrorException($user->getErrors());
+                if($user->save()){
+                    $confirm = true;
                 }
-                $confirm = true;
             }
 
             //Show the reset form, or just a confirm message
             return $this->render('pass-reset', [
                 'staff' => $user,
-                'confirm' => $confirm
+                'confirm' => $confirm,
             ]);
         } else {
             throw new BadRequestHttpException(Yii::t('app',"You didn't provide enough information for a password reset"));

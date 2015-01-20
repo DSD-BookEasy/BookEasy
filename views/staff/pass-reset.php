@@ -17,6 +17,8 @@ if($confirm){
 } else {
     $form = ActiveForm::begin();
 
+    echo $form->errorSummary($staff);
+
     echo $form->field($staff, 'id')->hiddenInput()->label(false);
     echo $form->field($staff, 'recover_hash')->hiddenInput()->label(false);
     echo $form->field($staff, 'plain_password')->passwordInput();
