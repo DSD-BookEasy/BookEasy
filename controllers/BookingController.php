@@ -102,7 +102,7 @@ class BookingController extends Controller
             }
             $model->assigned_instructor = $ins_id;
             if ($model->save()) {
-                return $this->actionView($id);
+                return $this->redirect(['booking/view', 'id' => $id]);
             }
         }
         $me = Staff::findOne(\Yii::$app->user->id);
@@ -145,7 +145,7 @@ class BookingController extends Controller
             return $this->redirect(['index']);
         }
         else {
-        return $this->redirect(['site/index']);
+            return $this->redirect(['site/index']);
         }
     }
 
@@ -224,7 +224,7 @@ class BookingController extends Controller
         if (!$booking->save()) {
             throw new ErrorException('Confirm denied');
         }
-        return $this->actionIndex();
+        return $this->redirect(['booking/view','id'=>$id]);
     }
 
     /**
