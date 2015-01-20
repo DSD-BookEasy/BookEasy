@@ -12,13 +12,13 @@ $this->params['breadcrumbs'][] = $this->title;
 echo Html::tag('h1',$this->title);
 
 if($confirm){
-    Html::tag('div', Yii::t('app',"Your password has been successfully reset. You can now login."), ['class' => 'alert
+    echo Html::tag('div', Yii::t('app',"Your password has been successfully reset. You can now login."), ['class' => 'alert
     alert-success']);
 } else {
     $form = ActiveForm::begin();
 
-    echo $form->field($staff, 'id')->hiddenInput();
-    echo $form->field($staff, 'recover_hash')->hiddenInput();
+    echo $form->field($staff, 'id')->hiddenInput()->label(false);
+    echo $form->field($staff, 'recover_hash')->hiddenInput()->label(false);
     echo $form->field($staff, 'plain_password')->passwordInput();
     echo $form->field($staff, 'repeat_password')->passwordInput();
 
