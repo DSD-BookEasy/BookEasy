@@ -30,9 +30,9 @@ if(!empty($confirm)) {
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= Html::label(Yii::t('app','Email or User Name'),'identificator'); ?>
-    <?= Html::input('text','identificator'); ?>
-
+    <?= Html::label(Yii::t('app','Email or User Name').':','identificator'); ?>
+    <?= Html::input('text','identificator','',['class' => 'form-control']); ?>
+    <br />
     <?= Html::submitButton(Yii::t('app', 'Recover'), ['id' => 'recoverBtn', 'class' => 'btn btn-primary']) ?>
 
     <?php ActiveForm::end(); ?>
