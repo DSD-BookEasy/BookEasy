@@ -1,6 +1,6 @@
 msgctxt "app"
 msgid ""
-msgstr ""
+msgstr "@@@@"
 
 msgctxt "app"
 msgid " your booking on our website"
@@ -19,8 +19,12 @@ msgid "Add more Time Spans"
 msgstr ""
 
 msgctxt "app"
-msgid "Add new Simulator}"
+msgid "Add new Simulator"
 msgstr ""
+
+msgctxt "app"
+msgid "Add new Simulator}"
+msgstr "@@@@"
 
 msgctxt "app"
 msgid "Address"
@@ -95,12 +99,16 @@ msgid "Booking List"
 msgstr ""
 
 msgctxt "app"
+msgid "Booking System Password Recovery"
+msgstr ""
+
+msgctxt "app"
 msgid "Booking of {0} {1}"
 msgstr ""
 
 msgctxt "app"
 msgid "Booking system password recovery"
-msgstr ""
+msgstr "@@@@"
 
 msgctxt "app"
 msgid "Bookings"
@@ -108,6 +116,10 @@ msgstr ""
 
 msgctxt "app"
 msgid "Change"
+msgstr ""
+
+msgctxt "app"
+msgid "Change Password"
 msgstr ""
 
 msgctxt "app"
@@ -119,11 +131,19 @@ msgid "Click me once"
 msgstr ""
 
 msgctxt "app"
+msgid "Click on (or copy and paste in your browser) the following link to reset your password and set a new one:"
+msgstr ""
+
+msgctxt "app"
 msgid "Click on an available time slot to book this simulator inside the regular opening hours of the museum."
 msgstr ""
 
 msgctxt "app"
 msgid "Click on an empty spot in the calendar to make a request for a booking outside the opening hours or hold and drag to request a longer time span."
+msgstr ""
+
+msgctxt "app"
+msgid "Click on the following link to reset your password and set a new one:"
 msgstr ""
 
 msgctxt "app"
@@ -244,6 +264,10 @@ msgstr ""
 
 msgctxt "app"
 msgid "Email content."
+msgstr "@@@@"
+
+msgctxt "app"
+msgid "Email or User Name"
 msgstr ""
 
 msgctxt "app"
@@ -323,11 +347,19 @@ msgid "Hello, {0}"
 msgstr ""
 
 msgctxt "app"
+msgid "Hello, {name} {surname}"
+msgstr ""
+
+msgctxt "app"
 msgid "ID"
 msgstr ""
 
 msgctxt "app"
 msgid "Id Time Slot Model"
+msgstr ""
+
+msgctxt "app"
+msgid "If you did not request a password reset you can just ignore this email."
 msgstr ""
 
 msgctxt "app"
@@ -368,7 +400,7 @@ msgstr ""
 
 msgctxt "app"
 msgid "Manage permissions"
-msgstr ""
+msgstr "@@@@"
 
 msgctxt "app"
 msgid "Manage single time slots"
@@ -412,6 +444,10 @@ msgstr ""
 
 msgctxt "app"
 msgid "Password Recovery"
+msgstr ""
+
+msgctxt "app"
+msgid "Password Reset"
 msgstr ""
 
 msgctxt "app"
@@ -459,7 +495,15 @@ msgid "Provide the following information to continue."
 msgstr ""
 
 msgctxt "app"
+msgid "Recover"
+msgstr ""
+
+msgctxt "app"
 msgid "Recovery E-Mail has been send"
+msgstr "@@@@"
+
+msgctxt "app"
+msgid "Recovery E-Mail has been sent"
 msgstr ""
 
 msgctxt "app"
@@ -512,7 +556,7 @@ msgstr ""
 
 msgctxt "app"
 msgid "Send"
-msgstr ""
+msgstr "@@@@"
 
 msgctxt "app"
 msgid "Setup the system by registering the first user, which will receive super user rights."
@@ -635,6 +679,10 @@ msgid "This account is disabled, you can't login"
 msgstr ""
 
 msgctxt "app"
+msgid "This recovery link is valid only one time and only for the 24 hours after this request."
+msgstr ""
+
+msgctxt "app"
 msgid "This timeslot can't be booked. Choose another one, please."
 msgstr ""
 
@@ -723,6 +771,10 @@ msgid "User Name"
 msgstr ""
 
 msgctxt "app"
+msgid "User not found or no password reset request issued"
+msgstr ""
+
+msgctxt "app"
 msgid "Value"
 msgstr ""
 
@@ -779,6 +831,10 @@ msgid "You can also request special bookings out of the normal opening hours by 
 msgstr ""
 
 msgctxt "app"
+msgid "You didn't provide enough information for a password reset"
+msgstr ""
+
+msgctxt "app"
 msgid "You don't have permission to see this booking"
 msgstr ""
 
@@ -803,7 +859,15 @@ msgid "Your comments"
 msgstr ""
 
 msgctxt "app"
+msgid "Your password has been successfully reset. You can now login."
+msgstr ""
+
+msgctxt "app"
 msgid "Your secret key is: "
+msgstr ""
+
+msgctxt "app"
+msgid "we have received a password reset request for your account on the museum booking system."
 msgstr ""
 
 msgctxt "app"
