@@ -37,6 +37,10 @@ class BookingController extends Controller
     // Error messages
     const ERROR_MESSAGE_NO_TIME_SLOTS = "You must choose at least one time slot";
     const ERROR_MESSAGE_INVALID_TIME_SLOTS = "You have chosen invalid time slots";
+    const ERROR_NOT_FOUND_EXCEPTION = "The requested page does not exist.";
+    const ERROR_PROCESSING = "An error has occurred while processing your request";
+    const ERROR_INVALID_INPUT = "Invalid input";
+
 
     public function behaviors()
     {
@@ -161,7 +165,7 @@ class BookingController extends Controller
         if ((Yii::$app->request->post())) {
 
             if (!$model->load((Yii::$app->request->post()))) {
-                throw new \ErrorException();
+                throw new \ErrorException(Yii::t('app', self::ERROR_INVALID_INPUT));
             }
 
             //this line solve a bug! Don't delete it!--> bug solved?? wait more to delete these 2 lines
@@ -263,7 +267,7 @@ class BookingController extends Controller
             // Check whether time slot IDs are numeric and valid
             foreach ($timeSlotIDs as $timeSlotID) {
                 if (!is_numeric($timeSlotID) or ((int)$timeSlotID) != $timeSlotID or $timeSlotID <= 0) {
-                    throw new BadRequestHttpException(self::ERROR_MESSAGE_INVALID_TIME_SLOTS);
+                    throw new BadRequestHttpException(Yii::t('app', self::ERROR_MESSAGE_INVALID_TIME_SLOTS));
                 }
             }
 
@@ -281,7 +285,7 @@ class BookingController extends Controller
         $sessionTimeSlots = Yii::$app->session->get(self::SESSION_PARAMETER_TIME_SLOT);
 
         if (empty($sessionTimeSlots)) {
-            throw new BadRequestHttpException(self::ERROR_MESSAGE_NO_TIME_SLOTS);
+            throw new BadRequestHttpException(Yii::t('app', self::ERROR_MESSAGE_NO_TIME_SLOTS));
         }
 
         // Populate model with data from the POST-Request
@@ -489,7 +493,7 @@ class BookingController extends Controller
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
 
-            throw new BadRequestHttpException();
+            throw new BadRequestHttpException(Yii::t('app', self::ERROR_MESSAGE_NO_TIME_SLOTS));
         }
 
         $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
@@ -499,13 +503,13 @@ class BookingController extends Controller
 
             if (!$booking->save()) {
                 //rise error
-                throw new ErrorException();
+                throw new ErrorException(Yii::t('app', self::ERROR_PROCESSING));
             }
 
             foreach ($timeSlots as $slot) {
                 $slot->id_booking = $booking->id;
                 if (!$slot->save()) {
-                    throw new ErrorException();
+                    throw new ErrorException(Yii::t('app', self::ERROR_PROCESSING));
                 }
             }
 
@@ -527,7 +531,7 @@ class BookingController extends Controller
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
 
-            throw new BadRequestHttpException();
+            throw new BadRequestHttpException((Yii::t('app', self::ERROR_PROCESSING)));
         }
     }
 
@@ -635,7 +639,7 @@ class BookingController extends Controller
         if (($model = Booking::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Yii::t('app', self::ERROR_NOT_FOUND_EXCEPTION));
         }
     }
 
@@ -663,7 +667,7 @@ class BookingController extends Controller
         if (($model = $query->one()) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('Incorrect input');
+            throw new NotFoundHttpException(Yii::t('app', self::ERROR_NOT_FOUND_EXCEPTION));
         }
     }
 
