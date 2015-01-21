@@ -92,6 +92,11 @@ class Booking extends \yii\db\ActiveRecord
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
                 $this->token = Yii::$app->getSecurity()->generateRandomString($length = 6);
+
+                if(empty($this->timestamp)){
+                    $now = new \DateTime();
+                    $this->timestamp = $now->format('Y-m-d H:i');
+                }
             }
             return true;
         }
