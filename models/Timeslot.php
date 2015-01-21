@@ -18,6 +18,10 @@ use yii\db\ActiveRecord;
  * @property integer $id_booking
  * @property integer $creation_mode
  * @property bool $blocking if this is a blocking Timeslot to allow for breaks, pauses, etc.
+ *
+ * Linked models
+ * @property Simulator $simulator
+ * @property Booking $booking
  */
 class Timeslot extends ActiveRecord
 {
@@ -222,9 +226,5 @@ class Timeslot extends ActiveRecord
 
         }
 
-    }
-    public function simulatorToString(){
-        $simulator = Simulator::findOne(['id' => $this->id_simulator]);;
-        return $simulator->name;
     }
 }
