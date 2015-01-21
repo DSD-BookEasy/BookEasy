@@ -19,15 +19,6 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
     <h1><?= Html::encode($this->title) ?></h1>
     <p><?= Yii::t('app',"From here you can change the global parameters of the system")?></p>
 
-    <p>
-        <?php
-        //TODO when we have permissions, this button should be rendered only if user can create parameters
-        ?>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Parameter',
-]), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
@@ -90,7 +81,11 @@ function renderFormTextarea($model){
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->textarea(['rows'=>2])->label(false);
+    $out .= $form->field($model, 'value', ['inputOptions' => [
+        'id' => $model->id.'-parameter-value',
+        'class' => 'form-control'
+    ]])
+        ->textarea(['rows'=>2])->label(false);
     $out .= Html::submitButton();
 
     ob_start();
@@ -109,7 +104,11 @@ function renderFormText($model){
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->textInput()->label(false);
+    $out .= $form->field($model, 'value', ['inputOptions' => [
+        'id' => $model->id.'-parameter-value',
+        'class' => 'form-control'
+    ]])
+        ->textInput()->label(false);
     $out .= Html::submitButton();
 
     ob_start();
@@ -128,12 +127,13 @@ function renderFormDateTime($model){
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->widget(DateTimePicker::className(), [
+    $out .= $form->field($model, 'value', ['inputOptions' => ['id' => $model->id.'-parameter-value']])
+        ->widget(DateTimePicker::className(), [
         'removeButton' => false,
         'pluginOptions' => [
             'autoclose' => true,
         ]
-    ]);
+    ])->label(false);
     $out .= Html::submitButton();
 
     ob_start();
@@ -153,12 +153,13 @@ function renderFormTime($model){
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->widget(TimePicker::className(), [
+    $out .= $form->field($model, 'value', ['inputOptions' => ['id' => $model->id.'-parameter-value']])
+        ->widget(TimePicker::className(), [
         'pluginOptions' => [
             'autoclose' => true,
             'showMeridian' => false,
         ]
-    ]);
+    ])->label(false);
     $out .= Html::submitButton();
 
     ob_start();

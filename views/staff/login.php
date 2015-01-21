@@ -6,21 +6,12 @@ use yii\widgets\ActiveForm;
 
 ?>
 <h1><?= Yii::t('app', 'Staff Login') ?></h1>
-<?php
-if (!empty($error)) {
-    ?>
-    <div class="error">
-        <br>
-        <h3><?= HTML::encode($error); ?></h3>
-        <br>
-    </div>
-<?php
-}
-?>
 
 <div class="login-form">
 
     <?php $form = ActiveForm::begin(); ?>
+
+    <?= $form->errorSummary($model); ?>
 
     <?= $form->field($model, 'user_name')->textInput(['maxlength' => 255]) ?>
 

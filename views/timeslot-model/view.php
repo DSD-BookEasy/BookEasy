@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\TimeslotModel */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slot Models'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Recurring Time Slots'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="time-slot-model-view">

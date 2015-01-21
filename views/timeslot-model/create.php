@@ -8,10 +8,8 @@ use yii\helpers\Html;
 /* @var $simulators app\models\Simulator[]*/
 
 
-$this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Time Slot',
-]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slot Models'), 'url' => 'index'];
+$this->title = Yii::t('app', 'Create Recurring Time Slots');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Recurring Time Slots'), 'url' => 'index'];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="time-slot-model-create">

@@ -2,14 +2,17 @@
 
 namespace app\controllers;
 
+use app\models\Parameter;
 use Yii;
 use app\models\Staff;
+use yii\base\ErrorException;
 use yii\data\ActiveDataProvider;
 use app\models\Booking;
 use app\models\Simulator;
 use app\models\Timeslot;
 use DateTime;
 use yii\filters\AccessControl;
+use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
@@ -20,7 +23,7 @@ class StaffController extends \yii\web\Controller
         return [
             'access' => [//Allow access to logout only if user is logged-in
                 'class' => AccessControl::className(),
-                'except' => ['login', 'update', 'recover'],
+                'except' => ['login', 'update', 'recover', 'pass-reset'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
@@ -62,14 +65,24 @@ class StaffController extends \yii\web\Controller
         } else {
             $staff = Staff::findOne(['user_name' => $loginData['user_name']]);
             if (!empty($staff) and $staff->isValidPassword($loginData['password'])) {
-                Yii::$app->user->login($staff, 3600 * 24 * 30);
-                return $this->redirect('agenda');
+
+                if ($staff->disabled) {
+                    $staff = new Staff();
+                    $staff->user_name = $loginData['user_name'];
+                    $staff->addError('disabled', \Yii::t('app', 'This account is disabled, you can\'t login'));
+                    return $this->render('login', [
+                        'model' => $staff,
+                    ]);
+                } else {
+                    Yii::$app->user->login($staff, 3600 * 24 * 30);
+                    return $this->redirect('agenda');
+                }
             } else {
                 $staff = new Staff();
                 $staff->user_name = $loginData['user_name'];
+                $staff->addError('', \Yii::t('app', 'Invalid Username or Password'));
                 return $this->render('login', [
                     'model' => $staff,
-                    'error' => \Yii::t('app', 'Invalid Username or Password')
                 ]);
             }
         }
@@ -83,30 +96,79 @@ class StaffController extends \yii\web\Controller
      */
     public function actionRecover()
     {
-        $loginData = Yii::$app->request->post('Staff');
-        if (empty($loginData)) {
-            // renders a view named "recover"
-            return $this->render('recover', [
-                'model' => new Staff(),
-            ]);
-        } else {
-            $staff = Staff::findOne(['email' => $loginData['email']]);
-            if (empty($staff)) {
-                //  email has not been found, echo error message
-                return $this->render('recover', [
-                    'model' => new Staff(),
-                    'error' => \Yii::t('app', 'E-Mail not found')
-                ]);
-            } else {
+        $recover = Yii::$app->request->post('identificator');
+        $error='';
+        $confirm='';
+
+        if (!empty($recover)) {
+            $staff = Staff::find()
+                ->where(['user_name' => $recover])
+                ->orWhere(['email' => $recover])
+                ->one();
+
+            if (!empty($staff)) {
                 // email has been found, send recovery email
 
                 $this->sendRecovery($staff);
-
-                return $this->render('recover', [
-                    'model' => $staff,
-                    'error' => \Yii::t('app', 'Recovery E-Mail has been send')
-                ]);
+                $confirm = Yii::t('app', 'Recovery E-Mail has been sent');
+            } else{
+                $error = Yii::t('app', 'E-Mail not found');
             }
+        }
+
+        return $this->render('recover', [
+            'error' => $error,
+            'confirm' => $confirm
+        ]);
+    }
+
+    public function actionPassReset()
+    {
+        //Find the identification data
+        if(Yii::$app->request->isGet) {
+            $hash = Yii::$app->request->get('recover_hash');
+            $id = Yii::$app->request->get('id');
+        } elseif (Yii::$app->request->isPost){
+            $temp_s = Yii::$app->request->post('Staff');
+            $hash = $temp_s['recover_hash'];
+            $id = $temp_s['id'];
+        }
+
+        if (!empty($hash) && !empty($id)) {
+            //Verify identification data is valid
+            $date = new \DateTime();
+            $date->sub(new \DateInterval('PT24H'));
+
+            $user = Staff::find()
+                ->where(['id' => $id])
+                ->andWhere(['recover_hash' => $hash])
+                ->andWhere(['>','last_recover', $date->format('Y-m-d H:i')])
+                ->one();
+            if(empty($user)){
+                throw new NotFoundHttpException(Yii::t('app',"User not found or no password reset request issued"));
+            }
+
+            $confirm = false;
+            $error = false;
+            if(Yii::$app->request->isPost) {//Set a new password and save
+                $user->plain_password = $temp_s['plain_password'];
+                $user->repeat_password = $temp_s['repeat_password'];
+
+                //Reset the recover data, so this link can be use only one time
+                $user->recover_hash = '';
+                $user->last_recover = '';
+                if($user->save()){
+                    $confirm = true;
+                }
+            }
+
+            //Show the reset form, or just a confirm message
+            return $this->render('pass-reset', [
+                'staff' => $user,
+                'confirm' => $confirm,
+            ]);
+        } else {
+            throw new BadRequestHttpException(Yii::t('app',"You didn't provide enough information for a password reset"));
         }
     }
 
@@ -307,32 +369,19 @@ class StaffController extends \yii\web\Controller
     }
 
 
-    private function sendRecovery($staff)
+    private function sendRecovery(Staff $staff)
     {
-        Yii::$app->mailer->compose(['html' => 'booking/new_booking_html', 'text' => 'booking/new_booking_text'], [
-            'id' => 1,
-            'mailText' => Yii::t('app', 'Email content.')
+        $now = new \DateTime();
+        $staff->last_recover= $now->format('Y-m-d H:i');
+        $staff->recover_hash = Yii::$app->getSecurity()->generateRandomString();
+        $staff->save();
+
+        Yii::$app->mailer->compose(['html' => 'staff/recovery_html', 'text' => 'staff/recovery_text'], [
+            'staff' => $staff
         ])
-            ->setFrom(\Yii::$app->params['adminEmail'])
-            ->setTo($staff['email'])
-            ->setSubject(\Yii::t('app', 'Booking system password recovery'))
+            ->setFrom(Parameter::getValue('adminEmail',''))
+            ->setTo($staff->email)
+            ->setSubject(Yii::t('app', 'Booking System Password Recovery'))
             ->send();
-
-/*        $getToken=rand(0, 99999);
-        $getTime=date("H:i:s");
-        $token=md5($getToken.$getTime);
-
-        $emailAdmin= Yii::t('app', 'bokning@flygmuseum.com');
-        $setText="To reset your password click the link below:<br/>
-                    <a href='http://localhost.com/index.php?r=staff/vertoken/view&token=".$token."'>Click Here to Reset Password</a><br><br>
-                    This email has been generated automaticaly. Please do not answer to it.";
-
-        $name='=?UTF-8?B?'.base64_encode(Yii::t('app', 'Flygmuseum Booking System')).'?=';
-        $subject='=?UTF-8?B?'.base64_encode(Yii::t('app', 'Booking system password recovery')).'?=';
-        $headers="From: $name <{$emailAdmin}>\r\n".
-            "Reply-To: {$emailAdmin}\r\n".
-            "MIME-Version: 1.0\r\n".
-            "Content-type: text/html; charset=UTF-8";
-        mail($staff['email'],$subject,$setText,$headers);*/
     }
 }

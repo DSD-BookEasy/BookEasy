@@ -7,9 +7,7 @@ use yii\helpers\Html;
 /* @var $model app\models\Timeslot */
 /* @var $simulators app\models\Simulator[] */
 
-$this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Time Slot',
-]);
+$this->title = Yii::t('app', 'Create Time Slot');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slots'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use \talma\widgets\FullCalendar;
+use \yii\helpers\Url;
 use kartik\datetime\DateTimePicker;
 
 
@@ -11,6 +13,7 @@ use kartik\datetime\DateTimePicker;
 /* @var $simulator app\models\Simulator */
 /* @var $timeslots app\models\Timeslot[] */
 /* @var $businessHours array */
+/* @var $error string */
 
 $this->title = Yii::t('app', 'Request Booking');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bookings'), 'url' => ['index']];
@@ -27,6 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <p><?= Yii::t('app','You are about to send a request for opening the museum for a special visit and a flight simulation.
     Please fill in the following form to continue')?>:</p>
 
+    <?php
+        if(!empty($error)){
+            Html::tag('div',$error,['class' => 'alert alert-danger']);
+        }
+    ?>
+
     <?= Html::ul([
         Yii::t('app','Entrance Fee: {0, number} kr', $entry_fee),
         Yii::t('app','Simulator Fee: {0, number} kr per {duration} minutes.', [$simulator->price_simulation, 'duration' => $simulator->flight_duration]),
@@ -36,75 +45,84 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
     $form = ActiveForm::begin(['action' => ['']]);
+    echo Html::input('hidden','simulator',$simulator->id);
 
     echo $this->render('_form', [
         'model' => $model,
         'showAddress' => true,
-        'form' => $form
+        'form' => $form,
+        'instructors' => $instructors,
+        'me' => $me,
     ]);
     ?>
     <fieldset>
         <legend><?= Yii::t('app',"Time Span")?></legend>
         <div id="dynamic_fields">
             <?php
+                \kartik\datetime\DateTimePickerAsset::register($this);
                 $deleteButton=Html::a('','#',['class' => 'glyphicon glyphicon-remove btn btn-warning dynamic_remove']);
-                $first=true;
+                $i=0;
+
                 foreach($timeslots as $t){
-                    $start_end=$form->field($t, 'start', ['options' => ['class' => 'col-md-5']])->widget(DateTimePicker::className(), [
-                        'removeButton' => false,
-                        'options' => ['placeholder' => Yii::t('app', 'Enter starting time ...')],
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                        ]
-                    ]);
-
-                    $start_end.=$form->field($t, 'end', ['options' => ['class' => 'col-md-5']])->widget(DateTimePicker::className(), [
-                        'removeButton' => false,
-                        'options' => ['placeholder' => Yii::t('app', 'Enter ending time ...')],
-                        'pluginOptions' => [
-                            'autoclose' => true,
-                        ]
-                    ]);//TODO make field names usable in array
-
-                    if($first){
-                        $first=false;
-                        //$start_end.=Html::tag('div','&nbsp;',['class' => 'col-md-2']);
-                    }
-                    else{
+                    $start_end='
+<div class="col-md-5 field-timeslot-start">
+    <label class="control-label" for="timeslot-start">Start</label>
+    <div class="input-group date">
+        <span class="input-group-addon" title="Select date &amp; time">
+            <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+        <input type="text" class="form-control picker_input picker_start" name="Timeslot['.$i.'][start]" placeholder="Enter starting time ..." value="'.$t->start.'">
+    </div>
+    <div class="help-block"></div>
+</div>
+<div class="col-md-5 field-timeslot-end">
+    <label class="control-label" for="timeslot-end">End</label>
+    <div class="input-group date">
+        <span class="input-group-addon" title="Select date &amp; time">
+            <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+        <input type="text" class="form-control picker_input picker_end" name="Timeslot['.$i.'][end]" placeholder="Enter ending time ..." value="'.$t->end.'">
+    </div>
+    <div class="help-block"></div>
+</div>';
+                    if($i!=0){
                         $start_end.=Html::tag('div',$deleteButton,['class' => 'col-md-2']);
                     }
 
                     echo Html::tag('div',
                         $start_end,
                         ['class' => 'dynamic_field row']);
+
+                    $i++;
                 }
             ?>
             <a href="#" id="dynamic_add" class="btn btn-success"><?= Yii::t('app','Add more Time Spans')?></a>
             <!-- This paragraph just creates some space to the elements below -->
             <p><br></p>
         </div>
+        <?php
+        echo Html::label(Yii::t('app','Below you can see the availability of the chosen simulator. Click on the calendar to add time spans to your booking (time spans in red are not available for booking)').':');
 
-<!-- The calendar to show the booked timeslots around the selected date is currently disabled, because it's not working properly and fixing it would require to much effort at the moment   --><?php
-/*    echo Html::label(Yii::t('app','Below you can see the availability of the chosen simulator').':');
-    echo FullCalendar::widget([
-        'config' => [
-            'header' => [
-                'left' => '',
-                'center' => 'title',
-            ],
-            'aspectRatio' => '2.5',
-            'defaultView' => 'agendaWeek',
-            'scrollTime' => '08:00:00',
-            'editable' => false,
-            'firstDay' => 1,
-            'allDaySlot' => false,
-            'events' => Url::to(['/timeslot/anon-calendar','simulator' => $simulator->id, 'background' => true]),
-            'minTime' => $businessHours['start'],
-            'maxTime' => $businessHours['end'],
-            'eventRender' => new \yii\web\JsExpression('calendarAddTimespan')
-        ]
-    ]);
-    */?>
+        echo FullCalendar::widget([
+            'config' => [
+                'header' => [
+                    'left' => '',
+                    'center' => 'title',
+                ],
+                'aspectRatio' => '2.5',
+                'defaultView' => 'agendaWeek',
+                'scrollTime' => '08:00:00',
+                'editable' => false,
+                'firstDay' => 1,
+                'allDaySlot' => false,
+                'events' => Url::to(['/timeslot/anon-calendar','simulator' => $simulator->id, 'background' => true]),
+                'minTime' => $businessHours['start'],
+                'maxTime' => $businessHours['end'],
+                'selectable' => true,
+                'select' => new \yii\web\JsExpression('calendarAddTimespan')
+            ]
+        ]);
+        ?>
     </fieldset>
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'),
@@ -117,4 +135,9 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 //Depends clause is necessary to make the js load AFTER jQuery
 $this->registerJsFile('@web/js/dynamic_field.js', ['depends' => 'app\assets\AppAsset']);
+
+//Flight time in minutes
+$this->registerJs("
+var simulationDuration=".$simulator->flight_duration."
+",\yii\web\View::POS_HEAD);
 ?>

@@ -15,9 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Booking',
-]), ['site/index'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Create Booking'), ['site/index'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -30,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'timestamp',
             'name',
             'surname',
+            'assigned_instructor_name',
             // 'telephone',
             // 'email:email',
             // 'address',
@@ -40,6 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
         //this is the only way I found to modify the content of a column
         'beforeRow' => function ($model){
             $model->status = $model->statusToString();
+            $model->assigned_instructor_name = $model->instructorToString();
         }
     ]); ?>
 

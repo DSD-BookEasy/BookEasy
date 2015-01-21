@@ -28,10 +28,29 @@ use yii\base\Exception;
 use yii\db\Migration;
 
 use yii\db\IntegrityException;
+use yii\filters\AccessControl;
+use yii\web\ForbiddenHttpException;
 
 
 class PopulatorController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'matchCallback' => function ($rule, $action) {
+                            return YII_ENV_DEV;
+                        }
+                    ],
+                ],
+            ],
+        ];
+    }
+
     /**
      * @param $date Reference to date of next timeslot
      * @param $lunchBreak Amount of the time break for lunch

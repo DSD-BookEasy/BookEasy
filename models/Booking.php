@@ -92,6 +92,11 @@ class Booking extends \yii\db\ActiveRecord
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
                 $this->token = Yii::$app->getSecurity()->generateRandomString($length = 6);
+
+                if(empty($this->timestamp)){
+                    $now = new \DateTime();
+                    $this->timestamp = $now->format('Y-m-d H:i');
+                }
             }
             return true;
         }
@@ -113,6 +118,14 @@ class Booking extends \yii\db\ActiveRecord
         }
     }
 
+    public function instructorToString(){
+        if ($this->assigned_instructor != null) {
+            $instructor = Staff::findOne($this->assigned_instructor);
+            return $instructor->name . ' ' . $instructor->surname;
+        } else {
+            return null;
+        }
+    }
 
     /*
      * old status to string

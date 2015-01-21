@@ -12,9 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
 <h1><?= $this->title ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create new staff {modelClass}', [
-            'modelClass' => 'account',
-        ]), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Create new staff account'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
 <?= GridView::widget([
@@ -23,7 +21,9 @@ $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
         'user_name',
         'name',
         'surname',
-        ['class' => 'yii\grid\ActionColumn'],
+        [
+            'class' => 'yii\grid\ActionColumn',
+            'template' => '{view} {update}',
+        ],
     ],
-
 ]); ?>

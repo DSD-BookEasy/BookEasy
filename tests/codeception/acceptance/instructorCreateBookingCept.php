@@ -8,13 +8,18 @@ $I->fillField("#staff-user_name", "mercedes26");
 $I->fillField("#staff-password", "123456789");
 $I->click("#loginBtn");
 $I->click("#loginBtn");
-$I->wait(2);
+$I->wait(1);
+$I->click("Bookings");
+$I->wait(1);
+$I->click("New Booking");
+$I->wait(1);
+$I->click("(//a[contains(text(),'Book »')])[2]");
+$I->wait(1);
 
-$I->fillField("#w4", "01/11/2015");
-$I->wait(2);
+$I->click("//div[@id='calendar_buttons']/a[3]");
+$I->wait(1);
 
-$I->see("Available","div.fc-title");
-$I->click("div.fc-content");
+$I->click("//div[@id='w0']/div[2]/div/table/tbody/tr/td/div/div/div[3]/table/tbody/tr/td[8]/div/a/div");
 $I->wait(1);
 
 $I->fillField("#booking-name", "marco");
@@ -32,12 +37,7 @@ $I->click("button.btn.btn-success");
 $I->wait(1);
 $I->click("Confirm");
 $I->wait(1);
-$I->amOnPage("/index-test.php/staff/agenda");
-$I->wait(2);
-$I->fillField("#w4", "01/11/2015");
-$I->wait(2);
 
-$I->click("div.fc-content");
 $I->wait(2);
 $I->see("Delete");
 $I->click("Delete");

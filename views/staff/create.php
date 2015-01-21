@@ -7,9 +7,7 @@ use yii\helpers\Html;
 /* @var $model app\models\Staff */
 /* @var $allRoles yii\rbac\Role[] */
 
-$this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Staff',
-]);
+$this->title = Yii::t('app', 'Create Staff');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Staff'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

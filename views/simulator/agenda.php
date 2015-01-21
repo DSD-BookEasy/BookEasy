@@ -147,15 +147,19 @@ $duration = $simulator->flight_duration;
                         'defaultDate' => $week->format("c"),
                         'events' => $events,
                         'eventRender' => new \yii\web\JsExpression('slotBooking'),
+                        'selectable' => true,
+                        'selectOverlap' => new \yii\web\JsExpression('function (event){
+                            return event.rendering === "inverse-background";
+                        }'),
+                        'select' => new \yii\web\JsExpression('specialRequest'),
                         'minTime' => $borders['start'],
                         'maxTime' => $borders['end']
                     ]
                 ]); ?>
                 <div class="alert alert-info">
-                    <?= Html::tag('p', Yii::t('app', "{click}", [
-                        'click' => Html::a(Yii::t('app',
-                            'An alternative way to create a booking is by clicking here. (Recommended for mobile devices)'),
-                            ['booking/create-weekdays', 'simulator' => $simulator->id])
+                    <?= Html::tag('p',
+                            Yii::t('app', "You can also request special bookings out of the normal opening hours by clicking on an empty spot in the calendar. Or alternatively {click_here}", [
+                                'click_here' => Html::a(Yii::t('app', 'click here (Recommended for mobile devices)'),['booking/create-weekdays', 'simulator' => $simulator->id])
                     ])) ?>
                 </div>
             </div>
@@ -183,20 +187,25 @@ $duration = $simulator->flight_duration;
                     'agenda',
                     'id' => $simulator->id,
                 ]);
-                echo DatePicker::widget([
-                    'name' => 'dp_1',
-                    'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-                    'options' => ['placeholder' => \Yii::t('app', "Pick a date ") . 'mm/dd/yyyy'],
-                    'pluginOptions' => [
-                        'todayHighlight' => true,
-                        'todayBtn' => true,
-                        'weekStart' => '1',
-                        'startDate' => 'today',
-                    ],
-                    'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
-
-                ]);
                 ?>
+
+                <div style="width: 35%">
+                    <?php
+                    echo DatePicker::widget([
+                        'name' => 'dp_1',
+                        'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+                        'options' => ['placeholder' => \Yii::t('app', "Pick a date")],
+                        'pluginOptions' => [
+                            'todayHighlight' => true,
+                            'todayBtn' => true,
+                            'weekStart' => '1',
+                            'startDate' => 'today',
+                        ],
+                        'pluginEvents' => ["changeDate" => "function(e){document.location.href='" . $agenda_url . "?week='+e.date.getWeekYear()+'W'+e.date.getWeek();}"],
+
+                    ]);
+                    ?>
+                </div>
             </div>
         </div>
     </div>
@@ -250,6 +259,49 @@ $duration = $simulator->flight_duration;
                     element.tooltip();
                 }
             }
+        }
+
+        function specialRequest(start, end, jsEvent, view){
+            //Cannot select dates in the past
+            if(start.isBefore(moment()) || end.isBefore(moment())){
+                return;
+            }
+
+            var $d = $('#dialog');
+            if($d.length==0){
+                $('<div id="dialog" />').appendTo('body');
+                $d = $('#dialog');
+                $d.dialog({
+                    autoOpen: false,
+                    modal: true,
+                    title: '<?= Yii::t('app','Special Booking Request'); ?>'
+                })
+            }
+
+            $d.html("<p><?= Yii::t('app','Do you really want to make a request for a special booking out of the normal opening hours?'); ?></p>\
+            <ul>\
+                <li><?= Yii::t('app','Start Time') ?>: "+start.format('YYYY-MM-DD HH:mm')+"</li>\
+                <li><?= Yii::t('app','End Time') ?>: "+end.format('YYYY-MM-DD HH:mm')+"</li>\
+            </ul>");
+
+            $d.dialog("option","buttons",[
+                {
+                    text: '<?= Yii::t('app','Yes'); ?>',
+                    click: function(){
+                        window.location.href = '<?= Url::to(['booking/create-weekdays', 'simulator' => $simulator->id])?>&'+
+                            encodeURIComponent('Timeslot[0][start]') + '=' + encodeURIComponent(start.format('YYYY-MM-DD HH:mm')) +
+                            '&' + encodeURIComponent('Timeslot[0][end]') + '=' + encodeURIComponent(end.format('YYYY-MM-DD HH:mm'));
+                    }
+                },
+                {
+                    text: '<?= Yii::t('app','No'); ?>',
+                    click: function (){
+                        $( this ).dialog( "close" );
+                    }
+                }
+            ]);
+
+            $d.dialog("open");
         }
     </script>
 <?php
