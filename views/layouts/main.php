@@ -110,6 +110,10 @@ AppAsset::register($this);
 </html>
 <?php $this->endPage();
 
+/**
+ * Filters menu entries based on the specified permissions
+ * @param $items
+ */
 function checkMenuPermissions(&$items){
     $toDel = [];
     foreach($items as $key => $entry){
@@ -120,7 +124,17 @@ function checkMenuPermissions(&$items){
 
             $can = false;
             foreach($entry['permission'] as $perm){
-                if(Yii::$app->user->can($perm)){
+                if ($perm === '?') {
+                    if (Yii::$app->user->getIsGuest()) {
+                        $can = true;
+                        break;
+                    }
+                } elseif ($perm === '@') {
+                    if (!Yii::$app->user->getIsGuest()) {
+                        $can = true;
+                        break;
+                    }
+                } elseif (Yii::$app->user->can($perm)){
                     $can = true;
                     break;
                 }
