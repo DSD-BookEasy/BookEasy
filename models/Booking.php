@@ -20,6 +20,10 @@ use yii\base\ErrorException;
  * @property string $comments
  * @property integer $assigned_instructor
  * @property string $token
+ *
+ * Linked Models
+ * @property Timeslot[] $timeslots
+ * @property Staff $instructors
  */
 class Booking extends \yii\db\ActiveRecord
 {
@@ -81,11 +85,27 @@ class Booking extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * Represents the relationship between a Booking and the timeslots
+     * You can access timeslots associated to a booking by calling
+     * $booking->timeslots
+     * @return \yii\db\ActiveQuery
+     */
     public function getTimeslots() {
         // Booking has_many Timeslot via timeslot.id_booking -> id
         return $this->hasMany(Timeslot::className(), ['id_booking' => 'id']);
     }
 
+    /**
+     * Represents the relationship between a Booking and an Instructor
+     * You can access the instructor object by calling
+     * $booking->instructor
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInstructor() {
+        return $this->hasOne(Staff::className(), ['id' => 'assigned_instructor']);
+    }
 
     public function beforeSave($insert)
     {
@@ -117,31 +137,4 @@ class Booking extends \yii\db\ActiveRecord
                 return Yii::t('app', 'Waiting for Confirmation');
         }
     }
-
-    public function instructorToString(){
-        if ($this->assigned_instructor != null) {
-            $instructor = Staff::findOne($this->assigned_instructor);
-            return $instructor->name . ' ' . $instructor->surname;
-        } else {
-            return null;
-        }
-    }
-
-    /*
-     * old status to string
-    public function statusToString(){
-        switch($this->status){
-            case Booking::CONFIRMED:
-                $this->status = 'Confirmed';
-                break;
-            case Booking::NOT_CONFIRMED:
-                $this->status = 'Not Confirmed';
-                break;
-            case Booking::WAITING_FOR_CONFIRMATION:
-                $this->status = 'Waiting for Confirmation';
-                break;
-        }
-    }
-    */
-
 }

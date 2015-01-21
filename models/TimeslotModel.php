@@ -22,6 +22,9 @@ use yii\db\ActiveRecord;
  * @property integer $repeat_day Day of the week in which the repetitions takes place
  * @property string $generated_until Date of the last generated Timeslot
  * @property bool $blocking
+ *
+ * Linked models
+ * @property Simulator $simulator
  */
 class TimeslotModel extends ActiveRecord
 {
@@ -321,10 +324,12 @@ class TimeslotModel extends ActiveRecord
         }
     }
 
-    public function simulatorToString(){
-        $simulator = Simulator::findOne(['id' => $this->id_simulator]);;
-        return $simulator->name;
+    /**
+     * Getter for finding the data of the simulator associated with the TimeslotModel
+     * You can access it by calling $this->simulator
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSimulator(){
+        return $this->hasOne(Simulator::className(), ['id' => 'id_simulator']);
     }
-
-
 }

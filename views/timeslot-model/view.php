@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         $timeSlotToShow = clone $model;
         $timeSlotToShow->frequency = $timeSlotToShow->frequencyToString();
-        $timeSlotToShow->id_simulator = $timeSlotToShow->simulatorToString();
+        $timeSlotToShow->id_simulator = $timeSlotToShow->simulator->name;
         $timeSlotToShow->repeat_day = $timeSlotToShow->repeatDayToString();
 
     ?>

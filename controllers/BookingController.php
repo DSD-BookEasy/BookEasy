@@ -34,10 +34,6 @@ class BookingController extends Controller
     const SESSION_PARAMETER_TIME_SLOT = 'timeslots';
     const SESSION_PARAMETER_WEEKDAYS = 'weekdays';
 
-    // Error messages
-    const ERROR_MESSAGE_NO_TIME_SLOTS = "You must choose at least one time slot";
-    const ERROR_MESSAGE_INVALID_TIME_SLOTS = "You have chosen invalid time slots";
-
     public function behaviors()
     {
         return [
@@ -137,15 +133,19 @@ class BookingController extends Controller
         if ($model->token != $token) {
             throw new ForbiddenHttpException(Yii::t('app', "You don't have permission to see this booking"));
         }
-        Timeslot::handleDeleteBooking($model);
-        $model->delete();
 
-        // if the user who deleted the booking can manageBookings, send him to the booking/index, otherwise it is a customer, send him to the site/index
-        if (Yii::$app->user->can('manageBookings')) {
-            return $this->redirect(['index']);
-        }
-        else {
-            return $this->redirect(['site/index']);
+        try {
+            Timeslot::handleDeleteBooking($model);
+            $model->delete();
+
+            // if the user who deleted the booking can manageBookings, send him to the booking/index, otherwise it is a customer, send him to the site/index
+            if (Yii::$app->user->can('manageBookings')) {
+                return $this->redirect(['index']);
+            } else {
+                return $this->redirect(['site/index']);
+            }
+        } catch(\ErrorException $e){
+            throw new ServerErrorHttpException(Yii::t('app',"There was an unexpected error during the deletion of the booking."));
         }
     }
 
@@ -161,12 +161,8 @@ class BookingController extends Controller
         if ((Yii::$app->request->post())) {
 
             if (!$model->load((Yii::$app->request->post()))) {
-                throw new \ErrorException();
+                throw new BadRequestHttpException();
             }
-
-            //this line solve a bug! Don't delete it!--> bug solved?? wait more to delete these 2 lines
-            //$model->id = Yii::$app->request->post('Booking')['id']; //I don't know why but the load doesn't load the id
-            //$model->token = Yii::$app->request->post('Booking')['token'];
 
             $model = $this->findModelForSearch($model);
 
@@ -217,12 +213,19 @@ class BookingController extends Controller
         ]);
     }
 
+    /**
+     * Action used when a coordinator confirms a booking
+     * @param $id
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws ServerErrorHttpException
+     */
     public function actionAccept($id)
     {
         $booking = $this->findModel($id);
         $booking->status = Booking::CONFIRMED;
         if (!$booking->save()) {
-            throw new ErrorException('Confirm denied');
+            throw new ServerErrorHttpException(Yii::t('app','There was an error while confirming the booking'));
         }
         return $this->redirect(['booking/view','id'=>$id]);
     }
@@ -263,7 +266,7 @@ class BookingController extends Controller
             // Check whether time slot IDs are numeric and valid
             foreach ($timeSlotIDs as $timeSlotID) {
                 if (!is_numeric($timeSlotID) or ((int)$timeSlotID) != $timeSlotID or $timeSlotID <= 0) {
-                    throw new BadRequestHttpException(self::ERROR_MESSAGE_INVALID_TIME_SLOTS);
+                    throw new BadRequestHttpException(Yii::t('app', "You have specified invalid time slots"));
                 }
             }
 
@@ -281,7 +284,7 @@ class BookingController extends Controller
         $sessionTimeSlots = Yii::$app->session->get(self::SESSION_PARAMETER_TIME_SLOT);
 
         if (empty($sessionTimeSlots)) {
-            throw new BadRequestHttpException(self::ERROR_MESSAGE_NO_TIME_SLOTS);
+            throw new BadRequestHttpException(Yii::t('app', "You must choose at least one time slot"));
         }
 
         // Populate model with data from the POST-Request
@@ -357,7 +360,7 @@ class BookingController extends Controller
             }
             $s = Simulator::findOne($simId);
             if (empty($s)) {
-                throw new NotFoundHttpException(Yii::t('app', 'The specifies simulator doesn\'t exist'));
+                throw new NotFoundHttpException(Yii::t('app', 'The specified simulator doesn\'t exist'));
             }
 
             //a booking in non opening hours has to be confirmed
@@ -395,7 +398,7 @@ class BookingController extends Controller
             }
             $s = Simulator::findOne($simId);
             if (empty($s)) {
-                throw new NotFoundHttpException(Yii::t('app', 'The specifies simulator doesn\'t exist'));
+                throw new NotFoundHttpException(Yii::t('app', 'The specified simulator doesn\'t exist'));
             }
 
             try {
@@ -489,7 +492,7 @@ class BookingController extends Controller
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
 
-            throw new BadRequestHttpException();
+            throw new BadRequestHttpException(Yii::t('app', "You must choose at least one time slot"));
         }
 
         $transaction = Yii::$app->db->beginTransaction(Transaction::SERIALIZABLE);
@@ -498,7 +501,6 @@ class BookingController extends Controller
             $booking = Yii::$app->session[self::SESSION_PARAMETER_BOOKING];
 
             if (!$booking->save()) {
-                //rise error
                 throw new ErrorException();
             }
 
@@ -527,7 +529,7 @@ class BookingController extends Controller
             unset(Yii::$app->session[self::SESSION_PARAMETER_BOOKING]);
             unset(Yii::$app->session[self::SESSION_PARAMETER_WEEKDAYS]);
 
-            throw new BadRequestHttpException();
+            throw new BadRequestHttpException((Yii::t('app', "There was an error while saving your booking to the system. We apologize for the error, please try again later.")));
         }
     }
 
@@ -570,12 +572,6 @@ class BookingController extends Controller
         if (empty($timeSlot)) {
             $isValid = false;
         }
-
-        // NOTE: A time slots does not necessary needs to have an ID since they can also be chosen freely
-        // Make sure we deal with a valid time slot
-        //if (empty($timeSlot->id)) {
-        // $isValid = false;
-        //}
 
         // Make sure start time is before end time
         if (strtotime($timeSlot->start) > strtotime($timeSlot->end)) {
@@ -635,7 +631,7 @@ class BookingController extends Controller
         if (($model = Booking::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Yii::t('app', "The requested booking was not found"));
         }
     }
 
@@ -663,7 +659,7 @@ class BookingController extends Controller
         if (($model = $query->one()) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('Incorrect input');
+            throw new NotFoundHttpException(Yii::t('app', "The requested booking was not found"));
         }
     }
 

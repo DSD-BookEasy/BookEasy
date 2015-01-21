@@ -18,6 +18,10 @@ use yii\db\ActiveRecord;
  * @property integer $id_booking
  * @property integer $creation_mode
  * @property bool $blocking if this is a blocking Timeslot to allow for breaks, pauses, etc.
+ *
+ * Linked models
+ * @property Simulator $simulator
+ * @property Booking $booking
  */
 class Timeslot extends ActiveRecord
 {
@@ -105,12 +109,19 @@ class Timeslot extends ActiveRecord
         return $this->hasOne(Simulator::className(), ['id' => 'id_simulator']);
     }
 
-    public static function handleDeleteBooking($booking){
+    /**
+     * Makes sure the timeslots associated a Booking that is going to be deleted are deleted or freed correctly
+     * @param Booking $booking
+     * @throws \ErrorException if deletion or update of the timeslots failed
+     */
+    public static function handleDeleteBooking(Booking $booking){
         $timeslots = $booking->timeslots;
 
         foreach($timeslots as $slot){
             if($slot->creation_mode == self::WEEKDAYS ){
-                $slot->delete();
+                if(!$slot->delete()){
+                    throw new \ErrorException();
+                }
             }else{
                 $slot->id_booking = NULL;
                 if(!$slot->save()){
@@ -222,9 +233,5 @@ class Timeslot extends ActiveRecord
 
         }
 
-    }
-    public function simulatorToString(){
-        $simulator = Simulator::findOne(['id' => $this->id_simulator]);;
-        return $simulator->name;
     }
 }

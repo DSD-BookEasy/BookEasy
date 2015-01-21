@@ -655,6 +655,14 @@ msgid "The ending date of all the time spans must be after its starting time"
 msgstr ""
 
 msgctxt "app"
+msgid "The requested booking was not found"
+msgstr ""
+
+msgctxt "app"
+msgid "The specified simulator doesn't exist"
+msgstr ""
+
+msgctxt "app"
 msgid "The specified time spans cannot be in the past"
 msgstr ""
 
@@ -664,10 +672,22 @@ msgstr ""
 
 msgctxt "app"
 msgid "The specifies simulator doesn't exist"
-msgstr ""
+msgstr "@@@@"
 
 msgctxt "app"
 msgid "There are no roles in the system."
+msgstr ""
+
+msgctxt "app"
+msgid "There was an error while confirming the booking"
+msgstr ""
+
+msgctxt "app"
+msgid "There was an error while saving your booking to the system. We apologize for the error, please try again later."
+msgstr ""
+
+msgctxt "app"
+msgid "There was an unexpected error during the deletion of the booking."
 msgstr ""
 
 msgctxt "app"
@@ -839,6 +859,14 @@ msgid "You don't have permission to see this booking"
 msgstr ""
 
 msgctxt "app"
+msgid "You have specified invalid time slots"
+msgstr ""
+
+msgctxt "app"
+msgid "You must choose at least one time slot"
+msgstr ""
+
+msgctxt "app"
 msgid "You must specify a valid simulator"
 msgstr ""
 
@@ -864,6 +892,10 @@ msgstr ""
 
 msgctxt "app"
 msgid "Your secret key is: "
+msgstr ""
+
+msgctxt "app"
+msgid "our email"
 msgstr ""
 
 msgctxt "app"
