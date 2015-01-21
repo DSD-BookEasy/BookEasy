@@ -33,9 +33,4 @@ class SiteController extends Controller
                 'simulators' => $simulators->getModels(),
             ]);
     }
-
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
 }
