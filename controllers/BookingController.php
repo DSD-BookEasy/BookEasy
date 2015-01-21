@@ -74,7 +74,7 @@ class BookingController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Booking::find(),
+            'query' => Booking::find()->orderBy('timestamp DESC'),
         ]);
 
         return $this->render('index', [
