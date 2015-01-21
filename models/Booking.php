@@ -20,6 +20,9 @@ use yii\base\ErrorException;
  * @property string $comments
  * @property integer $assigned_instructor
  * @property string $token
+ *
+ * Linked Models
+ * @property Timeslot[] $timeslots
  */
 class Booking extends \yii\db\ActiveRecord
 {
@@ -126,22 +129,4 @@ class Booking extends \yii\db\ActiveRecord
             return null;
         }
     }
-
-    /*
-     * old status to string
-    public function statusToString(){
-        switch($this->status){
-            case Booking::CONFIRMED:
-                $this->status = 'Confirmed';
-                break;
-            case Booking::NOT_CONFIRMED:
-                $this->status = 'Not Confirmed';
-                break;
-            case Booking::WAITING_FOR_CONFIRMATION:
-                $this->status = 'Waiting for Confirmation';
-                break;
-        }
-    }
-    */
-
 }

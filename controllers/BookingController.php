@@ -133,15 +133,19 @@ class BookingController extends Controller
         if ($model->token != $token) {
             throw new ForbiddenHttpException(Yii::t('app', "You don't have permission to see this booking"));
         }
-        Timeslot::handleDeleteBooking($model);
-        $model->delete();
 
-        // if the user who deleted the booking can manageBookings, send him to the booking/index, otherwise it is a customer, send him to the site/index
-        if (Yii::$app->user->can('manageBookings')) {
-            return $this->redirect(['index']);
-        }
-        else {
-            return $this->redirect(['site/index']);
+        try {
+            Timeslot::handleDeleteBooking($model);
+            $model->delete();
+
+            // if the user who deleted the booking can manageBookings, send him to the booking/index, otherwise it is a customer, send him to the site/index
+            if (Yii::$app->user->can('manageBookings')) {
+                return $this->redirect(['index']);
+            } else {
+                return $this->redirect(['site/index']);
+            }
+        } catch(\ErrorException $e){
+            throw new ServerErrorHttpException(Yii::t('app',"There was an unexpected error during the deletion of the booking."));
         }
     }
 

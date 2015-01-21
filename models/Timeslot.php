@@ -109,12 +109,19 @@ class Timeslot extends ActiveRecord
         return $this->hasOne(Simulator::className(), ['id' => 'id_simulator']);
     }
 
-    public static function handleDeleteBooking($booking){
+    /**
+     * Makes sure the timeslots associated a Booking that is going to be deleted are deleted or freed correctly
+     * @param Booking $booking
+     * @throws \ErrorException if deletion or update of the timeslots failed
+     */
+    public static function handleDeleteBooking(Booking $booking){
         $timeslots = $booking->timeslots;
 
         foreach($timeslots as $slot){
             if($slot->creation_mode == self::WEEKDAYS ){
-                $slot->delete();
+                if(!$slot->delete()){
+                    throw new \ErrorException();
+                }
             }else{
                 $slot->id_booking = NULL;
                 if(!$slot->save()){
