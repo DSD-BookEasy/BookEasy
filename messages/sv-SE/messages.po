@@ -687,6 +687,10 @@ msgid "There was an error while saving your booking to the system. We apologize 
 msgstr ""
 
 msgctxt "app"
+msgid "There was an unexpected error during the deletion of the booking."
+msgstr ""
+
+msgctxt "app"
 msgid "This Week"
 msgstr ""
 
@@ -888,6 +892,10 @@ msgstr ""
 
 msgctxt "app"
 msgid "Your secret key is: "
+msgstr ""
+
+msgctxt "app"
+msgid "our email"
 msgstr ""
 
 msgctxt "app"
