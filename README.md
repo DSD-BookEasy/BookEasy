@@ -1,13 +1,7 @@
-Yii 2 Basic Application Template
-================================
-
-Yii 2 Basic Application Template is a skeleton Yii 2 application best for
-rapidly creating small projects.
-
-The template contains the basic features including user login/logout and a contact page.
-It includes all commonly used configurations that would allow you to focus on adding new
-features to your application.
-
+BookEasy: Museum Booking System
+===============================
+This software implements a booking system for flight simulators, dealing with their availabilities
+and assignments to flight instructors.
 
 DIRECTORY STRUCTURE
 -------------------
@@ -24,6 +18,6 @@ DIRECTORY STRUCTURE
       views/              contains view files for the Web application
       web/                contains the entry script and Web resources
 
-SETUP NOTEs AND FRAMEWORK INSTRUCTIONS
+SETUP NOTES
 --------------------------------------
-See the Tips and Tricks document in our Google Drive, in the coding folder
+Please refer to the included INSTALL.pdf file to know how to install the software on your system 
