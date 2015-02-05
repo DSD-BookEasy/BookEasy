@@ -18,6 +18,10 @@ use yii\db\ActiveRecord;
  * @property integer $id_booking
  * @property integer $creation_mode
  * @property bool $blocking if this is a blocking Timeslot to allow for breaks, pauses, etc.
+ *
+ * Linked models
+ * @property Simulator $simulator
+ * @property Booking $booking
  */
 class Timeslot extends ActiveRecord
 {
@@ -50,6 +54,7 @@ class Timeslot extends ActiveRecord
         $newTS->end = $day->format('Y-m-d') . ' ' . $model->end_time;
         $newTS->id_timeSlotModel = $model->id;
         $newTS->creation_mode = self::MODEL;
+        $newTS->blocking = $model->blocking;
 
         return $newTS->save();
 
@@ -62,7 +67,8 @@ class Timeslot extends ActiveRecord
     {
         return [
             [['start', 'end'], 'checkConsistency'],
-            [['cost', 'id_timeSlotModel', 'id_simulator', 'creation_mode'], 'integer']
+            [['cost', 'id_timeSlotModel', 'id_simulator', 'creation_mode'], 'integer'],
+            [['blocking'], 'boolean']
         ];
     }
 
@@ -77,7 +83,7 @@ class Timeslot extends ActiveRecord
             'end' => Yii::t('app', 'End'),
             'cost' => Yii::t('app', 'Cost'),
             'id_timeSlotModel' => Yii::t('app', 'Id Time Slot Model'),
-            'id_simulator' => Yii::t('app', 'Id Simulator'),
+            'id_simulator' => Yii::t('app', 'Simulator'),
             'creation_mode' => Yii::t('app', 'Creation Mode')
         ];
     }
@@ -103,12 +109,19 @@ class Timeslot extends ActiveRecord
         return $this->hasOne(Simulator::className(), ['id' => 'id_simulator']);
     }
 
-    public static function handleDeleteBooking($booking){
+    /**
+     * Makes sure the timeslots associated a Booking that is going to be deleted are deleted or freed correctly
+     * @param Booking $booking
+     * @throws \ErrorException if deletion or update of the timeslots failed
+     */
+    public static function handleDeleteBooking(Booking $booking){
         $timeslots = $booking->timeslots;
 
         foreach($timeslots as $slot){
             if($slot->creation_mode == self::WEEKDAYS ){
-                $slot->delete();
+                if(!$slot->delete()){
+                    throw new \ErrorException();
+                }
             }else{
                 $slot->id_booking = NULL;
                 if(!$slot->save()){
@@ -177,5 +190,48 @@ class Timeslot extends ActiveRecord
         return false;
     }
 
+    /**
+     * @return Timeslot the next adjacent Timeslot
+     */
+    public function nextTimeslot() {
 
+        return self::find()
+            ->where(['id_simulator' => $this->id_simulator])
+            ->andWhere(['=', 'start', $this->end])
+            ->one();
+
+    }
+
+    /**
+     * Calculates the simulation cost using the custom cost or the default one taken from the simulator price.
+     * @return int the cost of this timeslot
+     */
+    public function calculateCost()
+    {
+
+        if (!empty($this->cost) && $this->cost > 0) {
+            // If this Timeslot has a cost specifically set for it, return it
+
+            return $this->cost;
+        } else {
+            // Otherwise, calculate its cost using the simulator's price
+
+            // The number of seconds of simulation in the time slot
+            $timeSpanInSeconds = strtotime($this->end) - strtotime($this->start);
+
+            $simulator = $this->simulator;
+
+            // Convert to seconds the default simulator's flight duration
+            // NOTE: Simulator stores time slot length in minutes
+            $simulatorFlightDurationInSecs = $simulator->flight_duration * 60;
+
+            // Number of time slots
+            $numberOfTimeSlots = ceil($timeSpanInSeconds / $simulatorFlightDurationInSecs);
+
+            // Return the price of the simulation
+            return $numberOfTimeSlots * $simulator->price_simulation;
+
+        }
+
+    }
 }

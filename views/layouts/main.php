@@ -8,6 +8,13 @@ use app\assets\AppAsset;
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+
+if ( !Yii::$app->user->isGuest && Yii::$app->user->identity->disabled ) {
+    // Logout a disabled user and redirect him to the homepage
+    Yii::$app->user->logout();
+    Yii::$app->controller->redirect(Yii::$app->homeUrl);
+}
+
 AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
@@ -32,23 +39,58 @@ AppAsset::register($this);
                     'class' => 'navbar-inverse navbar-fixed-top',
                 ],
             ]);
-            echo Nav::widget([
-                'options' => ['class' => 'navbar-nav navbar-right'],
-                'items' => [
-                    ['label' => \Yii::t('app','Home'), 'url' => ['index']],
-                    //['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => \Yii::t('app','Look for a Booking'), 'url' => ['/booking/search']],
-                    Yii::$app->user->isGuest ?
-                        ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
-                        ['label' => \Yii::t('app','Logout ({username})',
-                            ['username'=>Yii::$app->user->identity->user_name]),
-                            'url' => ['/staff/logout']],
-                ],
-            ]);
-            NavBar::end();
+
+        //Dynamically compose the menu based on user permissions
+        $menuItems = [];
+
+        //System menu
+        $system = [
+            ['label' => Yii::t('app', 'Time Slots'), 'url' => ['timeslot-model/index'], 'permission' => 'manageTimeslotModels'],
+            ['label' => Yii::t('app', 'Simulators'), 'url' => ['simulator/index'], 'permission' => 'manageSimulator'],
+            ['label' => Yii::t('app', 'Permissions'), 'url' => ['permission/index'], 'permission' => 'assignPermissions'],
+            ['label' => Yii::t('app', 'Roles'), 'url' => ['permission/roles'], 'permission' => 'assignRoles'],
+            ['label' => Yii::t('app', 'System Parameters'), 'url' => ['parameter/index'], 'permission' => 'manageParams'],
+            ['label' => Yii::t('app', 'Staff Accounts'), 'url' => ['staff/index'], 'permission' => 'manageStaff']
+        ];
+        checkMenuPermissions($system);
+        if(!empty($system)){
+            $menuItems[] = ['label' => Yii::t('app', 'System'),
+                'items' => $system
+            ];
+        }
+
+        //Booking menu
+        $bookings = [
+            ['label' => Yii::t('app', 'Todays Bookings'), 'url' => ['staff/agenda'], 'permission' => ['manageBookings', 'assignedToBooking']],
+            ['label' => Yii::t('app', 'New Booking'), 'url' => ['site/index'], 'permission' => '@'],
+            ['label' => Yii::t('app', 'Booking List'), 'url' => ['booking/index'], 'permission' => 'manageBookings'],
+            ['label' => Yii::t('app', 'Search Booking'), 'url' => ['booking/search'], 'permission' => '@']
+        ];
+        checkMenuPermissions($bookings);
+        if(!empty($bookings)){
+            $menuItems[] = ['label' => \Yii::t('app', 'Bookings'),
+                'items' => $bookings
+            ];
+        }
+
+        $menuItems[] = ['label' => \Yii::t('app','Search Booking'), 'url' => ['/booking/search']];
+        $menuItems[] = Yii::$app->user->isGuest ?
+            ['label' => \Yii::t('app','Login'), 'url' => ['/staff/login']] :
+            [
+                'label' => \Yii::t('app','Logout ({username})',
+                    ['username'=>Yii::$app->user->identity->user_name]),
+                'url' => ['/staff/logout']
+            ];
+
+
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav navbar-right'],
+            'items' => $menuItems
+        ]);
+        NavBar::end();
         ?>
 
-        <div class="container">
+        <div class="container controller-<?= Yii::$app->controller->id?> action-<?= Yii::$app->controller->action->id ?>">
             <?= Breadcrumbs::widget([
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
@@ -66,4 +108,46 @@ AppAsset::register($this);
 <?php $this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage() ?>
+<?php $this->endPage();
+
+/**
+ * Filters menu entries based on the specified permissions
+ * @param $items
+ */
+function checkMenuPermissions(&$items){
+    $toDel = [];
+    foreach($items as $key => $entry){
+        if(!empty($entry['permission'])){
+            if(!is_array($entry['permission'])){
+                $entry['permission']=[$entry['permission']];
+            }
+
+            $can = false;
+            foreach($entry['permission'] as $perm){
+                if ($perm === '?') {
+                    if (Yii::$app->user->getIsGuest()) {
+                        $can = true;
+                        break;
+                    }
+                } elseif ($perm === '@') {
+                    if (!Yii::$app->user->getIsGuest()) {
+                        $can = true;
+                        break;
+                    }
+                } elseif (Yii::$app->user->can($perm)){
+                    $can = true;
+                    break;
+                }
+            }
+
+            if(!$can){
+                $toDel[] = $key;
+            }
+        }
+    }
+
+    //Deleting array entries while iterating over it, is not so wise. We do it separately
+    foreach($toDel as $k){
+        unset($items[$k]);
+    }
+}

@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use \app\models\Booking;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -14,9 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Booking',
-]), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Create Booking'), ['site/index'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -29,12 +28,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'timestamp',
             'name',
             'surname',
+            'assigned_instructor_name',
             // 'telephone',
             // 'email:email',
             // 'address',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        //parse the enumeration of status in its string value
+        //this is the only way I found to modify the content of a column
+        'beforeRow' => function ($model){
+            $model->status = $model->statusToString();
+            $model->assigned_instructor_name = $model->instructor->name." ".$model->instructor->surname;
+        }
     ]); ?>
 
 </div>

@@ -4,13 +4,10 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TimeslotModel */
-/* @var $weekDays string[] */
 /* @var $simulators app\models\Simulator[]*/
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Time Slot Model',
-]) . ' ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Time Slot Models'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Update Recurring Time Slots: ') . ' ' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Recurring Time Slots'), 'url' => 'index'];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
@@ -20,7 +17,6 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
-        'weekDays' => $weekDays,
         'simulators' => $simulators
     ]) ?>
 

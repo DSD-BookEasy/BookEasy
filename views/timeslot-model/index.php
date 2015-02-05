@@ -6,7 +6,7 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Time Slot Models');
+$this->title = Yii::t('app', 'Recurring Time Slots');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="time-slot-model-index">
@@ -14,9 +14,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Time Slot Model',
-]), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Yii::t('app', 'From here you can manage recurring time slots for the simulators you have created. In this way it is possible to define a scheme for the opening hours.') ?> <br><br>
+        <!-- Create new recurring time slot button -->
+        <?= Html::a(Yii::t('app', 'Create new'), ['create'], ['class' => 'btn btn-success']) ?>
+
+        <!-- Switch to single time slot management -->
+        <?= Html::a(Yii::t('app', 'Manage single time slots'), ['/timeslot/index'], ['class' => 'btn btn-primary']) ?>
     </p>
 
     <?= GridView::widget([
@@ -25,16 +28,21 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
+            'id_simulator',
             'start_time',
             'end_time',
             'frequency',
-            'start_validity',
+            'start_validity:date',
             // 'end_validity',
             // 'repeat_day',
-            // 'id_simulator',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        //this modify the value  of frequency and id_simulator. Is the only way I found to change the view of this page
+        'beforeRow' => function ($model){
+            $model->frequency = $model->frequencyToString();
+            $model->id_simulator = $model->simulator->name;
+        }
     ]); ?>
 
 </div>

@@ -4,27 +4,20 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
+use kartik\datetime\DateTimePicker;
+use kartik\time\TimePicker;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $paramsNatures array */
 
 $this->title = Yii::t('app', 'Parameters');
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['']];
 ?>
 <div class="parameter-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <h3><?= Yii::t('app',"From here you can change the global parameters of the system")?></h3>
-
-    <p>
-        <?php
-        //TODO when we have permissions, this button should be rendered only if user can create parameters
-        ?>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Parameter',
-]), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    <p><?= Yii::t('app',"From here you can change the global parameters of the system")?></p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -63,13 +56,15 @@ function renderFormColumn($model,$natures){
             case 'textarea':
                 return renderFormTextarea($model);
             case 'time':
-            case 'date':
+                return renderFormTime($model);
+            case 'datetime':
+                return renderFormDateTime($model);
             default:
-                return 'def'.renderFormTextarea($model);
+                return renderFormTextarea($model);
         }
     }
     else{
-        return 'out'.renderFormTextarea($model);
+        return renderFormTextarea($model);
     }
 }
 
@@ -81,12 +76,16 @@ function renderFormColumn($model,$natures){
 function renderFormTextarea($model){
     ob_start();
     $form = ActiveForm::begin([
-      'action' => ['parameter/update','id'=>$model->id]
+      'action' => ['update','id'=>$model->id]
     ]);
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->textarea(['rows'=>2])->label(false);
+    $out .= $form->field($model, 'value', ['inputOptions' => [
+        'id' => $model->id.'-parameter-value',
+        'class' => 'form-control'
+    ]])
+        ->textarea(['rows'=>2])->label(false);
     $out .= Html::submitButton();
 
     ob_start();
@@ -100,12 +99,67 @@ function renderFormTextarea($model){
 function renderFormText($model){
     ob_start();
     $form = ActiveForm::begin([
-        'action' => ['parameter/update','id'=>$model->id]
+        'action' => ['update','id'=>$model->id]
     ]);
     $out = ob_get_contents();
     ob_end_clean();
 
-    $out .= $form->field($model, 'value')->textInput()->label(false);
+    $out .= $form->field($model, 'value', ['inputOptions' => [
+        'id' => $model->id.'-parameter-value',
+        'class' => 'form-control'
+    ]])
+        ->textInput()->label(false);
+    $out .= Html::submitButton();
+
+    ob_start();
+    $form->end();
+    $out .= ob_get_contents();
+    ob_end_clean();
+
+    return $out;
+}
+
+function renderFormDateTime($model){
+    ob_start();
+    $form = ActiveForm::begin([
+        'action' => ['update','id'=>$model->id]
+    ]);
+    $out = ob_get_contents();
+    ob_end_clean();
+
+    $out .= $form->field($model, 'value', ['inputOptions' => ['id' => $model->id.'-parameter-value']])
+        ->widget(DateTimePicker::className(), [
+        'removeButton' => false,
+        'pluginOptions' => [
+            'autoclose' => true,
+        ]
+    ])->label(false);
+    $out .= Html::submitButton();
+
+    ob_start();
+    $form->end();
+    $out .= ob_get_contents();
+    ob_end_clean();
+
+    return $out;
+}
+
+
+function renderFormTime($model){
+    ob_start();
+    $form = ActiveForm::begin([
+        'action' => ['update','id'=>$model->id]
+    ]);
+    $out = ob_get_contents();
+    ob_end_clean();
+
+    $out .= $form->field($model, 'value', ['inputOptions' => ['id' => $model->id.'-parameter-value']])
+        ->widget(TimePicker::className(), [
+        'pluginOptions' => [
+            'autoclose' => true,
+            'showMeridian' => false,
+        ]
+    ])->label(false);
     $out .= Html::submitButton();
 
     ob_start();

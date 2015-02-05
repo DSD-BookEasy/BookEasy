@@ -1,5 +1,6 @@
 <?php
 
+use app\controllers\TimeslotModelController;
 use app\models\TimeslotModel;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -10,7 +11,6 @@ use kartik\date\DatePicker;
 /* @var $this yii\web\View */
 /* @var $model app\models\TimeslotModel */
 /* @var $form yii\widgets\ActiveForm */
-/* @var $weekDays string[] */
 /* @var $simulators app\models\Simulator[] */
 
 ?>
@@ -19,11 +19,15 @@ use kartik\date\DatePicker;
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <?php if ($model->isNewRecord) { ?>
+
     <div class="row">
         <div class="col-md-4">
             <?= $form->field($model, 'id_simulator')->dropDownList(ArrayHelper::map($simulators, 'id', 'name')) ?>
         </div>
     </div>
+
+    <?php } ?>
 
     <div class="row">
         <div class="col-md-3">
@@ -52,7 +56,7 @@ use kartik\date\DatePicker;
             ]) ?>
         </div>
         <div class="col-md-2">
-            <?= $form->field($model, 'repeat_day')->dropDownList($weekDays) ?>
+            <?= $form->field($model, 'repeat_day')->dropDownList(TimeslotModelController::weekdays()) ?>
         </div>
 
     </div>
@@ -64,6 +68,10 @@ use kartik\date\DatePicker;
                 'convertFormat' => true,
                 'pluginOptions' => [
                     'autoclose' => true,
+                    'todayHighlight' => true,
+                    'todayBtn' => true,
+                    'weekStart' => '1',
+                    'startDate' => 'today',
                 ]
             ]) ?>
         </div>
@@ -73,8 +81,17 @@ use kartik\date\DatePicker;
                 'convertFormat' => true,
                 'pluginOptions' => [
                     'autoclose' => true,
+                    'todayHighlight' => true,
+                    'todayBtn' => true,
+                    'weekStart' => '1',
+                    'startDate' => 'today',
                 ]
             ]) ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <?= $form->field($model, 'blocking')->checkbox([ 'label' => Yii::t('app', 'Blocked Timeslots (non bookable)')]) ?>
         </div>
     </div>
 

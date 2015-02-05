@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use \app\models\Parameter;
 
 /* @var $this yii\web\View */
 /* @var $name string */
@@ -21,7 +22,7 @@ $this->title = $name;
         The above error occurred while the Web server was processing your request.
     </p>
     <p>
-        Please contact us if you think this is a server error. Thank you.
+        Please contact us by writing to <?= Html::a(Yii::t('app','our email'),'mailto:'.Parameter::getValue('adminEmail','')); ?> if you think this is a server error. Thank you.
     </p>
 
 </div>

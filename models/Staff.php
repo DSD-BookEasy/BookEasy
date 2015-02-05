@@ -16,22 +16,20 @@ use yii\web\IdentityInterface;
  * @property string $telephone
  * @property string $email
  * @property string $address
- * @property integer $role
  * @property string $user_name
  * @property string $password
  * @property string $last_login
  * @property string $auth_key
  * @property string $plain_password
+ * @property string $repeat_password
+ * @property string $last_recover
+ * @property string $recover_hash
+ * @property bool $disabled
  */
-class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
+class Staff extends \yii\db\ActiveRecord implements IdentityInterface
 {
-    /**
-     * Set this property to change the password of a user.
-     * If you change this property password will be automatically encrypted
-     * If you change the $password attribute you will change directly
-     * the encrypted password
-     */
-    public $plain_password;
+    private $_plain_password = null;
+    private $_repeat_password = null;
 
     /**
      * @inheritdoc
@@ -46,10 +44,15 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public function rules()
     {
+
         return [
-            [['role'], 'integer'],
             [['last_login'], 'safe'],
-            [['name', 'surname', 'telephone', 'email', 'address', 'user_name', 'password', 'auth_key'], 'string', 'max' => 255]
+            [['name', 'surname', 'telephone', 'email', 'address', 'user_name', 'password', 'auth_key'], 'string', 'max' => 255],
+            [['repeat_password'], 'compare', 'compareAttribute' => 'plain_password', 'skipOnEmpty' => false],
+            [['plain_password'], 'safe'],
+            ['email', 'email'],
+            [['disabled'], 'boolean'],
+            [['user_name', 'email', 'password'], 'required'],
         ];
     }
 
@@ -65,10 +68,11 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'telephone' => Yii::t('app', 'Telephone'),
             'email' => Yii::t('app', 'E-Mail'),
             'address' => Yii::t('app', 'Address'),
-            'role' => Yii::t('app', 'Role'),
             'user_name' => Yii::t('app', 'User Name'),
             'password' => Yii::t('app', 'Password'),
             'last_login' => Yii::t('app', 'Last Login'),
+            'plain_password' => Yii::t('app', 'Password'),
+            'repeat_password' => Yii::t('app', 'Repeat Password')
         ];
     }
 
@@ -157,12 +161,52 @@ class Staff extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             if ($this->isNewRecord) {
                 $this->auth_key = Yii::$app->getSecurity()->generateRandomString();
             }
-            if(isset($this->plain_password)){
-                $this->password= \Yii::$app->getSecurity()->generatePasswordHash($this->plain_password);
-                unset($this->plain_password);
-            }
             return true;
         }
         return false;
+    }
+
+    /**
+     * Getter for $plain_password property
+     * This property is populated only if in the current execution the password has been set
+     * It is not possible to retrieve the plaintext password of a user set is a previous request
+     * @return string the just-set password of the user
+     */
+    public function getPlain_Password(){
+        return $this->_plain_password;
+    }
+
+    /**
+     * Setter for $plain_password property.
+     * WARNING: it also sets the $password attribute with the hash of $plain_password
+     * Use this to change the password of a user
+     * @param string $psw the new password of the user
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function setPlain_Password($psw){
+        if(!empty($psw)) {
+            $this->_plain_password = $psw;
+            $this->password = Yii::$app->getSecurity()->generatePasswordHash($psw);
+        }
+    }
+
+    /**
+     * Property getter for the repeat field in the create/edit forms
+     * @return mixed
+     */
+    public function getRepeat_Password(){
+        return $this->_repeat_password;
+    }
+
+    /**
+     * Property setter for the repeat field in the create/edit forms
+     * @param string $psw the password of the user. Should be the same as $_plain_password
+     * @return mixed
+     */
+    public function setRepeat_Password($psw){
+        if(!empty($psw)) {
+            $this->_repeat_password = $psw;
+        }
     }
 }

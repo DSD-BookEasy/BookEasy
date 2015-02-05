@@ -1,7 +1,9 @@
-The Yii framework is free software. It is released under the terms of
-the following BSD License.
+BookEasy is free service developed within the Distributed Software
+Development course at Mälardalens högskola in Sweden and Politecnico
+di Milano in Italy.
+It is released under the terms of the following BSD License.
 
-Copyright © 2008 by Yii Software LLC (http://www.yiisoft.com)
+Copyright © 2015 by Mälardalens högskola & Politecnico di Milano
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Simulator;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -10,29 +11,6 @@ use yii\filters\VerbFilter;
 
 class SiteController extends Controller
 {
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-
     public function actions()
     {
         return [
@@ -49,16 +27,10 @@ class SiteController extends Controller
     public function actionIndex()
     {
         $simulators = new ActiveDataProvider([
-            'query' => \app\models\Simulator::find(),
+            'query' => Simulator::find(),
         ]);
-
-        return $this->render('index', [
-            'simulators' => $simulators->getModels(),
-        ]);
-    }
-
-    public function actionAbout()
-    {
-        return $this->render('about');
+            return $this->render('index', [
+                'simulators' => $simulators->getModels(),
+            ]);
     }
 }
